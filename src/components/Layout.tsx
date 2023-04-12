@@ -1,6 +1,6 @@
 import Logo from './Logo';
 
-const Layout: React.FC = ({ children }) => {
+const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <div className="flex flex-col min-h-screen mx-auto max-w-screen-md">
       <header className="py-10 text-center">
