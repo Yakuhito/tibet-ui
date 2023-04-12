@@ -7,6 +7,10 @@ const faqs = [
     answer: 'TibetSwap is an <a href="https://www.coindesk.com/learn/what-is-an-automated-market-maker/" target="_blank" rel="noopener noreferrer">Automated Market Maker (AMM)</a> running on the <a href="https://www.chia.net/" target="_blank" rel="noopener noreferrer">Chia blockchain</a>.',
   },
   {
+    question: 'Why should I trust you with my money?',
+    answer: 'You shouldn\'t. First, you only send offers to the server, meaning that the transaction only goes through if tyou received what you asked for. Second, TibetSwap puzzles were designed to be immutable, with no \'admin keys\' - once the router is launched, the creators of the app have the same permissions over the app as any regular user.',
+  },
+  {
     question: 'Is the code open-source?',
     answer: 'Of course! The smart contracts (puzzles), CLI, and API can be found in <a href="https://github.com/yakuhito/tibet" target="_blank" rel="noopener noreferrer">this repository</a>, and the source of this website can be found <a href="https://github.com/Yakuhito/tibetswap-v1-ui" target="_blank" rel="noopener noreferrer">here</a>.',
   },
