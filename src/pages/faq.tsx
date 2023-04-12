@@ -23,6 +23,10 @@ const faqs = [
     question: 'What are the fees associated with using TibetSwap?',
     answer: 'Aside for the associated blockchain fees, 0.7% of every trade is distributed to liquidity providers for the pool that is involved in the transaction.',
   },
+  {
+    question: 'Do you provide an API?',
+    answer: 'While you are storngly encouraged to run your own instance of our API, there is nothing stopping you from accessing ours. Just prepend "api." to the domain you used to access this page (e.g., "api.v1-testnet10.tibetswap.io"). An up-to-date list of endpoints, possible parameters, and responses can be found at <a href="https://api.v1-testnet10.tibetswap.io/docs" target="_blank" rel="noopener noreferrer">/docs</a>.',
+  },
 ];
 
 const FAQ: React.FC = () => {
