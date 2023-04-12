@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Link from 'next/link';
 import Layout from '../components/Layout';
 
 const faqs = [
@@ -33,6 +34,11 @@ const FAQ: React.FC = () => {
 
   return (
     <Layout>
+      <div className="mb-4">
+        <Link href="/">
+          <p className="text-gray-600 underline">&larr; Back to Homepage</p>
+        </Link>
+      </div>
       <h1 className="text-3xl font-bold mb-6">FAQ</h1>
       <div>
         {faqs.map((faq, index) => (
@@ -46,7 +52,7 @@ const FAQ: React.FC = () => {
             {activeIndex === index && (
               <div
                 className="px-4 py-2 bg-gray-100 text-left rounded-b-md faq-answer"
-                dangerouslySetInnerHTML={{ __html: faq.answer }}
+                dangerouslySetInnerHTML={{ __html: faq.answer }} 
               />
             )}
           </div>

@@ -4,9 +4,12 @@ import Layout from '../components/Layout';
 const Home: React.FC = () => {
   return (
     <Layout>
-      <h1 className="text-3xl font-bold">Test</h1>
+      <h1 className="text-3xl font-bold mb-4">Testing... 1... 2... 3...</h1>
+      <p className="mb-6 text-left">
+        Uh oh! You've accessed this site too early and caught us unprepared. We're still working on the UI, so please come back later :)
+      </p>
       <Link href="/faq">
-        <p className="underline">Go to FAQ</p>
+        <p className="text-gray-600 underline">FAQ &rarr;</p>
       </Link>
     </Layout>
   );
