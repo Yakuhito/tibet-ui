@@ -44,18 +44,18 @@ const FAQ: React.FC = () => {
         </Link>
       </div>
       <h1 className="text-3xl font-bold mb-6">FAQ</h1>
-      <div>
+      <div className="mb-4 max-w-screen-sm w-full">
         {faqs.map((faq, index) => (
           <div key={index} className="mb-4">
             <button
               onClick={() => toggleAnswer(index)}
-              className="text-left font-semibold w-full text-lg px-4 py-2 bg-gray-200 rounded-md focus:outline-none"
+              className="text-left font-semibold text-lg px-4 py-2 bg-gray-200 rounded-md focus:outline-none w-full"
             >
               {faq.question}
             </button>
             {activeIndex === index && (
               <div
-                className="px-4 py-2 bg-gray-100 text-left rounded-b-md faq-answer"
+                className="px-4 py-2 bg-gray-100 text-left rounded-b-md faq-answer w-full"
                 dangerouslySetInnerHTML={{ __html: faq.answer }} 
               />
             )}
