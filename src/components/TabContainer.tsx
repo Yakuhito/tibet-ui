@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
+import Swap from './Swap';
 
 const TabContainer: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'swap' | 'liquidity'>('swap');
 
   const renderContent = () => {
     if (activeTab === 'swap') {
-      return <p className="p-4">Swap</p>;
+      return <Swap />;
     } else {
       return <p className="p-4">Liquidity</p>;
     }
