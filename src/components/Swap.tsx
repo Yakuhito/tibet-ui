@@ -1,32 +1,24 @@
 import { useState } from 'react';
-import Select from 'react-select';
+import { Token } from '../api';
+import BuySellSwitch from './BuySellSwitch';
+import TokenSelector from './TokenSelector';
+import SwapInput from './SwapInput';
+import GenerateOfferButton from './GenerateOfferButton';
 
-type Token = {
-  label: string;
-  value: string;
-  imageSrc: string;
-};
-
-const tokens: Token[] = [
-  { label: 'Token A', value: 'tokenA', imageSrc: '/logo.jpg' },
-  { label: 'Token B', value: 'tokenB', imageSrc: '/logo.jpg' },
-  // Add more tokens as required
-];
-
-const customStyles = {
-  option: (provided: any, state: any) => {
-    const imgSrc = state.getValue()[0].imageSrc;
-    return { ...provided, paddingLeft: 40, backgroundImage: `url(${imgSrc})`, backgroundSize: '20px', backgroundPosition: '10px center', backgroundRepeat: 'no-repeat' };
-  },
-  singleValue: (provided: any, state: any) => {
-    const imgSrc = state.getValue()[0].imageSrc;
-    return { ...provided, paddingLeft: 40, backgroundImage: `url(${imgSrc})`, backgroundSize: '20px', backgroundPosition: '10px center', backgroundRepeat: 'no-repeat' };
-  },
-};
+const XCH: Token = {
+    asset_id: '',
+    pair_id: '',
+    name: 'Chia',
+    short_name: 'XCH',
+    image_url: '/xch.webp',
+    verified: true
+}
 
 const Swap: React.FC = () => {
   const [selectedToken, setSelectedToken] = useState<Token | null>(null);
   const [isBuySelected, setIsBuySelected] = useState(true);
+  const [amount0, setAmount0] = useState(0);
+  const [amount1, setAmount1] = useState(0);
 
   const handleGenerateOffer = () => {
     console.log('Selected token:', selectedToken);
@@ -34,49 +26,33 @@ const Swap: React.FC = () => {
   };
 
   return (
-    <div className="w-fill m-4">
-      <div className="my-4">
-        <div className="flex items-center justify-center">
-          <button
-            onClick={() => setIsBuySelected(true)}
-            className={`${
-              isBuySelected
-                ? 'bg-green-500 border-green-500 text-white'
-                : 'bg-white border-gray-300 text-black'
-            } px-4 py-2 rounded-l-md focus:outline-none w-full border`}
-          >
-            Buy
-          </button>
-          <button
-            onClick={() => setIsBuySelected(false)}
-            className={`${
-              isBuySelected
-                ? 'bg-white border-gray-300 text-black'
-                : 'bg-red-500 border-red-500 text-white'
-            } px-4 py-2 rounded-r-md focus:outline-none w-full border`}
-          >
-            Sell
-          </button>
-        </div>
-      </div>
-      <div className="mb-4">
-        <Select
-          styles={customStyles}
-          value={selectedToken}
-          options={tokens}
-          onChange={(value) => setSelectedToken(value as Token)}
-        />
-      </div>
-      <button
-        onClick={handleGenerateOffer}
-        className={`${
-            isBuySelected
-              ? 'bg-green-500'
-              : 'bg-red-500'
-          } text-white px-4 py-2 rounded-md w-full mt-4`}
-      >
-        GENERATE OFFER
-      </button>
+    <div className="w-fill p-2">
+      <BuySellSwitch
+        isBuySelected={isBuySelected}
+        onChange={setIsBuySelected}
+        disabled={true} />
+
+      <TokenSelector
+        selectedToken={selectedToken ?? XCH}
+        tokens={[]}
+        onChange={setSelectedToken}
+        disabled={true}/>
+
+      <SwapInput
+        token0={XCH}
+        token1={XCH}
+        isBuySelected={isBuySelected}
+        onArrowClick={() => setIsBuySelected(!isBuySelected)}
+        amount0={amount0}
+        amount1={amount1}
+        onAmountsChanged={(amount0, amount1: number) => {
+            setAmount0(amount0);
+            setAmount1(amount1);
+        }}
+        disabled={true}
+      />
+
+      <GenerateOfferButton isBuySelected={isBuySelected} disabled={true} onPressed={handleGenerateOffer}/>
     </div>
   );
 };
