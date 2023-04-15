@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Token } from '../api';
+import { useState, useEffect } from 'react';
+import { Token, Pair, getPairByLauncherId } from '../api';
 import BuySellSwitch from './BuySellSwitch';
 import TokenSelector from './TokenSelector';
 import SwapInput from './SwapInput';
@@ -10,37 +10,51 @@ const XCH: Token = {
     pair_id: '',
     name: 'Chia',
     short_name: 'XCH',
-    image_url: '/xch.webp',
+    image_url: '/assets/xch.webp',
     verified: true
 }
 
-const Swap: React.FC = () => {
+type SwapProps = {
+  disabled: boolean;
+  tokens: Token[] | null;
+};
+
+const Swap: React.FC<SwapProps> = ({ disabled, tokens }) => {
   const [selectedToken, setSelectedToken] = useState<Token | null>(null);
+  const [pair, setPair] = useState<Pair | null>(null);
   const [isBuySelected, setIsBuySelected] = useState(true);
   const [amount0, setAmount0] = useState(0);
   const [amount1, setAmount1] = useState(0);
 
-  const handleGenerateOffer = () => {
-    console.log('Selected token:', selectedToken);
-    console.log('Action:', isBuySelected ? 'Buy' : 'Sell');
-  };
+  useEffect(() => {
+    async function fetchPair() {
+      setPair(null);
+
+      if(selectedToken == null) return;
+
+      const pair = await getPairByLauncherId(selectedToken.pair_id);
+      setPair(pair);
+    }
+
+    fetchPair();
+  }, [selectedToken]);
 
   return (
     <div className="w-fill p-2">
       <BuySellSwitch
         isBuySelected={isBuySelected}
         onChange={setIsBuySelected}
-        disabled={true} />
+        disabled={disabled} />
 
       <TokenSelector
-        selectedToken={selectedToken ?? XCH}
-        tokens={[]}
+        selectedToken={selectedToken ?? null}
+        tokens={tokens ?? []}
         onChange={setSelectedToken}
-        disabled={true}/>
+        disabled={disabled}/>
 
       <SwapInput
         token0={XCH}
-        token1={XCH}
+        token1={selectedToken ?? XCH}
         isBuySelected={isBuySelected}
         onArrowClick={() => setIsBuySelected(!isBuySelected)}
         amount0={amount0}
@@ -49,10 +63,10 @@ const Swap: React.FC = () => {
             setAmount0(amount0);
             setAmount1(amount1);
         }}
-        disabled={true}
+        disabled={selectedToken == null || pair == null}
       />
 
-      <GenerateOfferButton isBuySelected={isBuySelected} disabled={true} onPressed={handleGenerateOffer}/>
+      <GenerateOfferButton isBuySelected={isBuySelected} disabled={selectedToken == null} onPressed={() => console.log('click!')}/>
     </div>
   );
 };

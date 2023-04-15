@@ -2,7 +2,7 @@ import Select from 'react-select';
 import { Token } from '../api';
 
 type TokenSelectorProps = {
-    selectedToken: Token;
+    selectedToken: Token | null;
     onChange: (token: Token) => void;
     tokens: Token[];
     disabled: boolean;
@@ -13,11 +13,11 @@ const customStyles = {
     const imgSrc = state.data.imageSrc;
     return {
       ...provided,
-      paddingLeft: 32,
+      paddingLeft: 48,
       backgroundImage: `url(${imgSrc})`,
       backgroundSize: '24px',
-      backgroundPosition: '4px center',
-      backgroundRepeat: 'no-repeat'
+      backgroundPosition: '20px center',
+      backgroundRepeat: 'no-repeat',
     };
   },
   singleValue: (provided: any, state: any) => {
@@ -32,7 +32,7 @@ const customStyles = {
       backgroundPosition: '4px center',
       backgroundRepeat: 'no-repeat',
       paddingTop: 6,
-      paddingBottom: 6
+      paddingBottom: 6,
     };
   },
   placeholder: (provided: any) => {
@@ -52,13 +52,20 @@ const TokenSelector: React.FC<TokenSelectorProps> = ({
     disabled
   }) => {
   
+    const tkToOption = (token: Token) => ({
+      value: token,
+      label: `${token.name} (${token.short_name})`,
+      imageSrc: token.image_url,
+      id: token.pair_id
+    });
+
     return (
       <div className="mt-2">
         <Select
           styles={customStyles}
-          value={selectedToken}
-          options={tokens}
-          onChange={(value) => onChange(value as Token)}
+          value={selectedToken ? tkToOption(selectedToken) : null}
+          options={tokens.map(tkToOption)}
+          onChange={(value) => onChange(value!.value)}
           isDisabled={disabled}
         />
       </div>

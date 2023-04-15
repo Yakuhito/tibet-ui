@@ -1,12 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Swap from './Swap';
+import { Token, getAllTokens } from '../api';
 
 const TabContainer: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'swap' | 'liquidity'>('swap');
+  const [tokens, setTokens] = useState<Token[] | null>(null);
+ 
+  useEffect(() => {
+    async function fetchTokens() {
+      const allTokens = await getAllTokens();
+      setTokens(allTokens);
+    }
+
+    fetchTokens();
+  }, []);
 
   const renderContent = () => {
     if (activeTab === 'swap') {
-      return <Swap />;
+      return <Swap disabled={tokens == null} tokens={tokens} />;
     } else {
       return <p className="p-4">Liquidity</p>;
     }

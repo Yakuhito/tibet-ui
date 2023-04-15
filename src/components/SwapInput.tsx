@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Token } from '../api';
 import AssetAmountInput from './AssetAmountInput';
 
@@ -38,7 +37,8 @@ const SwapInputs: React.FC<SwapInputsProps> = ({
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className={`h-7 w-7 ${
-            isBuySelected ? 'text-green-500' : 'text-red-500 transform rotate-180'
+            disabled ? 'text-gray-300 cursor-not-allowed' :
+            (isBuySelected ? 'text-green-500' : 'text-red-500 transform rotate-180')
           }`}
           fill="none"
           viewBox="0 0 24 24"
