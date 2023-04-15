@@ -54,7 +54,7 @@ const TokenSelector: React.FC<TokenSelectorProps> = ({
   
     const tkToOption = (token: Token) => ({
       value: token,
-      label: `${token.name} (${token.short_name})`,
+      label: `${token.name} (${token.short_name}) ${token.verified ? '✅' : '❗'}`,
       imageSrc: token.image_url,
       id: token.pair_id
     });

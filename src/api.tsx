@@ -91,3 +91,50 @@ export async function createOfferForPair(pairId: string, offer: string, action: 
   return response.data;
 }
 
+export function getInputPrice(input_amount: number, input_reserve: number, output_reserve: number): number {
+  if(input_amount == 0) return 0;
+
+  const input_amount_with_fee = input_amount * 993;
+  const numerator = input_amount_with_fee * output_reserve;
+  const denominator = (input_reserve * 1000) + input_amount_with_fee;
+  return Math.floor(numerator / denominator);
+}
+
+export function getOutputPrice(output_amount: number, input_reserve: number, output_reserve: number): number {
+  if(output_amount > output_reserve) {
+    return 0;
+  }
+  if(output_amount == 0) return 0;
+
+  const numerator = input_reserve * output_amount * 1000;
+  const denominator = (output_reserve - output_amount) * 993;
+  return Math.floor(numerator / denominator) + 1;
+}
+
+export function getFastQuote(
+  amountIn: number | undefined,
+  amountOut: number | undefined,
+  xchIsInput: boolean,
+  xchReserve: number,
+  tokenReserve: number
+): number {
+  if ((amountIn !== undefined && amountOut !== undefined) || (amountIn === undefined && amountOut === undefined)) {
+    throw new Error('Exactly one of amountIn or amountOut must be set');
+  }
+  if (xchReserve <= 0 || tokenReserve <= 0) {
+    throw new Error('Reserves must be positive');
+  }
+  
+  var inputReserve: number = xchReserve;
+  var outputReserve: number = tokenReserve;
+  if(!xchIsInput) {
+    inputReserve = tokenReserve;
+    outputReserve = xchReserve;
+  }
+
+  if(amountOut === undefined) {
+    return getInputPrice(amountIn!, inputReserve, outputReserve)
+  }
+
+  return getOutputPrice(amountOut!, inputReserve, outputReserve)
+}

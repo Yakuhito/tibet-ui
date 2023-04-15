@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import { Token } from '../api';
 
 type AssetAmountInputProps = {
@@ -11,12 +11,6 @@ type AssetAmountInputProps = {
 };
 
 const AssetAmountInput: React.FC<AssetAmountInputProps> = ({ token, onChange, maxDecimals, disabled, value }) => {
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = parseFloat(event.target.value);
-    const newValueWithMaxDecimals = Number(newValue.toFixed(maxDecimals));
-    onChange(newValueWithMaxDecimals * Math.pow(10, maxDecimals));
-  };
-
   return (
     <div className="flex justify-between">
       <div className="flex-grow">
@@ -28,7 +22,11 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({ token, onChange, ma
           min={0}
           placeholder="133.7"
           value={value / Math.pow(10, maxDecimals)}
-          onChange={handleChange}
+          onChange={(e) => {
+            const parsed = parseFloat(e.target.value);
+            if(Number.isNaN(parsed)) return 0;
+            onChange(Math.floor(parsed * Math.pow(10, maxDecimals)));
+          }}
           disabled={disabled}
         />
       </div>

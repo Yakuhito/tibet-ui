@@ -38,7 +38,9 @@ const SwapInputs: React.FC<SwapInputsProps> = ({
           xmlns="http://www.w3.org/2000/svg"
           className={`h-7 w-7 ${
             disabled ? 'text-gray-300 cursor-not-allowed' :
-            (isBuySelected ? 'text-green-500' : 'text-red-500 transform rotate-180')
+            (isBuySelected ? 'text-green-500' : 'text-red-500')
+          } ${
+            isBuySelected ? '' : 'transform rotate-180'
           }`}
           fill="none"
           viewBox="0 0 24 24"
@@ -51,7 +53,7 @@ const SwapInputs: React.FC<SwapInputsProps> = ({
         token={token1}
         value={amount1}
         onChange={(val) => onAmountsChanged(amount0, val)}
-        maxDecimals={4}
+        maxDecimals={3}
         disabled={disabled}
       />
     </div>
