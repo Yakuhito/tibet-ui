@@ -14,6 +14,7 @@ export interface Token {
 export interface Pair {
     launcher_id: string;
     asset_id: string;
+    liquidity_asset_id: string;
     xch_reserve: number;
     token_reserve: number;
     liquidity: number;
@@ -137,4 +138,17 @@ export function getFastQuote(
   }
 
   return getOutputPrice(amountOut!, inputReserve, outputReserve)
+}
+
+export function getLiquidityQuote(
+  knownIn: number,
+  knownReserve: number,
+  unknownReserve: number,
+  checkUnknown: boolean
+): number {
+  if(knownReserve === 0 || unknownReserve === 0 || knownIn === 0) return 0;
+  const output = Math.floor(unknownReserve * knownIn / knownReserve);
+  if(checkUnknown && output > unknownReserve) return 0;
+
+  return output;
 }

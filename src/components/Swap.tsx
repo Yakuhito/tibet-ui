@@ -1,27 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Token, Pair, getPairByLauncherId, getInputPrice, getOutputPrice } from '../api';
-import BuySellSwitch from './BuySellSwitch';
+import BooleanSwitch from './BooleanSwitch';
 import TokenSelector from './TokenSelector';
 import SwapInput from './SwapInput';
 import GenerateOfferButton from './GenerateOfferButton';
-
-const XCH: Token = {
-    asset_id: '',
-    pair_id: '',
-    name: 'Chia',
-    short_name: 'XCH',
-    image_url: '/assets/xch.webp',
-    verified: true
-}
-
-const UNKNWN: Token = {
-  asset_id: '',
-  pair_id: '',
-  name: 'Unknown Token',
-  short_name: '???',
-  image_url: 'https://bafybeigzcazxeu7epmm4vtkuadrvysv74lbzzbl2evphtae6k57yhgynp4.ipfs.dweb.link/9098.gif',
-  verified: false
-}
+import { UNKNWN, XCH } from '@/shared_tokens';
 
 type SwapProps = {
   disabled: boolean;
@@ -60,17 +43,27 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens }) => {
     update();
   }, [selectedToken, isBuySelected, pair]);
 
+  const setSelectedTokenAndWarn = (t: Token) => {
+    if(!t.verified) {
+      alert(`WARNING: This token has not been labeled as 'verified' by the TibetSwap team. Please make sure you truly want to transact with asset id 0x${t.asset_id} before proceeding.`);
+    }
+
+    setSelectedToken(t);
+  }
+
   return (
     <div className="w-fill p-2">
-      <BuySellSwitch
-        isBuySelected={isBuySelected}
+      <BooleanSwitch
+        isSelected={isBuySelected}
         onChange={setIsBuySelected}
-        disabled={disabled} />
+        disabled={disabled}
+        trueLabel='Buy'
+        falseLabel='Sell'/>
 
       <TokenSelector
         selectedToken={selectedToken ?? null}
         tokens={tokens ?? []}
-        onChange={setSelectedToken}
+        onChange={setSelectedTokenAndWarn}
         disabled={disabled}/>
 
       <SwapInput

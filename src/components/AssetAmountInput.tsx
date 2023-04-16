@@ -24,8 +24,11 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({ token, onChange, ma
           value={value / Math.pow(10, maxDecimals)}
           onChange={(e) => {
             const parsed = parseFloat(e.target.value);
-            if(Number.isNaN(parsed)) return 0;
-            onChange(Math.floor(parsed * Math.pow(10, maxDecimals)));
+            if(Number.isNaN(parsed)) {
+              onChange(0);
+            } else {
+              onChange(Math.floor(parsed * Math.pow(10, maxDecimals)));
+            }
           }}
           disabled={disabled}
         />
