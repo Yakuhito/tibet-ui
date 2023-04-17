@@ -25,8 +25,16 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer }) => 
     async function updatePair(): Promise<Pair | null> {
       if(selectedToken !== null) {
         const newPair = await getPairByLauncherId(selectedToken!.pair_id);
-        setPair(newPair);
-        return newPair;
+
+        if(
+          newPair.launcher_id !== pair?.launcher_id ||
+          newPair.liquidity !== pair?.liquidity ||
+          newPair.xch_reserve !== pair?.xch_reserve ||
+          newPair.token_reserve !== pair?.token_reserve
+        ) {
+          setPair(newPair);
+          return newPair;
+        }
       }
 
       return null;
@@ -37,10 +45,10 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer }) => 
 
       var currentPair: Pair | null = pair;
       if(pair === null || selectedToken?.pair_id !== pair.launcher_id) {
-        currentPair = await updatePair();
+        currentPair = (await updatePair()) ?? pair;
       }
 
-      if(currentPair !== null && currentPair.xch_reserve > 0 && currentPair.token_reserve > 0 && currentPair.liquidity > 1000) {
+     if(currentPair !== null && currentPair.xch_reserve > 0 && currentPair.token_reserve > 0 && currentPair.liquidity > 1000) {
         setAmount0(getLiquidityQuote(1000, currentPair.liquidity, currentPair.xch_reserve, !isAddSelected));
         setAmount1(getLiquidityQuote(1000, currentPair.liquidity, currentPair.token_reserve, !isAddSelected));
         setAmount2(1000);
@@ -54,6 +62,7 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer }) => 
     }, 5000);
 
     return () => clearInterval(interval);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedToken, isAddSelected, pair]);
 
   const setSelectedTokenAndWarn = (t: Token) => {
@@ -62,6 +71,7 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer }) => 
     }
 
     setSelectedToken(t);
+
   }
 
   return (

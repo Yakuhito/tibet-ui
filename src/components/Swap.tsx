@@ -21,14 +21,30 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer }) => {
   const [amount1, setAmount1] = useState(0);
 
   useEffect(() => {
+    async function updatePair(): Promise<Pair | null> {
+      if(selectedToken !== null) {
+        const newPair = await getPairByLauncherId(selectedToken!.pair_id);
+
+        if(
+          newPair.launcher_id !== pair?.launcher_id ||
+          newPair.liquidity !== pair?.liquidity ||
+          newPair.xch_reserve !== pair?.xch_reserve ||
+          newPair.token_reserve !== pair?.token_reserve
+        ) {
+          setPair(newPair);
+          return newPair;
+        }
+      }
+
+      return null;
+    }
+
     async function update() {
       if(selectedToken === null) return;
 
       var currentPair: Pair | null = pair;
       if(pair === null || selectedToken?.pair_id !== pair.launcher_id) {
-        const newPair = await getPairByLauncherId(selectedToken!.pair_id);
-        setPair(newPair);
-        currentPair = newPair;
+        currentPair = (await updatePair()) ?? pair;
       }
 
       if(currentPair !== null && currentPair.xch_reserve > 0 && currentPair.token_reserve > 0) {
@@ -40,9 +56,16 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer }) => {
           setAmount0(getInputPrice(1000, currentPair.token_reserve, currentPair.xch_reserve));
         }
       }
-    }
+   }
 
     update();
+
+    const interval = setInterval(() => {
+      updatePair();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedToken, isBuySelected, pair]);
 
   const setSelectedTokenAndWarn = (t: Token) => {
