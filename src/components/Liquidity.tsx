@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Token, Pair, getPairByLauncherId, getInputPrice, getOutputPrice, getLiquidityQuote } from '../api';
+import { Token, Pair, getPairByLauncherId, getInputPrice, getOutputPrice, getLiquidityQuote, ActionType } from '../api';
 import BooleanSwitch from './BooleanSwitch';
 import TokenSelector from './TokenSelector';
 import LiquidityInput from './LiquidityInput';
@@ -74,6 +74,30 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer }) => 
 
   }
 
+  const submitLiquidityOperation = () => {
+    const sideOne: [Token, boolean, number][] = [
+      [XCH, true, amount0],
+      [selectedToken!, false, amount1]
+    ];
+    const sideTwo: [Token, boolean, number][] = [
+      [getLiquidityToken(pair!), false, amount2],
+    ];
+
+    if(isAddSelected) {
+      generateOffer({
+        ask: sideOne,
+        receive: sideTwo,
+        action: ActionType.ADD_LIQUIDITY
+      });
+    } else {
+      generateOffer({
+        ask: sideTwo,
+        receive: sideOne,
+        action: ActionType.REMOVE_LIQUIDITY
+      });
+    }
+  };
+
   return (
     <div className="w-fill p-2">
       <BooleanSwitch
@@ -119,7 +143,7 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer }) => 
       <GenerateOfferButton
         isBuySelected={isAddSelected}
         disabled={selectedToken == null || pair == null}
-        onPressed={() => alert('btnpress')}
+        onPressed={submitLiquidityOperation}
       />
     </div>
   );

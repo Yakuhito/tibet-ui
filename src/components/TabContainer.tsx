@@ -23,7 +23,11 @@ const TabContainer: React.FC = () => {
     fetchTokens();
   }, []);
 
-  const renderContent = (generateOffer: (data: GenerateOfferData) => void) => {
+  const renderContent = (generateOffer: (data: GenerateOfferData) => void, data: GenerateOfferData | null) => {
+    if(data !== null) {
+      return <div>Data! {data.action}</div>;
+    }
+
     if (activeTab === 'swap') {
       return <Swap
         disabled={tokens == null}
@@ -59,10 +63,22 @@ const TabContainer: React.FC = () => {
           Liquidity
         </button>
       </div>) : (
-        <div className='flex text-center'>Generate Offer</div>
+        <div className='flex p-4'>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 16 16"
+            className="h-4 mt-1"
+            onClick={() => setGenerateOfferData(null)}
+          >
+            <path d="M11,14 L2,8 L11,2" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          <p className='text-center w-full'>
+            Generate Offer
+          </p>
+        </div>
       )}
 
-      <div className="border-t border-gray-300">{renderContent(setGenerateOfferData)}</div>
+      <div className="border-t border-gray-300">{renderContent(setGenerateOfferData, generateOfferData)}</div>
     </div>
   );
 };

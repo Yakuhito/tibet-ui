@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Token, Pair, getPairByLauncherId, getInputPrice, getOutputPrice } from '../api';
+import { Token, Pair, getPairByLauncherId, getInputPrice, getOutputPrice, ActionType } from '../api';
 import BooleanSwitch from './BooleanSwitch';
 import TokenSelector from './TokenSelector';
 import SwapInput from './SwapInput';
@@ -76,6 +76,29 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer }) => {
     setSelectedToken(t);
   }
 
+  const submitSwapOperation = () => {
+    const sideOne: [Token, boolean, number][] = [
+      [XCH, true, amount0]
+    ];
+    const sideTwo: [Token, boolean, number][] = [
+      [selectedToken!, false, amount1]
+    ];
+
+    if(isBuySelected) {
+      generateOffer({
+        ask: sideOne,
+        receive: sideTwo,
+        action: ActionType.SWAP
+      });
+    } else {
+      generateOffer({
+        ask: sideTwo,
+        receive: sideOne,
+        action: ActionType.SWAP
+      });
+    }
+  };
+
   return (
     <div className="w-fill p-2">
       <BooleanSwitch
@@ -123,7 +146,7 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer }) => {
       <GenerateOfferButton
         isBuySelected={isBuySelected}
         disabled={selectedToken == null || pair == null}
-        onPressed={() => console.log('click!')}
+        onPressed={submitSwapOperation}
       />
     </div>
   );
