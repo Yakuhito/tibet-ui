@@ -5,13 +5,15 @@ import TokenSelector from './TokenSelector';
 import SwapInput from './SwapInput';
 import GenerateOfferButton from './GenerateOfferButton';
 import { UNKNWN, XCH } from '@/shared_tokens';
+import { GenerateOfferData } from './TabContainer';
 
 type SwapProps = {
   disabled: boolean;
   tokens: Token[] | null;
+  generateOffer: (data: GenerateOfferData) => void;
 };
 
-const Swap: React.FC<SwapProps> = ({ disabled, tokens }) => {
+const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer }) => {
   const [selectedToken, setSelectedToken] = useState<Token | null>(null);
   const [pair, setPair] = useState<Pair | null>(null);
   const [isBuySelected, setIsBuySelected] = useState(true);
@@ -95,7 +97,11 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens }) => {
         disabled={selectedToken == null || pair == null}
       />
 
-      <GenerateOfferButton isBuySelected={isBuySelected} disabled={selectedToken == null} onPressed={() => console.log('click!')}/>
+      <GenerateOfferButton
+        isBuySelected={isBuySelected}
+        disabled={selectedToken == null || pair == null}
+        onPressed={() => console.log('click!')}
+      />
     </div>
   );
 };

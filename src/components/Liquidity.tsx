@@ -5,13 +5,15 @@ import TokenSelector from './TokenSelector';
 import LiquidityInput from './LiquidityInput';
 import GenerateOfferButton from './GenerateOfferButton';
 import { UNKNWN, XCH, getLiquidityToken } from '@/shared_tokens';
+import { GenerateOfferData } from './TabContainer';
 
 type LiquidityProps = {
   disabled: boolean;
   tokens: Token[] | null;
+  generateOffer: (data: GenerateOfferData) => void;
 };
 
-const Swap: React.FC<LiquidityProps> = ({ disabled, tokens }) => {
+const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer }) => {
   const [selectedToken, setSelectedToken] = useState<Token | null>(null);
   const [pair, setPair] = useState<Pair | null>(null);
   const [isAddSelected, setIsAddSelected] = useState(true);
@@ -20,24 +22,38 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens }) => {
   const [amount2, setAmount2] = useState(0);
 
   useEffect(() => {
+    async function updatePair(): Promise<Pair | null> {
+      if(selectedToken !== null) {
+        const newPair = await getPairByLauncherId(selectedToken!.pair_id);
+        setPair(newPair);
+        return newPair;
+      }
+
+      return null;
+    }
+
     async function update() {
       if(selectedToken === null) return;
 
       var currentPair: Pair | null = pair;
       if(pair === null || selectedToken?.pair_id !== pair.launcher_id) {
-        const newPair = await getPairByLauncherId(selectedToken!.pair_id);
-        setPair(newPair);
-        currentPair = newPair;
+        currentPair = await updatePair();
       }
 
-    if(currentPair !== null && currentPair.xch_reserve > 0 && currentPair.token_reserve > 0 && currentPair.liquidity > 1000) {
+      if(currentPair !== null && currentPair.xch_reserve > 0 && currentPair.token_reserve > 0 && currentPair.liquidity > 1000) {
         setAmount0(getLiquidityQuote(1000, currentPair.liquidity, currentPair.xch_reserve, !isAddSelected));
         setAmount1(getLiquidityQuote(1000, currentPair.liquidity, currentPair.token_reserve, !isAddSelected));
         setAmount2(1000);
-    }
+      }
    }
 
     update();
+
+    const interval = setInterval(() => {
+      updatePair();
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, [selectedToken, isAddSelected, pair]);
 
   const setSelectedTokenAndWarn = (t: Token) => {
@@ -90,7 +106,11 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens }) => {
         disabled={selectedToken == null || pair == null}
       />
 
-      <GenerateOfferButton isBuySelected={isAddSelected} disabled={selectedToken == null} onPressed={() => console.log('click!')}/>
+      <GenerateOfferButton
+        isBuySelected={isAddSelected}
+        disabled={selectedToken == null || pair == null}
+        onPressed={() => alert('btnpress')}
+      />
     </div>
   );
 };
