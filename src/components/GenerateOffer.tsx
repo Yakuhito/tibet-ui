@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { GenerateOfferData } from './TabContainer';
 import RingLoader from "react-spinners/RingLoader";
-import { Pair, Quote, Token, getInputPrice, getLiquidityQuote, getOutputPrice, getPairByLauncherId, getQuoteForPair } from '@/api';
+import { OfferResponse, Pair, Quote, Token, createOfferForPair, getInputPrice, getLiquidityQuote, getOutputPrice, getPairByLauncherId, getQuoteForPair } from '@/api';
 
 type GenerateOfferProps = {
   data: GenerateOfferData;
@@ -13,12 +13,14 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data }) => {
         steps:
             - 0: loading (check data)
             - 1: verified; ask user to confirm
-            - 2: summary
-            - 3: walletconnect
+            - 2: summary & paste
+            - 3: send to server & see response
         errors:
             - -1 - amounts don't match
     */
     const [pairAndQuote, setPairAndQuote] = useState<[Pair, Quote] | null>(null);
+    const [offer, setOffer] = useState<string>('');
+    const [offerResponse, setOfferResponse] = useState<OfferResponse | null>(null);
 
     useEffect(() => {
         async function namelessFunction() {
@@ -93,11 +95,21 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data }) => {
                         setStep(2);
                     }
                 }
+            } else if(step === 3 && offerResponse === null) {
+                const offerResponse = await createOfferForPair(
+                    pairAndQuote![0].launcher_id,
+                    offer,
+                    data.action,
+                    undefined
+                );
+                setOfferResponse(offerResponse);
             }
         }
 
-        namelessFunction();
-    }, [data, step, pairAndQuote]);
+        if([0, 3].includes(step)) {
+            namelessFunction();
+        }
+    }, [data, step, pairAndQuote, offer, offerResponse]);
 
     const listAssets = (a: [Token, boolean, number][]) => {
         return <ul className="list-disc">
@@ -121,17 +133,27 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data }) => {
                 <u>Order Summary</u>
                 <br />
                 <br />
-                <p>You{"'"}ll give:</p>
-                {listAssets(data.ask)}
-                <p>In return, you{"'"}ll ask for:</p>
+                <p>Offering:</p>
                 {listAssets(data.receive)}
+                <p>Requesting:</p>
+                {listAssets(data.ask)}
+                <p>Minimum fee: {pairAndQuote![1].fee / Math.pow(10, 12)} XCH</p>
                 <br />
-                <p>Press the button below to proceed.</p>
+                <p>Please generate the offer, paste it below, and click the button to proceed.</p>
+                <input type="text"
+                    value={offer}
+                    className='w-full py-2 px-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500'
+                    onChange={e => setOffer(e.target.value)}
+                    placeholder='offer1...'
+                />
                 <button
                     onClick={() => setStep(3)}
-                    className={`bg-green-500 text-white px-4 py-2 rounded-md w-full mt-4`}
+                    className={`${
+                        offer.length === 0 ? 'bg-gray-300 cursor-not-allowed' : 'bg-green-500'
+                    } text-white px-4 py-2 rounded-md w-full mt-4`}
+                    disabled={offer.length === 0}
                 >
-                Continue to next step
+                Submit Offer
                 </button>
             </div>;
         }
@@ -142,6 +164,19 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data }) => {
                     <div>Please go back and try again.</div>
                 </div>
             )
+        }
+        if(step == 3) {
+            if(offerResponse === null) {
+                return <div className="mt-16 mb-16 flex justify-center items-center flex-col">
+                    <RingLoader size={64} color={"#123abc"} />
+                    <div className='mt-4'>Sending offer...</div>
+                </div>;
+            }
+
+            return <div className="mt-16 mb-16 flex justify-center items-center flex-col">
+                <div>{offerResponse!.success ? 'Offer submission successful!' : 'Error ocurred while submitting offer :('}</div>
+                <div>{offerResponse!.message}</div>
+            </div>
         }
         return (
             <div className="mt-16 mb-16 flex justify-center items-center flex-col">
