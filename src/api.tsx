@@ -45,7 +45,8 @@ export interface OfferResponse {
     message: string;
 }  
 
-const BASE_URL = "https://api.v1-testnet10.tibetswap.io"; 
+// const BASE_URL = "https://api.v1-testnet10.tibetswap.io"; 
+const BASE_URL = "http://localhost:8000"
 
 // Function to get all tokens
 export async function getAllTokens(): Promise<Token[]> {

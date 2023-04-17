@@ -6,8 +6,8 @@ import GenerateOffer from './GenerateOffer';
 
 export interface GenerateOfferData {
   pairId: string;
-  ask: [Token, boolean, number][]; // token, is_xch, amount
-  receive: [Token, boolean, number][]; // token, is_xch, amount
+  offer: [Token, boolean, number][]; // token, is_xch, amount
+  request: [Token, boolean, number][]; // token, is_xch, amount
   action: ActionType;
 }
 

@@ -28,18 +28,18 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data }) => {
                 const pair = await getPairByLauncherId(data.pairId);
                 const quote = await getQuoteForPair(
                     data.pairId,
-                    data.ask[0][2],
+                    data.offer[0][2],
                     undefined,
-                    data.ask[0][1],
+                    data.offer[0][1],
                     true
                 );
                 setPairAndQuote([pair, quote]);
             } else if(step === 0) { // && pairAndQuote !== null
-                const numAssets = data.ask.length + data.receive.length;
+                const numAssets = data.offer.length + data.request.length;
                 if(numAssets === 2) {
-                    const token0IsXCH = data.ask[0][1];
-                    const token0Amount = data.ask[0][2];
-                    const token1Amount = data.receive[0][2];
+                    const token0IsXCH = data.offer[0][1];
+                    const token0Amount = data.offer[0][2];
+                    const token1Amount = data.request[0][2];
 
                     var xchAmount: number = token0Amount,
                         tokenAmount: number = token1Amount;
@@ -49,34 +49,41 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data }) => {
                     }
                     
                     const pair = pairAndQuote![0];
-                    var expectedTokenAmount = getInputPrice(xchAmount, pair.xch_reserve, pair.token_reserve);
-                    if(!token0IsXCH) {
-                        expectedTokenAmount = getOutputPrice(xchAmount, pair.token_reserve, pair.xch_reserve);
+                    if(token0IsXCH) {
+                        const expectedTokenAmount = getInputPrice(xchAmount, pair.xch_reserve, pair.token_reserve);
+                        if(expectedTokenAmount > tokenAmount) {
+                            setStep(-1);
+                        } else {
+                            setStep(2);
+                        }
                     }
-
-                    if(expectedTokenAmount !== tokenAmount) {
-                        setStep(-1);
-                    } else {
-                        setStep(2);
+                    
+                    if(!token0IsXCH) {
+                        const expectedXCHAmount = getInputPrice(tokenAmount, pair.token_reserve, pair.xch_reserve);
+                        if(expectedXCHAmount > xchAmount) {
+                            setStep(-1);
+                        } else {
+                            setStep(2);
+                        }
                     }
                 } else {
-                    const takeAssetsFromAsk = data.ask.length === 2;
+                    const takeAssetsFromOffer = data.offer.length === 2;
 
                     var token0Amount: number,
                         token0IsXCH: boolean,
                         token1Amount: number,
                         liquidityAmount: number;
 
-                    if(takeAssetsFromAsk) {
-                        token0Amount = data.ask[0][2];
-                        token0IsXCH = data.ask[0][1];
-                        token1Amount = data.ask[1][2];
-                        liquidityAmount = data.receive[0][2];
+                    if(takeAssetsFromOffer) {
+                        token0Amount = data.offer[0][2];
+                        token0IsXCH = data.offer[0][1];
+                        token1Amount = data.offer[1][2];
+                        liquidityAmount = data.request[0][2];
                     } else {
-                        token0Amount = data.receive[0][2];
-                        token0IsXCH = data.receive[0][1];
-                        token1Amount = data.receive[1][2];
-                        liquidityAmount = data.ask[0][2];
+                        token0Amount = data.request[0][2];
+                        token0IsXCH = data.request[0][1];
+                        token1Amount = data.request[1][2];
+                        liquidityAmount = data.offer[0][2];
                     }
 
                     var xchAmount: number = token0Amount,
@@ -134,9 +141,9 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data }) => {
                 <br />
                 <br />
                 <p>Offering:</p>
-                {listAssets(data.receive)}
+                {listAssets(data.offer)}
                 <p>Requesting:</p>
-                {listAssets(data.ask)}
+                {listAssets(data.request)}
                 <p>Minimum fee: {pairAndQuote![1].fee / Math.pow(10, 12)} XCH</p>
                 <br />
                 <p>Please generate the offer, paste it below, and click the button to proceed.</p>
@@ -175,7 +182,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data }) => {
 
             return <div className="mt-16 mb-16 flex justify-center items-center flex-col">
                 <div>{offerResponse!.success ? 'Offer submission successful!' : 'Error ocurred while submitting offer :('}</div>
-                <div>{offerResponse!.message}</div>
+                <textarea className="mt-4 w-full py-2 px-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500">{offerResponse!.message}</textarea>
             </div>
         }
         return (

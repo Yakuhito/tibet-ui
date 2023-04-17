@@ -87,15 +87,15 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer }) => {
     if(isBuySelected) {
       generateOffer({
         pairId: pair!.launcher_id,
-        ask: sideOne,
-        receive: sideTwo,
+        offer: sideOne,
+        request: sideTwo,
         action: ActionType.SWAP
       });
     } else {
       generateOffer({
         pairId: pair!.launcher_id,
-        ask: sideTwo,
-        receive: sideOne,
+        offer: sideTwo,
+        request: sideOne,
         action: ActionType.SWAP
       });
     }
