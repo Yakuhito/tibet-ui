@@ -128,11 +128,11 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer }) => 
             if(amount0 !== newAmount0) {
               setAmount0(newAmount0);
               setAmount1(getLiquidityQuote(newAmount0, pair?.xch_reserve ?? 0, pair?.token_reserve ?? 0, !isAddSelected));
-              setAmount2(getLiquidityQuote(newAmount0, pair?.xch_reserve ?? 0, pair?.liquidity ?? 0, isAddSelected));
+              setAmount2(getLiquidityQuote(newAmount0, pair?.xch_reserve ?? 0, pair?.liquidity ?? 0, !isAddSelected));
             } else if(amount1 !== newAmount1) {
                 setAmount0(getLiquidityQuote(newAmount1, pair?.token_reserve ?? 0, pair?.xch_reserve ?? 0, !isAddSelected));
                 setAmount1(newAmount1);
-                setAmount2(getLiquidityQuote(newAmount1, pair?.token_reserve ?? 0, pair?.liquidity ?? 0, isAddSelected));
+                setAmount2(getLiquidityQuote(newAmount1, pair?.token_reserve ?? 0, pair?.liquidity ?? 0, !isAddSelected));
             } else if(amount2 !== newAmount2) {
                 setAmount0(getLiquidityQuote(newAmount2, pair?.liquidity ?? 0, pair?.xch_reserve ?? 0, !isAddSelected));
                 setAmount1(getLiquidityQuote(newAmount2, pair?.liquidity ?? 0, pair?.token_reserve ?? 0, !isAddSelected));
