@@ -148,7 +148,7 @@ export function getLiquidityQuote(
 ): number {
   if(knownReserve === 0 || unknownReserve === 0 || knownIn === 0) return 0;
   const output = Math.floor(unknownReserve * knownIn / knownReserve);
+  
   if(checkUnknown && output > unknownReserve) return 0;
-
   return output;
 }

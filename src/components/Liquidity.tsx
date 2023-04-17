@@ -85,12 +85,14 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer }) => 
 
     if(isAddSelected) {
       generateOffer({
+        pairId: pair!.launcher_id,
         ask: sideOne,
         receive: sideTwo,
         action: ActionType.ADD_LIQUIDITY
       });
     } else {
       generateOffer({
+        pairId: pair!.launcher_id,
         ask: sideTwo,
         receive: sideOne,
         action: ActionType.REMOVE_LIQUIDITY

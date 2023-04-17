@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import Swap from './Swap';
 import { ActionType, Token, getAllTokens } from '../api';
 import Liquidity from './Liquidity';
+import GenerateOffer from './GenerateOffer';
 
 export interface GenerateOfferData {
+  pairId: string;
   ask: [Token, boolean, number][]; // token, is_xch, amount
   receive: [Token, boolean, number][]; // token, is_xch, amount
   action: ActionType;
@@ -25,7 +27,7 @@ const TabContainer: React.FC = () => {
 
   const renderContent = (generateOffer: (data: GenerateOfferData) => void, data: GenerateOfferData | null) => {
     if(data !== null) {
-      return <div>Data! {data.action}</div>;
+      return <GenerateOffer data={data}/>;
     }
 
     if (activeTab === 'swap') {
