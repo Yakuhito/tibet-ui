@@ -125,21 +125,19 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer }) => 
         amount1={amount1}
         amount2={amount2}
         onAmountsChanged={(newAmount0: number, newAmount1: number, newAmount2: number) => {
+            var tokenAmount = 0;
             if(amount0 !== newAmount0) {
-              const liquidity = getLiquidityQuote(newAmount0, pair?.xch_reserve ?? 0, pair?.liquidity ?? 0, !isAddSelected);
-              setAmount0(newAmount0 + liquidity);
-              setAmount1(getLiquidityQuote(newAmount0, pair?.xch_reserve ?? 0, pair?.token_reserve ?? 0, !isAddSelected));
-              setAmount2(liquidity);
+              tokenAmount = getLiquidityQuote(newAmount0, pair?.xch_reserve ?? 0, pair?.token_reserve ?? 0, !isAddSelected);
             } else if(amount1 !== newAmount1) {
-                const liquidity = getLiquidityQuote(newAmount1, pair?.token_reserve ?? 0, pair?.liquidity ?? 0, !isAddSelected);
-                setAmount0(getLiquidityQuote(newAmount1, pair?.token_reserve ?? 0, pair?.xch_reserve ?? 0, !isAddSelected) + liquidity);
-                setAmount1(newAmount1);
-                setAmount2(liquidity);
+              tokenAmount = newAmount1;
             } else if(amount2 !== newAmount2) {
-                setAmount0(getLiquidityQuote(newAmount2, pair?.liquidity ?? 0, pair?.xch_reserve ?? 0, !isAddSelected) + newAmount2);
-                setAmount1(getLiquidityQuote(newAmount2, pair?.liquidity ?? 0, pair?.token_reserve ?? 0, !isAddSelected));
-                setAmount2(newAmount2);
+              tokenAmount = getLiquidityQuote(newAmount2, pair?.liquidity ?? 0, pair?.token_reserve ?? 0, !isAddSelected);
             }
+
+            const liquidity = getLiquidityQuote(tokenAmount, pair?.token_reserve ?? 0, pair?.liquidity ?? 0, !isAddSelected);
+            setAmount0(getLiquidityQuote(tokenAmount, pair?.token_reserve ?? 0, pair?.xch_reserve ?? 0, !isAddSelected) + liquidity);
+            setAmount1(tokenAmount);
+            setAmount2(liquidity);
         }}
         disabled={selectedToken == null || pair == null}
       />
