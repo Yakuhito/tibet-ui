@@ -49,7 +49,7 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer }) => 
       }
 
      if(currentPair !== null && currentPair.xch_reserve > 0 && currentPair.token_reserve > 0 && currentPair.liquidity > 1000) {
-        setAmount0(getLiquidityQuote(1000, currentPair.liquidity, currentPair.xch_reserve, !isAddSelected));
+        setAmount0(getLiquidityQuote(1000, currentPair.liquidity, currentPair.xch_reserve, !isAddSelected) + 1000);
         setAmount1(getLiquidityQuote(1000, currentPair.liquidity, currentPair.token_reserve, !isAddSelected));
         setAmount2(1000);
       }
@@ -126,15 +126,17 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer }) => 
         amount2={amount2}
         onAmountsChanged={(newAmount0: number, newAmount1: number, newAmount2: number) => {
             if(amount0 !== newAmount0) {
-              setAmount0(newAmount0);
+              const liquidity = getLiquidityQuote(newAmount0, pair?.xch_reserve ?? 0, pair?.liquidity ?? 0, !isAddSelected);
+              setAmount0(newAmount0 + liquidity);
               setAmount1(getLiquidityQuote(newAmount0, pair?.xch_reserve ?? 0, pair?.token_reserve ?? 0, !isAddSelected));
-              setAmount2(getLiquidityQuote(newAmount0, pair?.xch_reserve ?? 0, pair?.liquidity ?? 0, !isAddSelected));
+              setAmount2(liquidity);
             } else if(amount1 !== newAmount1) {
-                setAmount0(getLiquidityQuote(newAmount1, pair?.token_reserve ?? 0, pair?.xch_reserve ?? 0, !isAddSelected));
+                const liquidity = getLiquidityQuote(newAmount1, pair?.token_reserve ?? 0, pair?.liquidity ?? 0, !isAddSelected);
+                setAmount0(getLiquidityQuote(newAmount1, pair?.token_reserve ?? 0, pair?.xch_reserve ?? 0, !isAddSelected) + liquidity);
                 setAmount1(newAmount1);
-                setAmount2(getLiquidityQuote(newAmount1, pair?.token_reserve ?? 0, pair?.liquidity ?? 0, !isAddSelected));
+                setAmount2(liquidity);
             } else if(amount2 !== newAmount2) {
-                setAmount0(getLiquidityQuote(newAmount2, pair?.liquidity ?? 0, pair?.xch_reserve ?? 0, !isAddSelected));
+                setAmount0(getLiquidityQuote(newAmount2, pair?.liquidity ?? 0, pair?.xch_reserve ?? 0, !isAddSelected) + newAmount2);
                 setAmount1(getLiquidityQuote(newAmount2, pair?.liquidity ?? 0, pair?.token_reserve ?? 0, !isAddSelected));
                 setAmount2(newAmount2);
             }

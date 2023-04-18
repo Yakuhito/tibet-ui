@@ -92,11 +92,13 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data }) => {
                         xchAmount = token1Amount;
                         tokenAmount = token0Amount;
                     }
+                    xchAmount -= liquidityAmount;
                     
                     const pair = pairAndQuote![0];
                     const expectedXCHAmount = getLiquidityQuote(liquidityAmount, pair.liquidity, pair.xch_reserve, false);
                     const expectedTokenAmount = getLiquidityQuote(liquidityAmount, pair.liquidity, pair.token_reserve, false);
-                    if(expectedXCHAmount !== xchAmount || expectedTokenAmount !== tokenAmount) {
+                    if(expectedXCHAmount > xchAmount || expectedTokenAmount > tokenAmount) {
+                        console.log({expectedXCHAmount, xchAmount, expectedTokenAmount, tokenAmount})
                         setStep(-1);
                     } else {
                         setStep(2);
@@ -118,13 +120,38 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data }) => {
         }
     }, [data, step, pairAndQuote, offer, offerResponse]);
 
+    const copyToClipboard = (text: string) => {
+        navigator.clipboard.writeText(text).then(() => {
+            alert(`Copied to clipboard: ${text}`);
+        });
+    };
+
+    // const listAssets = (a: [Token, boolean, number][]) => {
+    //     return <ul className="list-disc">
+    //         {a.map(e => <li className="ml-6" key={e[0].asset_id}>
+    //             {e[2] / Math.pow(10, e[1] ? 12 : 3)} {e[0].name} {e[0].asset_id}
+    //         </li>)}
+    //     </ul>;
+    // }
+
     const listAssets = (a: [Token, boolean, number][]) => {
-        return <ul className="list-disc">
-            {a.map(e => <li className="ml-6" key={e[0].asset_id}>
-                {e[2] / Math.pow(10, e[1] ? 12 : 3)} {e[0].name}
-            </li>)}
-        </ul>;
-    }
+        return (
+            <ul className="list-disc">
+                {a.map(e => (
+                    <li className="ml-6 mb-2" key={e[0].asset_id}>
+                        {e[2] / Math.pow(10, e[1] ? 12 : 3)} {e[0].name}{" "}
+                        {e[1] ? <></> : <button
+                            className="ml-1 bg-blue-500 hover:bg-blue-700 text-white px-2 rounded"
+                            onClick={() => copyToClipboard(e[0].asset_id)}
+                        >
+                            Copy Asset ID
+                        </button>}
+                    </li>
+                ))}
+            </ul>
+        );
+    };
+    
 
     const renderContent = (step: number) => {
         if(step === 0) {
