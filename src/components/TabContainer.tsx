@@ -46,7 +46,7 @@ const TabContainer: React.FC = () => {
   };
 
   return (
-    <div className="bg-white border border-gray-300 rounded-md max-w-screen-sm w-[calc(3/5*100%)] m-4">
+    <div className="bg-white border border-gray-300 rounded-md max-w-screen-sm md:w-[calc(3/5*100%)] m-4">
       {generateOfferData == null ? (<div className="flex">
         <button
           className={`w-1/2 p-4 text-center ${

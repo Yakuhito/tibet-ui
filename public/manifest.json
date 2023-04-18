@@ -1,0 +1,16 @@
+{
+    "name": "TibetSwap (testnet10)",
+    "short_name": "Tibet (testnet10)",
+    "start_url": "/",
+    "display": "standalone",
+    "theme_color": "#ffffff",
+    "background_color": "#ffffff",
+    "icons": [
+      {
+        "src": "/logo.jpg",
+        "type": "image/jpeg",
+        "sizes": "400x400"
+      }
+    ]
+  }
+  
