@@ -49,9 +49,9 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer }) => 
       }
 
      if(currentPair !== null && currentPair.xch_reserve > 0 && currentPair.token_reserve > 0 && currentPair.liquidity > 1000) {
-        setAmount0(getLiquidityQuote(1000, currentPair.liquidity, currentPair.xch_reserve, !isAddSelected) + 1000);
-        setAmount1(getLiquidityQuote(1000, currentPair.liquidity, currentPair.token_reserve, !isAddSelected));
-        setAmount2(1000);
+        setAmount0(getLiquidityQuote(1000, currentPair.token_reserve, currentPair.xch_reserve, !isAddSelected) + 1000);
+        setAmount1(1000);
+        setAmount2(getLiquidityQuote(1000, currentPair.token_reserve, currentPair.liquidity, !isAddSelected));
       }
    }
 
