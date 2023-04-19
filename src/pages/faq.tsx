@@ -9,7 +9,7 @@ const faqs = [
   },
   {
     question: 'Why should I trust you with my money?',
-    answer: 'You shouldn\'t. First, you only send offers to the server, meaning that the transaction only goes through if tyou received what you asked for. Second, TibetSwap puzzles were designed to be immutable, with no \'admin keys\' - once the router is launched, the creators of the app have the same permissions over the app as any regular user.',
+    answer: 'You shouldn\'t. First, you only send offers to the server, meaning that the transaction only goes through if you received what you asked for. Second, TibetSwap puzzles were designed to be immutable, with no \'admin keys\' - once the router is launched, the creators of the app have the same permissions over the app as any regular user.',
   },
   {
     question: 'Is the code open-source?',
