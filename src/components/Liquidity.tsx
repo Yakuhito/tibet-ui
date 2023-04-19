@@ -49,9 +49,18 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer }) => 
       }
 
      if(currentPair !== null && currentPair.xch_reserve > 0 && currentPair.token_reserve > 0 && currentPair.liquidity > 1000) {
-        setAmount0(getLiquidityQuote(1000, currentPair.token_reserve, currentPair.xch_reserve, !isAddSelected) + 1000);
+        const liquidity = getLiquidityQuote(1000, currentPair.token_reserve, currentPair.liquidity, !isAddSelected);
+        
+        var xchAmount = getLiquidityQuote(1000, currentPair.token_reserve, currentPair.xch_reserve, !isAddSelected);
+        if(isAddSelected) {
+          xchAmount += liquidity;
+        } else {
+          xchAmount -= liquidity;
+        }
+
+        setAmount0(xchAmount);
         setAmount1(1000);
-        setAmount2(getLiquidityQuote(1000, currentPair.token_reserve, currentPair.liquidity, !isAddSelected));
+        setAmount2(liquidity);
       }
    }
 
@@ -135,7 +144,13 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer }) => 
             }
 
             const liquidity = getLiquidityQuote(tokenAmount, pair?.token_reserve ?? 0, pair?.liquidity ?? 0, !isAddSelected);
-            setAmount0(getLiquidityQuote(tokenAmount, pair?.token_reserve ?? 0, pair?.xch_reserve ?? 0, !isAddSelected) + liquidity);
+            var xchAmount = getLiquidityQuote(tokenAmount, pair?.token_reserve ?? 0, pair?.xch_reserve ?? 0, !isAddSelected);
+            if(isAddSelected) {
+              xchAmount += liquidity;
+            } else {
+              xchAmount -= liquidity;
+            }
+            setAmount0(xchAmount);
             setAmount1(tokenAmount);
             setAmount2(liquidity);
         }}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { GenerateOfferData } from './TabContainer';
 import RingLoader from "react-spinners/RingLoader";
-import { OfferResponse, Pair, Quote, Token, createOfferForPair, getInputPrice, getLiquidityQuote, getOutputPrice, getPairByLauncherId, getQuoteForPair } from '@/api';
+import { ActionType, OfferResponse, Pair, Quote, Token, createOfferForPair, getInputPrice, getLiquidityQuote, getOutputPrice, getPairByLauncherId, getQuoteForPair } from '@/api';
 
 type GenerateOfferProps = {
   data: GenerateOfferData;
@@ -92,13 +92,18 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data }) => {
                         xchAmount = token1Amount;
                         tokenAmount = token0Amount;
                     }
-                    xchAmount -= liquidityAmount;
                     
                     const pair = pairAndQuote![0];
-                    const expectedXCHAmount = getLiquidityQuote(tokenAmount, pair.token_reserve, pair.xch_reserve, false);
+                    var expectedXCHAmount = getLiquidityQuote(tokenAmount, pair.token_reserve, pair.xch_reserve, false);
                     const expectedLiquidityAmount = getLiquidityQuote(tokenAmount, pair.token_reserve, pair.liquidity, false);
+
+                    if(data.action === ActionType.ADD_LIQUIDITY) {
+                        expectedXCHAmount += expectedLiquidityAmount;
+                    } else {
+                        expectedXCHAmount -= expectedLiquidityAmount;
+                    }
                     if(expectedXCHAmount > xchAmount || expectedLiquidityAmount > liquidityAmount) {
-                        console.log({expectedXCHAmount, xchAmount, expectedLiquidityAmount, tokenAmount})
+                        console.log({tokenAmount, expectedXCHAmount, xchAmount, expectedLiquidityAmount, liquidityAmount})
                         setStep(-1);
                     } else {
                         setStep(2);
