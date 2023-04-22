@@ -148,12 +148,12 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer }) => 
               tokenAmount = newAmount1;
               liquidity = getLiquidityQuote(tokenAmount, pair?.token_reserve ?? 0, pair?.liquidity ?? 0, false);
               xchAmount = getLiquidityQuote(tokenAmount, pair?.token_reserve ?? 0, pair?.xch_reserve ?? 0, false);
-              xchAmount += liquidity;
+              xchAmount += liquidity; // ask for user to offer more XCH (to mint tokens)
             } else {
               liquidity = newAmount2;
               tokenAmount = getLiquidityQuote(liquidity, pair?.liquidity ?? 0, pair?.token_reserve ?? 0, true);
               xchAmount = getLiquidityQuote(liquidity, pair?.liquidity ?? 0, pair?.xch_reserve ?? 0, true);
-              xchAmount -= liquidity;
+              xchAmount += liquidity; // tell user to request more XCH (from liq. burn)
             }
             
             setAmount0(xchAmount);

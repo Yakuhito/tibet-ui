@@ -99,11 +99,11 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data }) => {
                     var expectedLiquidityAmount = getLiquidityQuote(tokenAmount, pair.token_reserve, pair.liquidity, false);
 
                     if(data.action === ActionType.ADD_LIQUIDITY) {
-                        expectedXCHAmount += expectedLiquidityAmount;
+                        expectedXCHAmount -= expectedLiquidityAmount;
                     } else {
                         expectedLiquidityAmount = liquidityAmount;
                         expectedXCHAmount = getLiquidityQuote(liquidityAmount, pair.liquidity, pair.xch_reserve, true);
-                        expectedXCHAmount -= expectedLiquidityAmount;
+                        expectedXCHAmount += expectedLiquidityAmount;
                         expectedLiquidityAmount = getLiquidityQuote(liquidityAmount, pair.liquidity, pair.token_reserve, true);
                     }
                     if(expectedXCHAmount > xchAmount || expectedLiquidityAmount > liquidityAmount || expectedTokenAmount > tokenAmount) {
