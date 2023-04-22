@@ -94,15 +94,19 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data }) => {
                     }
                     
                     const pair = pairAndQuote![0];
+                    var expectedTokenAmount = tokenAmount;
                     var expectedXCHAmount = getLiquidityQuote(tokenAmount, pair.token_reserve, pair.xch_reserve, false);
-                    const expectedLiquidityAmount = getLiquidityQuote(tokenAmount, pair.token_reserve, pair.liquidity, false);
+                    var expectedLiquidityAmount = getLiquidityQuote(tokenAmount, pair.token_reserve, pair.liquidity, false);
 
                     if(data.action === ActionType.ADD_LIQUIDITY) {
                         expectedXCHAmount += expectedLiquidityAmount;
                     } else {
+                        expectedLiquidityAmount = liquidityAmount;
+                        expectedXCHAmount = getLiquidityQuote(liquidityAmount, pair.liquidity, pair.xch_reserve, true);
                         expectedXCHAmount -= expectedLiquidityAmount;
+                        expectedLiquidityAmount = getLiquidityQuote(liquidityAmount, pair.liquidity, pair.token_reserve, true);
                     }
-                    if(expectedXCHAmount > xchAmount || expectedLiquidityAmount > liquidityAmount) {
+                    if(expectedXCHAmount > xchAmount || expectedLiquidityAmount > liquidityAmount || expectedTokenAmount > tokenAmount) {
                         console.log({tokenAmount, expectedXCHAmount, xchAmount, expectedLiquidityAmount, liquidityAmount})
                         setStep(-1);
                     } else {
