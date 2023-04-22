@@ -11,7 +11,11 @@ export interface GenerateOfferData {
   action: ActionType;
 }
 
-const TabContainer: React.FC = () => {
+export interface TabContainerProps {
+  onPairSelect: (pairLauncherId: string | null) => void;
+}
+
+const TabContainer: React.FC<TabContainerProps> = ({ onPairSelect }) => {
   const [activeTab, setActiveTab] = useState<'swap' | 'liquidity'>('swap');
   const [tokens, setTokens] = useState<Token[] | null>(null);
   const [generateOfferData, setGenerateOfferData] = useState<GenerateOfferData | null>(null);
@@ -35,12 +39,14 @@ const TabContainer: React.FC = () => {
         disabled={tokens == null}
         tokens={tokens}
         generateOffer={generateOffer}
+        onPairSelect={onPairSelect}
       />;
     } else {
       return <Liquidity
         disabled={tokens == null}
         tokens={tokens}
         generateOffer={generateOffer}
+        onPairSelect={onPairSelect}
       />;
     }
   };
@@ -52,7 +58,10 @@ const TabContainer: React.FC = () => {
           className={`w-1/2 p-4 text-center ${
             activeTab === 'swap' ? 'underline' : ''
           }`}
-          onClick={() => setActiveTab('swap')}
+          onClick={() => {
+            onPairSelect(null);
+            setActiveTab('swap')
+          }}
         >
           Swap
         </button>
@@ -60,7 +69,10 @@ const TabContainer: React.FC = () => {
           className={`w-1/2 p-4 text-center ${
             activeTab === 'liquidity' ? 'underline' : ''
           }`}
-          onClick={() => setActiveTab('liquidity')}
+          onClick={() => {
+            onPairSelect(null);
+            setActiveTab('liquidity');
+          }}
           >
           Liquidity
         </button>

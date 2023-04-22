@@ -11,9 +11,10 @@ type LiquidityProps = {
   disabled: boolean;
   tokens: Token[] | null;
   generateOffer: (data: GenerateOfferData) => void;
+  onPairSelect: (pairLauncherId: string | null) => void;
 };
 
-const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer }) => {
+const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, onPairSelect }) => {
   const [selectedToken, setSelectedToken] = useState<Token | null>(null);
   const [pair, setPair] = useState<Pair | null>(null);
   const [isAddSelected, setIsAddSelected] = useState(true);
@@ -32,6 +33,7 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer }) => 
           newPair.xch_reserve !== pair?.xch_reserve ||
           newPair.token_reserve !== pair?.token_reserve
         ) {
+          onPairSelect(newPair.launcher_id);
           setPair(newPair);
           return newPair;
         }

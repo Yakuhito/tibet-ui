@@ -11,9 +11,10 @@ type SwapProps = {
   disabled: boolean;
   tokens: Token[] | null;
   generateOffer: (data: GenerateOfferData) => void;
+  onPairSelect: (pairLauncherId: string | null) => void;
 };
 
-const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer }) => {
+const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, onPairSelect }) => {
   const [selectedToken, setSelectedToken] = useState<Token | null>(null);
   const [pair, setPair] = useState<Pair | null>(null);
   const [isBuySelected, setIsBuySelected] = useState(true);
@@ -32,6 +33,7 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer }) => {
           newPair.token_reserve !== pair?.token_reserve
         ) {
           setPair(newPair);
+          onPairSelect(newPair.launcher_id);
           return newPair;
         }
       }
