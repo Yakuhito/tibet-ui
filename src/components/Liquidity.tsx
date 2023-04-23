@@ -63,7 +63,7 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, onPai
         } else {
           const tokenAmount = getLiquidityQuote(1000, currentPair.liquidity, currentPair.token_reserve, true);
           var xchAmount = getLiquidityQuote(1000, currentPair.liquidity, currentPair.xch_reserve, true);
-          xchAmount -= 1000;
+          xchAmount += 1000;
 
           setAmount0(xchAmount);
           setAmount1(tokenAmount);
