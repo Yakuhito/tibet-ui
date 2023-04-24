@@ -7,8 +7,8 @@ export default function Document() {
         <meta name="application-name" content="TibetSwap" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="TiberSwap" />
-        <meta name="description" content="AMM for the Chia blockchain" />
+        <meta name="apple-mobile-web-app-title" content="TibetSwap" />
+        <meta name="description" content="The AMM for the Chia blockchain." />
         <meta name="format-detection" content="telephone=no" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#000000" />

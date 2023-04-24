@@ -1,6 +1,6 @@
 {
-    "name": "TibetSwap (testnet10)",
-    "short_name": "Tibet (testnet10)",
+    "name": "TibetSwap",
+    "short_name": "TibetSwap",
     "start_url": "/",
     "display": "standalone",
     "theme_color": "#ffffff",
