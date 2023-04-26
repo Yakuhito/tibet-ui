@@ -16,7 +16,8 @@ export interface TabContainerProps {
 }
 
 const TabContainer: React.FC<TabContainerProps> = ({ onPairSelect }) => {
-  const SWAP_ENABLED = process.env.NEXT_PUBLIC_SWAP_ENABLED === 'true';
+  // todo: v1 emergency withdraw liquidty
+  const SWAP_ENABLED = false; // process.env.NEXT_PUBLIC_SWAP_ENABLED === 'true';
   const [activeTab, setActiveTab] = useState<'swap' | 'liquidity'>(SWAP_ENABLED ? 'swap' : 'liquidity');
   const [tokens, setTokens] = useState<Token[] | null>(null);
   const [generateOfferData, setGenerateOfferData] = useState<GenerateOfferData | null>(null);
@@ -64,7 +65,9 @@ const TabContainer: React.FC<TabContainerProps> = ({ onPairSelect }) => {
               onPairSelect(null);
               setActiveTab('swap')
             } else {
-              alert("Swapping is currently disabled - check back soon!");
+              // todo: v1 emergency withdraw liquidty
+              // alert("Swapping is currently disabled - check back soon!");
+              alert("Swapping has been disabled - please withdraw your liquidity ASAP!");
             }
           }}
         >
