@@ -97,7 +97,7 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, onPai
       [selectedToken!, false, amount1]
     ];
     const sideTwo: [Token, boolean, number][] = [
-      [getLiquidityToken(pair!), false, amount2],
+      [getLiquidityToken(pair!, selectedToken), false, amount2],
     ];
 
     if(isAddSelected) {
@@ -135,7 +135,7 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, onPai
       <LiquidityInput
         token0={XCH}
         token1={selectedToken ?? UNKNWN}
-        token2={getLiquidityToken(pair)}
+        token2={getLiquidityToken(pair, selectedToken)}
         isAddSelected={isAddSelected}
         onArrowClick={() => setIsAddSelected(!isAddSelected)}
         amount0={amount0}
