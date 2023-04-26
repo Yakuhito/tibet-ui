@@ -23,7 +23,7 @@ export function getLiquidityToken(pair: Pair | null, token: Token | null): Token
     asset_id: pair?.liquidity_asset_id ?? '',
     pair_id: pair?.launcher_id ?? '',
     name: 'Pair Liquidity Token',
-    short_name: `TIBET-XCH-${token?.short_name ?? 'XXX'}`,
+    short_name: `TIBET-${token?.short_name ?? 'XXX'}-XCH`,
     image_url: '/logo.jpg',
     verified: true
   }
