@@ -180,7 +180,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data }) => {
                 {listAssets(data.offer)}
                 <p>Requesting:</p>
                 {listAssets(data.request)}
-                <p>Minimum fee: {pairAndQuote![1].fee / Math.pow(10, 12)} XCH</p>
+                <p>Minimum fee: {(pairAndQuote![1].fee / Math.pow(10, 12)).toFixed(12)} XCH</p>
                 <br />
                 <p>Please generate the offer, paste it below, and click the button to proceed.</p>
                 <input type="text"
