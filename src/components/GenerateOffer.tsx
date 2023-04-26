@@ -104,7 +104,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data }) => {
                         expectedLiquidityAmount = liquidityAmount;
                         expectedXCHAmount = getLiquidityQuote(liquidityAmount, pair.liquidity, pair.xch_reserve, true);
                         expectedXCHAmount += expectedLiquidityAmount;
-                        expectedLiquidityAmount = getLiquidityQuote(liquidityAmount, pair.liquidity, pair.token_reserve, true);
+                        expectedTokenAmount = getLiquidityQuote(liquidityAmount, pair.liquidity, pair.token_reserve, true);
                     }
                     if(expectedXCHAmount > xchAmount || expectedLiquidityAmount > liquidityAmount || expectedTokenAmount > tokenAmount) {
                         console.log({tokenAmount, expectedXCHAmount, xchAmount, expectedLiquidityAmount, liquidityAmount})
