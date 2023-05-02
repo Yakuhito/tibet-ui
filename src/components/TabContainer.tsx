@@ -55,11 +55,14 @@ const TabContainer: React.FC<TabContainerProps> = ({ onPairSelect }) => {
   };
 
   return (
-    <div className="bg-white border border-gray-300 rounded-md max-w-screen-sm md:w-[calc(3/5*100%)] m-4">
-      {generateOfferData == null ? (<div className="flex">
+    <div className="bg-white rounded-2xl max-w-screen-sm md:w-[calc(3/5*100%)] p-8">
+
+      {/* Display buy/sell buttons */}
+      {generateOfferData == null ? (
+      <div className="flex gap-4 px-4 text-xl mb-4">
         <button
-          className={`w-1/2 p-4 text-center ${
-            activeTab === 'swap' ? 'underline' : ''
+          className={`font-medium ${
+            activeTab === 'swap' ? 'text-brandDark' : 'text-brandDark/80 hover:opacity-80'
           }`}
           onClick={() => {
             if(SWAP_ENABLED) {
@@ -77,8 +80,8 @@ const TabContainer: React.FC<TabContainerProps> = ({ onPairSelect }) => {
           Swap
         </button>
         <button
-          className={`w-1/2 p-4 text-center ${
-            activeTab === 'liquidity' ? 'underline' : ''
+          className={`font-medium ${
+            activeTab === 'liquidity' ? 'text-brandDark' : 'text-brandDark/80 hover:opacity-80'
           }`}
           onClick={() => {
             onPairSelect(null);
@@ -103,7 +106,7 @@ const TabContainer: React.FC<TabContainerProps> = ({ onPairSelect }) => {
         </div>
       )}
 
-      <div className="border-t border-gray-300">{renderContent(setGenerateOfferData, generateOfferData)}</div>
+      <div className="">{renderContent(setGenerateOfferData, generateOfferData)}</div>
     </div>
   );
 };
