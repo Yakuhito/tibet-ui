@@ -15,11 +15,11 @@ type LiquidityProps = {
 };
 
 const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, onPairSelect }) => {
+  const emergency_withdraw = process.env.NEXT_PUBLIC_V1_EMERGENCY_WITHDRAW === "true";
+
   const [selectedToken, setSelectedToken] = useState<Token | null>(null);
   const [pair, setPair] = useState<Pair | null>(null);
-  // const [isAddSelected, setIsAddSelected] = useState(true);
-  // todo: v1 emergency withdraw liquidty
-  const [isAddSelected, setIsAddSelected] = useState(false);
+  const [isAddSelected, setIsAddSelected] = useState(emergency_withdraw ? false : true);
   const [amount0, setAmount0] = useState(0);
   const [amount1, setAmount1] = useState(0);
   const [amount2, setAmount2] = useState(0);
@@ -123,9 +123,7 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, onPai
     <div className="w-fill p-2">
       <BooleanSwitch
         isSelected={isAddSelected}
-        // todo: v1 emergency withdraw liquidty
-        onChange={ () => {} }
-        // onChange={setIsAddSelected}
+        onChange={ emergency_withdraw ? () => {} : setIsAddSelected }
         disabled={disabled}
         trueLabel='Add'
         falseLabel='Remove'/>
@@ -141,9 +139,7 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, onPai
         token1={selectedToken ?? UNKNWN}
         token2={getLiquidityToken(pair, selectedToken)}
         isAddSelected={isAddSelected}
-        // todo: v1 emergency withdraw liquidty
-        // onArrowClick={() => setIsAddSelected(!isAddSelected)}
-        onArrowClick={() => {}}
+        onArrowClick={emergency_withdraw ? () => {} : () => setIsAddSelected(!isAddSelected)}
         amount0={amount0}
         amount1={amount1}
         amount2={amount2}
