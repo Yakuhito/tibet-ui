@@ -12,10 +12,19 @@ type AssetAmountInputProps = {
 
 const AssetAmountInput: React.FC<AssetAmountInputProps> = ({ token, onChange, maxDecimals, disabled, value }) => {
   return (
-    <div className="flex justify-between">
+    <div className="flex justify-between bg-brandDark/10 p-6 rounded-2xl">
+
+      {/* Currency Label */}
+      <div className={`absolute ${disabled ? 'cursor-not-allowed': ''}`}>
+        <div className="flex justify-center items-center  rounded-full py-1 font-bold px-0">
+          <Image className="mr-1 rounded-full" width={24} height={24} src={token.image_url ?? '/logo.jpg'} alt={token.name} />
+          <span>{token.short_name}</span>
+        </div>
+      </div>
+
       <div className="flex-grow">
         <input
-          className={`w-full text-right py-2 px-2 border border-gray-300 rounded-l-md focus:outline-none focus:border-blue-500 ${
+          className={`w-full text-4xl font-bold px-2 focus:outline-none pt-12 bg-transparent ${
             disabled ? 'bg-gray-100 cursor-not-allowed': ''
           }`}
           type="number"
@@ -33,12 +42,7 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({ token, onChange, ma
           disabled={disabled}
         />
       </div>
-      <div className={`flex-shrink-0 flex items-center border rounded-r-md p-2 ${
-        disabled ? 'bg-gray-100 cursor-not-allowed': ''
-      }`}>
-        <Image className="mr-1" width={24} height={24} src={token.image_url ?? '/logo.jpg'} alt={token.name} />
-        <span>{token.short_name}</span>
-      </div>
+
     </div>
   );
 };
