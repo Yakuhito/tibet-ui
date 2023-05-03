@@ -14,3 +14,33 @@ input[type="number"]::-webkit-outer-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+
+
+
+/* Remove vertical line on <TokenSelector /> */
+span.css-1u9des2-indicatorSeparator {
+  display: none;
+}
+
+/* Pretty Scrollbar */
+*::-webkit-scrollbar {
+  width: 12px;
+}
+ 
+*::-webkit-scrollbar-track {
+background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+background: #526e78;
+border-radius: 1rem;
+border: 3px solid #EFF4F7;
+}
+
+@media (prefers-color-scheme: dark) {
+*::-webkit-scrollbar-thumb {
+  background: #526e78;
+  border-radius: 1rem;
+  border: 3px solid #18181b;
+}
+}
