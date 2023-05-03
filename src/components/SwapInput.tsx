@@ -38,7 +38,7 @@ const SwapInputs: React.FC<SwapInputsProps> = ({
           xmlns="http://www.w3.org/2000/svg"
           className={`h-7 w-7 ${
             disabled ? 'text-gray-300 cursor-not-allowed' :
-            (isBuySelected ? 'text-green-500' : 'text-red-500')
+            (isBuySelected ? 'text-green-800' : 'text-red-700')
           } ${
             isBuySelected ? '' : 'transform rotate-180'
           }`}

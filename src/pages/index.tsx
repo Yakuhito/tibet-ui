@@ -12,12 +12,6 @@ const Home: React.FC = () => {
   return (
     <Layout isHomePage>
       <TabContainer onPairSelect={setPairLauncherId}/>
-      <a target="_blank" href={link} rel="noopener noreferrer" className="mb-1 mt-8">
-      <p className="text-gray-600 underline">Analytics &rarr;</p>
-      </a>
-      <Link href="/faq" className="mb-12">
-        <p className="text-gray-600 underline">FAQ &rarr;</p>
-      </Link>
     </Layout>
   );
 };

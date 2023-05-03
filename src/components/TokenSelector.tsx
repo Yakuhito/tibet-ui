@@ -18,6 +18,7 @@ const customStyles = {
       backgroundSize: '24px',
       backgroundPosition: '20px center',
       backgroundRepeat: 'no-repeat',
+      color: 'black',
     };
   },
   singleValue: (provided: any, state: any) => {
@@ -26,8 +27,10 @@ const customStyles = {
       ...provided,
       display: 'flex',
       alignItems: 'center',
-      paddingLeft: 32,
+      paddingLeft: 42,
       backgroundImage: `url(${imgSrc})`,
+      color: '#526e78',
+      fontWeight: 500,
       backgroundSize: '24px',
       backgroundPosition: '4px center',
       backgroundRepeat: 'no-repeat',
@@ -40,9 +43,23 @@ const customStyles = {
       ...provided,
       paddingLeft: 8,
       paddingTop: 6,
-      paddingBottom: 6
+      paddingBottom: 6,
+      color: '#526e78',
+      fontWeight: 500,
     };
-  }
+  },
+  control: (provided: any, state: any) => ({
+    ...provided,
+    border: 0,
+    borderRadius: '0.75rem',
+    backgroundColor: '#526e781a',
+    boxShadow: state.isFocused ? '0 0 0 2px #526e78' : provided.boxShadow,
+    cursor: 'pointer',
+  }),
+  dropdownIndicator: (provided: any, state: any) => ({
+    ...provided,
+    color: state.isFocused ? '#526e78' : 'rgb(82 110 120 / 35%)',
+  }),
 };
 
 const TokenSelector: React.FC<TokenSelectorProps> = ({

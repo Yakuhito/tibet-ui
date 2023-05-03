@@ -145,12 +145,12 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data }) => {
 
     const listAssets = (a: [Token, boolean, number][]) => {
         return (
-            <ul className="list-disc">
+            <ul className="list-none m-0 font-medium">
                 {a.map(e => (
-                    <li className="ml-6 mb-2" key={e[0].asset_id}>
+                    <li key={e[0].asset_id}>
                         {e[2] / Math.pow(10, e[1] ? 12 : 3)} {e[0].name}{" "}
                         {e[1] ? <></> : <button
-                            className="ml-1 bg-blue-500 hover:bg-blue-700 text-white px-2 rounded"
+                            className="ml-1 bg-brandDark hover:bg-brandDark/80 text-white px-2 rounded-lg"
                             onClick={() => copyToClipboard(e[0].asset_id)}
                         >
                             Copy Asset ID
@@ -167,33 +167,38 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data }) => {
             return (
                 <div className="mt-16 mb-16 flex justify-center items-center flex-col">
                     <RingLoader size={64} color={"#123abc"} />
-                    <div className='mt-4'>Verifying trade data...</div>
+                    <div className='mt-4 font-medium'>Verifying trade data...</div>
                 </div>
             )
         }
         if(step === 2) {
             return <div className="text-left w-full">
-                <u>Order Summary</u>
+                <p className="text-4xl font-bold mb-8">Order Summary</p>
+
+                <div className="bg-brandDark/10 rounded-xl p-4 mb-4">
+                    <p className="mb-2 font-medium text-lg text-brandDark">Offering:</p>
+                    {listAssets(data.offer)}
+                </div>
+
+                <div className="bg-brandDark/10 rounded-xl p-4 mb-4">
+                    <p className="mb-2 font-medium text-lg text-brandDark">Requesting:</p>
+                    {listAssets(data.request)}
+                </div>
+                
+                <p className="bg-brandDark/10 rounded-xl py-2 px-4 font-medium">Min fee: <span className="font-normal">{(pairAndQuote![1].fee / Math.pow(10, 12)).toFixed(12)} XCH</span></p>
                 <br />
-                <br />
-                <p>Offering:</p>
-                {listAssets(data.offer)}
-                <p>Requesting:</p>
-                {listAssets(data.request)}
-                <p>Minimum fee: {(pairAndQuote![1].fee / Math.pow(10, 12)).toFixed(12)} XCH</p>
-                <br />
-                <p>Please generate the offer, paste it below, and click the button to proceed.</p>
+                <p className="px-4 mb-4 font-medium">Please generate the offer, paste it below, and click the button to proceed.</p>
                 <input type="text"
                     value={offer}
-                    className='w-full py-2 px-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500'
+                    className='w-full py-2 px-4 border-2 text-brandDark dark:border-brandDark dark:bg-brandDark/20 rounded-md focus:outline-none focus:border-brandDark'
                     onChange={e => setOffer(e.target.value)}
                     placeholder='offer1...'
                 />
                 <button
                     onClick={() => setStep(3)}
                     className={`${
-                        offer.length === 0 ? 'bg-gray-300 cursor-not-allowed' : 'bg-green-500'
-                    } text-white px-4 py-2 rounded-md w-full mt-4`}
+                        offer.length === 0 ? 'bg-brandDark/10 text-brandDark/20 dark:text-brandLight/30 cursor-not-allowed' : 'bg-green-700'
+                    } text-brandLight px-4 py-2 rounded-lg w-full mt-8 font-medium`}
                     disabled={offer.length === 0}
                 >
                 Submit Offer
@@ -202,7 +207,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data }) => {
         }
         if(step === -1) {
             return (
-                <div className="mt-16 mb-16 flex justify-center items-center flex-col">
+                <div className="mt-16 mb-16 flex justify-center items-center flex-col font-medium">
                     <div>Oops! Amounts don{"'"}t match anymore.</div>
                     <div>Please go back and try again.</div>
                 </div>
@@ -212,24 +217,24 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data }) => {
             if(offerResponse === null) {
                 return <div className="mt-16 mb-16 flex justify-center items-center flex-col">
                     <RingLoader size={64} color={"#123abc"} />
-                    <div className='mt-4'>Sending offer...</div>
+                    <div className='mt-4 font-medium'><p>Sending offer...</p></div>
                 </div>;
             }
 
-            return <div className="mt-16 mb-16 flex justify-center items-center flex-col">
-                <div>{offerResponse!.success ? 'Offer submission successful!' : 'Error ocurred while submitting offer :('}</div>
-                <textarea className="mt-4 w-full py-2 px-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500">{offerResponse!.message}</textarea>
+            return <div className="mt-16 mb-16">
+                <div className="font-medium">{offerResponse!.success ? 'Offer submission successful!' : 'An error occurred while submitting offer ☹️'}</div>
+                <textarea className="mt-4 dark:text-brandLight/30 min-h-[10rem] text-brandDark w-full py-2 px-2 border-2 border-transparent bg-brandDark/10 rounded-xl focus:outline-none focus:border-brandDark">{offerResponse!.message}</textarea>
             </div>
         }
         return (
-            <div className="mt-16 mb-16 flex justify-center items-center flex-col">
+            <div className="mt-16 mb-16 flex justify-center items-center flex-col font-medium">
                 <div>Something went wrong - please refresh this page</div>
             </div>
         );
     }
 
     return (
-        <div className="p-4 w-full h-full flex justify-center items-center">
+        <div className="w-full h-full">
             { renderContent(step) }
         </div>
   );

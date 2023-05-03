@@ -120,7 +120,7 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, onPai
   };
 
   return (
-    <div className="w-fill p-2">
+    <div className="w-fill">
       <BooleanSwitch
         isSelected={isAddSelected}
         onChange={ emergency_withdraw ? () => {} : setIsAddSelected }

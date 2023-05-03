@@ -17,7 +17,7 @@ export default function Document() {
         <link rel="apple-touch-icon" href="/logo.jpg" />
         <link rel="apple-touch-icon" sizes="400x400" href="/logo.jpg" />
 
-        <link rel="icon" type="image/jpeg" sizes="400x400" href="/logo.png" />
+        <link rel="icon" type="image/jpeg" sizes="400x400" href="/logo.jpg" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="shortcut icon" href="/logo.jpg" />
 

@@ -17,6 +17,7 @@ export default function Navbar() {
         </Link>
         <div className="flex items-center bg-brandDark/10 dark:bg-brandDark/20 rounded-xl p-1">
           <Link href="/" className="font-medium text-brandLight px-4 py-1 bg-brandDark rounded-lg">Swap</Link>
+          <Link href="/faq" className="font-medium text-brandDark dark:text-brandLight/50 px-4 py-1">FAQ</Link>
           <Link href={`${process.env.NEXT_PUBLIC_INFO_BASE_URL}`} className="font-medium text-brandDark dark:text-brandLight/50 px-4 py-1">Analytics</Link>
         </div>
       </div>

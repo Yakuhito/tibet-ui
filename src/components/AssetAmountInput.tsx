@@ -12,7 +12,7 @@ type AssetAmountInputProps = {
 
 const AssetAmountInput: React.FC<AssetAmountInputProps> = ({ token, onChange, maxDecimals, disabled, value }) => {
   return (
-    <div className="flex justify-between bg-brandDark/10 p-6 rounded-2xl">
+    <div className={`flex justify-between bg-brandDark/10 p-6 rounded-2xl ${disabled ? 'opacity-30' : ''}`}>
 
       {/* Currency Label */}
       <div className={`absolute ${disabled ? 'cursor-not-allowed': ''}`}>

@@ -38,30 +38,31 @@ const FAQ: React.FC = () => {
 
   return (
     <Layout>
-      <div className="mb-4">
-        <Link href="/">
-          <p className="text-gray-600 underline">&larr; Back to Homepage</p>
-        </Link>
-      </div>
-      <h1 className="text-3xl font-bold mb-6">FAQ</h1>
-      <div className="mb-4 max-w-screen-sm w-full">
-        {faqs.map((faq, index) => (
-          <div key={index} className="mb-4">
-            <button
-              onClick={() => toggleAnswer(index)}
-              className="text-left font-semibold text-lg px-4 py-2 bg-gray-200 rounded-md focus:outline-none w-full"
-            >
-              {faq.question}
-            </button>
-            {activeIndex === index && (
-              <div
-                className="px-4 py-2 bg-gray-100 text-left rounded-b-md faq-answer w-full"
-                dangerouslySetInnerHTML={{ __html: faq.answer }} 
-              />
-            )}
-          </div>
-        ))}
-      </div>
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-4 select-none w-full">
+          <Link href="/" className="text-xl font-medium text-brandDark/90 hover:opacity-60 dark:text-brandLight/80">Home</Link>
+          <p className="text-xl font-medium text-brandDark dark:text-brandLight">›</p>
+          <p className="text-xl font-medium text-brandDark dark:text-brandLight">FAQ</p>
+        </div>
+        <h1 className="text-5xl font-bold py-12 w-full">FAQ</h1>
+        <div className="mb-4 max-w-screen-sm w-full">
+          {faqs.map((faq, index) => (
+            <div key={index} className="mb-4">
+              <button
+                onClick={() => toggleAnswer(index)}
+                className={`text-left font-semibold text-lg px-4 py-4 bg-brandDark/10 rounded-xl focus:outline-none w-full ${activeIndex === index ? 'rounded-b-none' : ''}`}
+              >
+                {faq.question}
+              </button>
+              {activeIndex === index && (
+                <div
+                  className="px-4 py-2 pb-6 bg-brandDark/10 text-left rounded-b-xl faq-answer w-full"
+                  dangerouslySetInnerHTML={{ __html: faq.answer }} 
+                />
+              )}
+            </div>
+          ))}
+        </div>
     </Layout>
   );
 };
