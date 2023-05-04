@@ -13,23 +13,17 @@ export interface GenerateOfferData {
 
 export interface TabContainerProps {
   onPairSelect: (pairLauncherId: string | null) => void;
+  tokens: Token[] | null;
+  selectedToken: Token | null;
+  setSelectedToken: React.Dispatch<React.SetStateAction<Token | null>>;
 }
 
-const TabContainer: React.FC<TabContainerProps> = ({ onPairSelect }) => {
+const TabContainer: React.FC<TabContainerProps> = ({ onPairSelect, tokens, selectedToken, setSelectedToken }) => {
   const emergency_withdraw = process.env.NEXT_PUBLIC_V1_EMERGENCY_WITHDRAW === "true";
 
   const SWAP_ENABLED = !emergency_withdraw && process.env.NEXT_PUBLIC_SWAP_ENABLED === 'true';
   const [activeTab, setActiveTab] = useState<'swap' | 'liquidity'>(SWAP_ENABLED ? 'swap' : 'liquidity');
-  const [tokens, setTokens] = useState<Token[] | null>(null);
   const [generateOfferData, setGenerateOfferData] = useState<GenerateOfferData | null>(null);
- 
-  useEffect(() => {
-    async function fetchTokens() {
-      const allTokens = await getAllTokens();
-      setTokens(allTokens);
-    }
-    fetchTokens();
-  }, []);
 
   const renderContent = (generateOffer: (data: GenerateOfferData) => void, data: GenerateOfferData | null) => {
     if(data !== null) {
@@ -42,6 +36,8 @@ const TabContainer: React.FC<TabContainerProps> = ({ onPairSelect }) => {
         tokens={tokens}
         generateOffer={generateOffer}
         onPairSelect={onPairSelect}
+        selectedToken={selectedToken}
+        setSelectedToken={setSelectedToken}
       />;
     } else {
       return <Liquidity
