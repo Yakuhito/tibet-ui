@@ -12,7 +12,7 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <Navbar />
+      <Navbar path="" />
       <Layout isHomePage>
         <TabContainer onPairSelect={setPairLauncherId}/>
       </Layout>
