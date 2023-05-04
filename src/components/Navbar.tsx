@@ -2,24 +2,19 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
-import { useState, useEffect } from 'react';
-
 
 export default function Navbar() {
   const router = useRouter();
-  useEffect(() => {
-    console.log(router.asPath, '🫧', router.asPath === "/[pair_short_name]")
-  }, [router])
   return (
     <nav className="sticky w-full top-0 bg-brandLight/50 dark:bg-zinc-900/50 backdrop-blur-xl">
       <div className="container mx-auto px-4 flex gap-8 items-center justify-between py-4">
         <Link href="/">
             <Image
-                src="/logo.jpg"
-                height="64"
-                width="64"
-                alt="TibetSwap Logo"
-                className="rounded-full border-neutral-300 hover:translate-y-1 hover:opacity-80 transition dark:opacity-80"
+              src="/logo.jpg"
+              height="64"
+              width="64"
+              alt="TibetSwap Logo"
+              className="rounded-full border-neutral-300 hover:translate-y-1 hover:opacity-80 transition dark:opacity-80"
             />
         </Link>
         <div className="flex items-center bg-brandDark/10 dark:bg-brandDark/20 rounded-xl p-1">
