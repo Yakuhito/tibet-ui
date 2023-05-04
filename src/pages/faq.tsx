@@ -37,12 +37,6 @@ const FAQ: React.FC = () => {
 
   return (
     <>
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-4 select-none w-full">
-        <Link href="/" className="text-xl font-medium text-brandDark/90 hover:opacity-60 dark:text-brandLight/80">Home</Link>
-        <p className="text-xl font-medium text-brandDark dark:text-brandLight">›</p>
-        <p className="text-xl font-medium text-brandDark dark:text-brandLight">FAQ</p>
-      </div>
       <h1 className="text-5xl font-bold py-12 w-full">FAQ</h1>
       <div className="mb-4 w-full">
         {faqs.map((faq, index) => (
