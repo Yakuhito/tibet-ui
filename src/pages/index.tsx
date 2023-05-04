@@ -8,11 +8,9 @@ const Home: React.FC = () => {
   );
 
   return (
-    <div className="">
-      <main className="max-w-[28rem] mx-auto">
+      <main className="max-w-[28rem]">
         <TabContainer onPairSelect={setPairLauncherId} />
       </main>
-    </div>
   );
 };
 
