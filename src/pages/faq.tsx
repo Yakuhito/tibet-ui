@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import Link from 'next/link';
-import Layout from '../components/Layout';
-import Navbar from '@/components/Navbar';
 
 const faqs = [
   {
