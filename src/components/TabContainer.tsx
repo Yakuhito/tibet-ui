@@ -42,6 +42,8 @@ const TabContainer: React.FC<TabContainerProps> = ({ tokens, selectedToken, setS
         disabled={tokens == null}
         tokens={tokens}
         generateOffer={generateOffer}
+        selectedToken={selectedToken}
+        setSelectedToken={setSelectedToken}
       />;
     }
   };

@@ -11,12 +11,13 @@ type LiquidityProps = {
   disabled: boolean;
   tokens: Token[] | null;
   generateOffer: (data: GenerateOfferData) => void;
+  selectedToken: Token | null;
+  setSelectedToken: React.Dispatch<React.SetStateAction<Token | null>>;
 };
 
-const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer }) => {
+const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, selectedToken, setSelectedToken }) => {
   const emergency_withdraw = process.env.NEXT_PUBLIC_V1_EMERGENCY_WITHDRAW === "true";
 
-  const [selectedToken, setSelectedToken] = useState<Token | null>(null);
   const [pair, setPair] = useState<Pair | null>(null);
   const [isAddSelected, setIsAddSelected] = useState(emergency_withdraw ? false : true);
   const [amount0, setAmount0] = useState(0);
