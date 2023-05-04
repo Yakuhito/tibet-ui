@@ -10,10 +10,6 @@ const PairPreSelect: React.FC = () => {
   const { pair_short_name } = router.query;
   
   const [selectedToken, setSelectedToken] = useState<Token | null>(null);
-  const [pairLauncherId, setPairLauncherId] = useState<string | null>(null);
-  const link = process.env.NEXT_PUBLIC_INFO_BASE_URL + (
-    pairLauncherId === null ? "" : `/pair/${pairLauncherId}`
-  );
 
   // Fetch all tokens
   const [tokens, setTokens] = useState<Token[] | null>(null);
@@ -39,13 +35,12 @@ const PairPreSelect: React.FC = () => {
     if (!pair_short_name && !tokens) return
     const token = getTokenFromShortName(pair_short_name)
     if (!token) return
-    setPairLauncherId(token.asset_id)
     setSelectedToken(token);
   }, [pair_short_name, tokens])
 
   return (
     <main className="max-w-[28rem]">
-      <TabContainer tokens={tokens} onPairSelect={setPairLauncherId} selectedToken={selectedToken} setSelectedToken={setSelectedToken} />
+      <TabContainer tokens={tokens} selectedToken={selectedToken} setSelectedToken={setSelectedToken} />
     </main>
   );
 };

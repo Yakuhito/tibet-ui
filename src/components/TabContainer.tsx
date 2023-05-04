@@ -12,13 +12,12 @@ export interface GenerateOfferData {
 }
 
 export interface TabContainerProps {
-  onPairSelect: (pairLauncherId: string | null) => void;
   tokens: Token[] | null;
   selectedToken: Token | null;
   setSelectedToken: React.Dispatch<React.SetStateAction<Token | null>>;
 }
 
-const TabContainer: React.FC<TabContainerProps> = ({ onPairSelect, tokens, selectedToken, setSelectedToken }) => {
+const TabContainer: React.FC<TabContainerProps> = ({ tokens, selectedToken, setSelectedToken }) => {
   const emergency_withdraw = process.env.NEXT_PUBLIC_V1_EMERGENCY_WITHDRAW === "true";
 
   const SWAP_ENABLED = !emergency_withdraw && process.env.NEXT_PUBLIC_SWAP_ENABLED === 'true';
@@ -35,7 +34,6 @@ const TabContainer: React.FC<TabContainerProps> = ({ onPairSelect, tokens, selec
         disabled={tokens == null}
         tokens={tokens}
         generateOffer={generateOffer}
-        onPairSelect={onPairSelect}
         selectedToken={selectedToken}
         setSelectedToken={setSelectedToken}
       />;
@@ -44,7 +42,6 @@ const TabContainer: React.FC<TabContainerProps> = ({ onPairSelect, tokens, selec
         disabled={tokens == null}
         tokens={tokens}
         generateOffer={generateOffer}
-        onPairSelect={onPairSelect}
       />;
     }
   };
@@ -62,7 +59,6 @@ const TabContainer: React.FC<TabContainerProps> = ({ onPairSelect, tokens, selec
           }`}
           onClick={() => {
             if(SWAP_ENABLED) {
-              onPairSelect(null);
               setActiveTab('swap')
             } else {
               if(emergency_withdraw) {
@@ -80,7 +76,6 @@ const TabContainer: React.FC<TabContainerProps> = ({ onPairSelect, tokens, selec
             activeTab === 'liquidity' ? 'text-brandDark' : 'text-brandDark/50 hover:opacity-80'
           }`}
           onClick={() => {
-            onPairSelect(null);
             setActiveTab('liquidity');
           }}
           >
