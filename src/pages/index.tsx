@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Layout from '../components/Layout';
 import TabContainer from '../components/TabContainer';
 import { useState } from 'react';
+import Navbar from '@/components/Navbar';
 
 const Home: React.FC = () => {
   const [pairLauncherId, setPairLauncherId] = useState<string | null>(null);
@@ -10,9 +11,12 @@ const Home: React.FC = () => {
   );
 
   return (
-    <Layout isHomePage>
-      <TabContainer onPairSelect={setPairLauncherId}/>
-    </Layout>
+    <>
+      <Navbar />
+      <Layout isHomePage>
+        <TabContainer onPairSelect={setPairLauncherId}/>
+      </Layout>
+    </>
   );
 };
 

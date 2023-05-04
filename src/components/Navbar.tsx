@@ -2,7 +2,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
-export default function Navbar() {
+interface NavbarProps {
+  path: string;
+}
+
+export default function Navbar({ path }: NavbarProps) {
   return (
     <nav className="sticky w-full top-0 bg-brandLight/50 dark:bg-zinc-900/50 backdrop-blur-xl">
       <div className="container mx-auto px-4 flex gap-8 items-center justify-between py-4">
@@ -16,8 +20,8 @@ export default function Navbar() {
             />
         </Link>
         <div className="flex items-center bg-brandDark/10 dark:bg-brandDark/20 rounded-xl p-1">
-          <Link href="/" className="font-medium text-brandLight px-4 py-1 bg-brandDark rounded-lg">Swap</Link>
-          <Link href="/faq" className="font-medium text-brandDark dark:text-brandLight/50 px-4 py-1">FAQ</Link>
+          <Link href="/" className={`font-medium text-brandDark px-4 py-1 rounded-lg ${!path ? 'text-brandLight bg-brandDark' : 'dark:text-brandLight/50'}`}>Swap</Link>
+          <Link href="/faq" className={`font-medium text-brandDark px-4 py-1 rounded-lg ${path === "faq" ? 'text-brandLight bg-brandDark' : 'dark:text-brandLight/50'}`}>FAQ</Link>
           <Link href={`${process.env.NEXT_PUBLIC_INFO_BASE_URL}`} className="font-medium text-brandDark dark:text-brandLight/50 px-4 py-1">Analytics</Link>
         </div>
       </div>

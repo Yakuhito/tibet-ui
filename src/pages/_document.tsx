@@ -1,5 +1,4 @@
 import { Html, Head, Main, NextScript } from 'next/document';
-import Navbar from '@/components/Navbar';
 
 export default function Document() {
   return (
@@ -37,7 +36,6 @@ export default function Document() {
         <link rel='apple-touch-startup-image' href='/logo.jpg' sizes='400x400' />
       </Head>
       <body className="bg-slate-100 dark:bg-zinc-900 dark:text-brandLight">
-        <Navbar />
         <div className="container mx-auto px-4">
           <Main />
         </div>
