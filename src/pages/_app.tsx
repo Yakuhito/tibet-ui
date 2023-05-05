@@ -6,7 +6,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <div className="min-h-[100svh] flex flex-col">
       <Navbar />
-      <div className="mx-auto">
+      <div className="mx-auto pt-12">
         <Component {...pageProps} />
       </div>
       <footer className="pb-6 pt-1 text-center text-brandDark mt-auto">

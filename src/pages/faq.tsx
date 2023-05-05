@@ -36,7 +36,7 @@ const FAQ: React.FC = () => {
 
   return (
     <>
-      <h1 className="text-5xl font-bold py-12">FAQ</h1>
+      <h1 className="text-5xl font-bold pb-12">FAQ</h1>
       <div className="mb-4 max-w-[28rem]">
         {faqs.map((faq, index) => (
           <div key={index} className="mb-4">
