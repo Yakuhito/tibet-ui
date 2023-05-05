@@ -35,7 +35,7 @@ const FAQ: React.FC = () => {
   };
 
   return (
-    <>
+    <main className="max-w-[28rem] mx-auto">
       <h1 className="text-5xl font-bold pb-12">FAQ</h1>
       <div className="mb-4 max-w-[28rem]">
         {faqs.map((faq, index) => (
@@ -55,7 +55,7 @@ const FAQ: React.FC = () => {
           </div>
         ))}
       </div>
-    </>
+    </main>
   );
 };
 

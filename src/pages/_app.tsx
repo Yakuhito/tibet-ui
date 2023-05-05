@@ -4,14 +4,16 @@ import Navbar from '@/components/Navbar';
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <div className="min-h-[100svh] flex flex-col">
+    <div>
       <Navbar />
-      <div className="mx-auto pt-12">
-        <Component {...pageProps} />
+      <div className="min-h-[calc(100svh-96px)] flex flex-col px-4">
+        <div className="pt-12">
+          <Component {...pageProps} />
+        </div>
+        <footer className="pb-6 pt-1 text-center text-brandDark mt-auto">
+              <p>Follow us on<a href="https://twitter.com/TibetSwap" target="_blank" rel="noopener noreferrer" className="underline ml-1">Twitter</a></p>
+        </footer>
       </div>
-      <footer className="pb-6 pt-1 text-center text-brandDark mt-auto">
-          <p>Follow us on<a href="https://twitter.com/TibetSwap" target="_blank" rel="noopener noreferrer" className="underline ml-1">Twitter</a></p>
-      </footer>
     </div>
   );
 }

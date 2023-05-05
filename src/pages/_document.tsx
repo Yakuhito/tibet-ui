@@ -36,7 +36,7 @@ export default function Document() {
         <link rel='apple-touch-startup-image' href='/logo.jpg' sizes='400x400' />
       </Head>
       <body className="bg-slate-100 dark:bg-zinc-900 dark:text-brandLight">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto">
           <Main />
         </div>
         <NextScript />
