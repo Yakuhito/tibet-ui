@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import Link from 'next/link';
 
 const faqs = [
   {
@@ -37,8 +36,8 @@ const FAQ: React.FC = () => {
 
   return (
     <>
-      <h1 className="text-5xl font-bold py-12 w-full">FAQ</h1>
-      <div className="mb-4 w-full">
+      <h1 className="text-5xl font-bold py-12">FAQ</h1>
+      <div className="mb-4 max-w-[28rem]">
         {faqs.map((faq, index) => (
           <div key={index} className="mb-4">
             <button
@@ -49,7 +48,7 @@ const FAQ: React.FC = () => {
             </button>
             {activeIndex === index && (
               <div
-                className="px-4 py-2 pb-6 bg-brandDark/10 text-left rounded-b-xl faq-answer w-full"
+                className="px-4 py-2 pb-6 bg-brandDark/10 text-left rounded-b-xl w-full"
                 dangerouslySetInnerHTML={{ __html: faq.answer }} 
               />
             )}
