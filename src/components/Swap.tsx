@@ -174,7 +174,7 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
           {/* Price Impact */}
           <div className="flex justify-between w-full">
             <p>Price impact</p>
-            <p className={`font-medium ${priceImpact > 0.05 ? 'text-red-800' : ''}`}>{(priceImpact * 100).toFixed(2) + '%'}</p>
+            <p className={`font-medium ${priceImpact > 0.05 ? 'text-red-700' : ''}`}>{(priceImpact * 100).toFixed(2) + '%'}</p>
           </div>
           <p></p>
         </div>
@@ -183,7 +183,7 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
 
       {/* High price impact warning banner */}
       { priceImpact > 0.05 && (
-      <div className="bg-red-400/50 rounded-xl text-red-700 p-4 flex items-center gap-4">
+      <div className="bg-red-400/50 dark:bg-red-400/20 rounded-xl text-red-700 p-4 flex items-center gap-4">
         <label className="inline-flex items-center cursor-pointer">
           <div className="relative">
             <input
@@ -192,10 +192,10 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
               checked={highPriceImpactConfirmed}
               onChange={() => setHighPriceImpactConfirmed(!highPriceImpactConfirmed)}
             />
-            <div className="bg-brandLight rounded-md w-6 h-6 border peer-checked:bg-red-700 border-red-700 flex items-center justify-center">
+            <div className="bg-brandLight dark:bg-zinc-900 rounded-md w-6 h-6 border peer-checked:bg-red-700 border-red-700 flex items-center justify-center">
               {highPriceImpactConfirmed && (
                 <svg
-                  className="fill-white w-4 h-4"
+                  className="fill-brandLight w-4 h-4"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                 >
