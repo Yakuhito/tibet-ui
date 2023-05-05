@@ -77,6 +77,17 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
     setSelectedToken(t);
   }
 
+  const getPriceImpact = () => {
+    // Formula used:
+    // amountInWithFee = amount_traded * (1 - fee);
+    // price_impact = amountInWithFee / (reserve_a_initial + amountInWithFee);
+    if (!pair) return
+    const amountInWithFee = isBuySelected ? amount0 : amount1;
+    const price_impact = isBuySelected ? amountInWithFee / (pair?.xch_reserve + amountInWithFee) : amountInWithFee / (pair?.token_reserve + amountInWithFee)
+    const percentString = (price_impact * 100).toFixed(2) + '%';
+    return percentString
+  }
+
   const submitSwapOperation = () => {
     const sideOne: [Token, boolean, number][] = [
       [XCH, true, amount0]
@@ -145,6 +156,24 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
         }}
         disabled={selectedToken == null || pair == null}
       />
+
+      {/* Price details Section */}
+      { selectedToken !== null && pair !== null && (
+        <div className="flex flex-col p-6 rounded-2xl mt-4 text-sm">
+          {/* Price */}
+          <div className="flex justify-between w-full">
+            <p>Price</p>
+            <p className="font-medium">1 {selectedToken?.short_name} = {getOutputPrice(1000, pair?.xch_reserve ?? 0, pair?.token_reserve ?? 0)/1000000000000} XCH</p>
+          </div>
+          {/* Price Impact */}
+          <div className="flex justify-between w-full">
+            <p>Price impact</p>
+            <p className="font-medium">{getPriceImpact()}</p>
+          </div>
+          <p></p>
+        </div>
+        )
+      }
 
       <GenerateOfferButton
         isBuySelected={isBuySelected}
