@@ -126,7 +126,6 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
       <BooleanSwitch
         isSelected={isBuySelected}
         onChange={setIsBuySelected}
-        disabled={disabled}
         trueLabel='Buy'
         falseLabel='Sell'/>
 
