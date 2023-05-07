@@ -1,5 +1,5 @@
+import type { Token } from '../api';
 import Image from 'next/image';
-import { Token } from '../api';
 
 type AssetAmountInputProps = {
   token: Token;
