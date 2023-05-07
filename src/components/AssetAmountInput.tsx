@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import React, { use, useEffect, useState } from 'react';
 import { Token } from '../api';
 
 type AssetAmountInputProps = {
