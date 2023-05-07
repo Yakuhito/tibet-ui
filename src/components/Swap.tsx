@@ -193,7 +193,7 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
               checked={highPriceImpactConfirmed}
               onChange={() => setHighPriceImpactConfirmed(!highPriceImpactConfirmed)}
             />
-            <div className="bg-brandLight dark:bg-zinc-900 rounded-md w-6 h-6 border peer-checked:bg-red-700 border-red-700 flex items-center justify-center">
+            <div className="bg-slate-100 dark:bg-zinc-900 rounded-md w-6 h-6 border peer-checked:bg-red-700 border-red-700 flex items-center justify-center">
               {highPriceImpactConfirmed && (
                 <svg
                   className="fill-brandLight w-4 h-4"
