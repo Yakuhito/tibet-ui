@@ -1,5 +1,5 @@
-import { createOfferForPair, getInputPrice, getLiquidityQuote, getPairByLauncherId, getQuoteForPair } from '@/api';
-import type { ActionType, OfferResponse, Pair, Quote, Token } from '@/api';
+import { ActionType, createOfferForPair, getInputPrice, getLiquidityQuote, getPairByLauncherId, getQuoteForPair } from '@/api';
+import type { OfferResponse, Pair, Quote, Token } from '@/api';
 import type { GenerateOfferData } from './TabContainer';
 import RingLoader from 'react-spinners/RingLoader';
 import { useEffect, useState } from 'react';
@@ -35,7 +35,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data }) => {
                     true
                 );
                 setPairAndQuote([pair, quote]);
-            } else if(step === 0) { // && pairAndQuote !== null
+            } else if(step === 0) {
                 const numAssets = data.offer.length + data.request.length;
                 if(numAssets === 2) {
                     const token0IsXCH = data.offer[0][1];
@@ -136,14 +136,6 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data }) => {
         });
     };
 
-    // const listAssets = (a: [Token, boolean, number][]) => {
-    //     return <ul className="list-disc">
-    //         {a.map(e => <li className="ml-6" key={e[0].asset_id}>
-    //             {e[2] / Math.pow(10, e[1] ? 12 : 3)} {e[0].name} {e[0].asset_id}
-    //         </li>)}
-    //     </ul>;
-    // }
-
     const listAssets = (a: [Token, boolean, number][]) => {
         return (
             <ul className="list-none m-0 font-medium">
@@ -164,75 +156,83 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data }) => {
     
 
     const renderContent = (step: number) => {
+        // Loading (verify data)
         if(step === 0) {
             return (
                 <div className="mt-16 mb-16 flex justify-center items-center flex-col">
                     <RingLoader size={64} color={"#123abc"} />
                     <div className='mt-4 font-medium'>Verifying trade data...</div>
                 </div>
-            )
-        }
+            );
+        };
+        // Verified - display summary of order & ask user to confirm
         if(step === 2) {
-            return <div className="text-left w-full">
-                <p className="text-4xl font-bold mb-8">Order Summary</p>
+            return (
+                <div className="text-left w-full">
+                    <p className="text-4xl font-bold mb-8">Order Summary</p>
 
-                <div className="bg-brandDark/10 rounded-xl p-4 mb-4">
-                    <p className="mb-2 font-medium text-lg text-brandDark">Offering:</p>
-                    {listAssets(data.offer)}
-                </div>
+                    <div className="bg-brandDark/10 rounded-xl p-4 mb-4">
+                        <p className="mb-2 font-medium text-lg text-brandDark">Offering:</p>
+                        {listAssets(data.offer)}
+                    </div>
 
-                <div className="bg-brandDark/10 rounded-xl p-4 mb-4">
-                    <p className="mb-2 font-medium text-lg text-brandDark">Requesting:</p>
-                    {listAssets(data.request)}
+                    <div className="bg-brandDark/10 rounded-xl p-4 mb-4">
+                        <p className="mb-2 font-medium text-lg text-brandDark">Requesting:</p>
+                        {listAssets(data.request)}
+                    </div>
+
+                    <p className="bg-brandDark/10 rounded-xl py-2 px-4 font-medium mb-4">Min fee: <span className="font-normal">{(pairAndQuote![1].fee / Math.pow(10, 12)).toFixed(12)} XCH</span></p>
+                    <p className="px-4 mb-4 font-medium">Please generate the offer, paste it below, and click the button to proceed.</p>
+                    <input type="text"
+                        value={offer}
+                        className='w-full py-2 px-4 border-2 text-brandDark dark:border-brandDark dark:bg-brandDark/20 rounded-md focus:outline-none focus:border-brandDark'
+                        onChange={e => setOffer(e.target.value)}
+                        placeholder='offer1...'
+                    />
+                    <button
+                        onClick={() => setStep(3)}
+                        className={`${offer.length === 0 ? 'bg-brandDark/10 text-brandDark/20 dark:text-brandLight/30 cursor-not-allowed' : 'bg-green-700'} text-brandLight px-4 py-2 rounded-lg w-full mt-8 font-medium`}
+                        disabled={offer.length === 0}
+                    >
+                        Submit Offer
+                    </button>
                 </div>
-                
-                <p className="bg-brandDark/10 rounded-xl py-2 px-4 font-medium">Min fee: <span className="font-normal">{(pairAndQuote![1].fee / Math.pow(10, 12)).toFixed(12)} XCH</span></p>
-                <br />
-                <p className="px-4 mb-4 font-medium">Please generate the offer, paste it below, and click the button to proceed.</p>
-                <input type="text"
-                    value={offer}
-                    className='w-full py-2 px-4 border-2 text-brandDark dark:border-brandDark dark:bg-brandDark/20 rounded-md focus:outline-none focus:border-brandDark'
-                    onChange={e => setOffer(e.target.value)}
-                    placeholder='offer1...'
-                />
-                <button
-                    onClick={() => setStep(3)}
-                    className={`${
-                        offer.length === 0 ? 'bg-brandDark/10 text-brandDark/20 dark:text-brandLight/30 cursor-not-allowed' : 'bg-green-700'
-                    } text-brandLight px-4 py-2 rounded-lg w-full mt-8 font-medium`}
-                    disabled={offer.length === 0}
-                >
-                Submit Offer
-                </button>
-            </div>;
-        }
+            )
+        };
+        // Amounts don't match screen
         if(step === -1) {
             return (
                 <div className="mt-16 mb-16 flex justify-center items-center flex-col font-medium">
                     <div>Oops! Amounts don{"'"}t match anymore.</div>
                     <div>Please go back and try again.</div>
                 </div>
-            )
-        }
+            );
+        };
+        // Send order to server & display response
         if(step == 3) {
             if(offerResponse === null) {
-                return <div className="mt-16 mb-16 flex justify-center items-center flex-col">
+                return (
+                <div className="mt-16 mb-16 flex justify-center items-center flex-col">
                     <RingLoader size={64} color={"#123abc"} />
                     <div className='mt-4 font-medium'><p>Sending offer...</p></div>
-                </div>;
-            }
+                </div>
+                );
+            };
 
-            return <div className="mt-16 mb-16">
-                <div className="font-medium">{offerResponse!.success ? 'Offer submission successful!' : 'An error occurred while submitting offer ☹️'}</div>
-                <textarea className="mt-4 dark:text-brandLight/30 min-h-[10rem] text-brandDark w-full py-2 px-2 border-2 border-transparent bg-brandDark/10 rounded-xl focus:outline-none focus:border-brandDark">{offerResponse!.message}</textarea>
-            </div>
-        }
+            return (
+                <div className="mt-16 mb-16">
+                    <div className="font-medium">{offerResponse!.success ? 'Offer submission successful!' : 'An error occurred while submitting offer ☹️'}</div>
+                    <textarea className="mt-4 dark:text-brandLight/30 min-h-[10rem] text-brandDark w-full py-2 px-2 border-2 border-transparent bg-brandDark/10 rounded-xl focus:outline-none focus:border-brandDark">{offerResponse!.message}</textarea>
+                </div>
+            );
+        };
+
         return (
             <div className="mt-16 mb-16 flex justify-center items-center flex-col font-medium">
                 <div>Something went wrong - please refresh this page</div>
             </div>
         );
-    }
+    };
 
     return (
         <div className="w-full h-full">
