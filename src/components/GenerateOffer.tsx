@@ -1,6 +1,6 @@
 import { createOfferForPair, getInputPrice, getLiquidityQuote, getPairByLauncherId, getQuoteForPair } from '@/api';
 import type { ActionType, OfferResponse, Pair, Quote, Token } from '@/api';
-import { GenerateOfferData } from './TabContainer';
+import type { GenerateOfferData } from './TabContainer';
 import RingLoader from 'react-spinners/RingLoader';
 import { useEffect, useState } from 'react';
 
