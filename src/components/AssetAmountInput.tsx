@@ -22,10 +22,10 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({ token, onChange, ma
   }
 
   return (
-    <div className={`flex justify-between bg-brandDark/10 p-6 rounded-2xl ${disabled ? 'opacity-30' : ''}`}>
+    <div className={`flex justify-between bg-brandDark/10 p-6 rounded-2xl relative pt-[59px] ${disabled ? 'opacity-30' : ''}`}>
 
       {/* Token Short_Name */}
-      <div className={`absolute ${disabled ? 'cursor-not-allowed': ''}`}>
+      <div className={`absolute top-6 ${disabled ? 'cursor-not-allowed': ''}`}>
         <div className="flex justify-center items-center  rounded-full py-1 font-bold">
           <Image className="mr-1 rounded-full animate-fadeIn" width={24} height={24} src={token.image_url ?? '/logo.jpg'} alt={token.name} />
           <span>{token.short_name}</span>
@@ -34,7 +34,7 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({ token, onChange, ma
 
       {/* Input/Value */}
       <input
-        className={`w-full text-4xl font-bold px-2 focus:outline-none pt-12 bg-transparent ${disabled ? 'bg-gray-100 cursor-not-allowed': ''}`}
+        className={`w-full text-4xl font-bold px-2 focus:outline-none bg-transparent leading-normal ${disabled ? 'bg-gray-100 cursor-not-allowed': ''}`}
         value={value / Math.pow(10, maxDecimals)}
         onChange={handleInputChange}
         disabled={disabled}
