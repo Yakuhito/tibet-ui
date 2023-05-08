@@ -166,9 +166,44 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
         disabled={selectedToken == null || pair == null}
       />
 
+      {/* High price impact warning banner */}
+      { priceImpact >= 0.05 && (
+      <div className="bg-red-400/50 dark:bg-red-400/20 rounded-xl text-red-700 p-4 mt-8 flex items-center gap-4">
+        <label className="inline-flex items-center cursor-pointer">
+          <div className="relative">
+            <input
+              type="checkbox"
+              className="opacity-0 absolute h-0 w-0 peer"
+              checked={highPriceImpactConfirmed}
+              onChange={() => setHighPriceImpactConfirmed(!highPriceImpactConfirmed)}
+            />
+            <div className="bg-slate-100 dark:bg-zinc-900 rounded-md w-6 h-6 border peer-checked:bg-red-700 border-red-700 flex items-center justify-center">
+              {highPriceImpactConfirmed && (
+                <svg
+                  className="fill-brandLight w-4 h-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M0 11l2-2 5 5L18 3l2 2L7 18z" />
+                </svg>
+              )}
+            </div>
+          </div>
+        </label>
+        <p className="font-medium text-sm">Price impact is very high. You will lose a significant portion of your funds if you proceed. Please tick the box if you would like to continue.</p>
+      </div>
+      )
+      }
+
+      <GenerateOfferButton
+        isBuySelected={isBuySelected}
+        disabled={selectedToken == null || pair == null || priceImpact >= 0.05 && !highPriceImpactConfirmed}
+        onPressed={submitSwapOperation}
+      />
+
       {/* Price details Section */}
       { selectedToken !== null && pair !== null && amount0 !== 0 && (
-        <div className="flex flex-col p-6 rounded-2xl mt-4 text-sm">
+        <div className="flex flex-col p-6 rounded-2xl mt-2 gap-1 bg-brandDark/0 text-sm">
           {/* Price */}
           <div className="flex justify-between w-full">
             <p>Price</p>
@@ -198,41 +233,6 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
         </div>
         )
       }
-
-      {/* High price impact warning banner */}
-      { priceImpact >= 0.05 && (
-      <div className="bg-red-400/50 dark:bg-red-400/20 rounded-xl text-red-700 p-4 flex items-center gap-4">
-        <label className="inline-flex items-center cursor-pointer">
-          <div className="relative">
-            <input
-              type="checkbox"
-              className="opacity-0 absolute h-0 w-0 peer"
-              checked={highPriceImpactConfirmed}
-              onChange={() => setHighPriceImpactConfirmed(!highPriceImpactConfirmed)}
-            />
-            <div className="bg-slate-100 dark:bg-zinc-900 rounded-md w-6 h-6 border peer-checked:bg-red-700 border-red-700 flex items-center justify-center">
-              {highPriceImpactConfirmed && (
-                <svg
-                  className="fill-brandLight w-4 h-4"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M0 11l2-2 5 5L18 3l2 2L7 18z" />
-                </svg>
-              )}
-            </div>
-          </div>
-        </label>
-        <p className="font-medium text-sm">Price impact is very high. You will lose a significant portion of your funds if you proceed. Please tick the box if you would like to continue.</p>
-      </div>
-      )
-    }
-
-      <GenerateOfferButton
-        isBuySelected={isBuySelected}
-        disabled={selectedToken == null || pair == null || priceImpact >= 0.05 && !highPriceImpactConfirmed}
-        onPressed={submitSwapOperation}
-      />
     </div>
   );
 };
