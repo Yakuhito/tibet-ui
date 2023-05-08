@@ -181,6 +181,12 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
             <p className={`font-medium ${priceImpact >= 0.05 ? 'text-red-700' : ''}`}>{(priceImpact * 100).toFixed(2) + '%'}</p>
           </div>
 
+          {/* Liquidity Fee */}
+          <div className="flex justify-between w-full">
+            <p>Liquidity fee</p>
+            <p className="font-medium">0.70%</p>
+          </div>
+
           {/* Dev Fee */}
           <div className="flex justify-between w-full">
             <div className="flex items-center gap-1">
