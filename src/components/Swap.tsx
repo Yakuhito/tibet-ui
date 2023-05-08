@@ -88,8 +88,9 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
     if (!pair) return
     const y = isBuySelected ? pair?.token_reserve : pair?.xch_reserve;
     const dy = isBuySelected ? amount1 : amount0;
-    const price_impact = (y - dy)**2 / y**2 - 1;
-    price_impact > -0.05 && setHighPriceImpactConfirmed(false);
+    const price_impact = -((y - dy)**2 / y**2 - 1);
+    console.log(price_impact)
+    price_impact < 0.05 && setHighPriceImpactConfirmed(false);
     setPriceImpact(price_impact);
   },[amount0, amount1, isBuySelected, pair]);
 
@@ -177,7 +178,7 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
           {/* Price Impact */}
           <div className="flex justify-between w-full">
             <p>Price impact</p>
-            <p className={`font-medium ${priceImpact <= -0.05 ? 'text-red-700' : ''}`}>{(priceImpact * 100).toFixed(2) + '%'}</p>
+            <p className={`font-medium ${priceImpact >= 0.05 ? 'text-red-700' : ''}`}>{(priceImpact * 100).toFixed(2) + '%'}</p>
           </div>
 
           {/* Dev Fee */}
@@ -193,7 +194,7 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
       }
 
       {/* High price impact warning banner */}
-      { priceImpact <= -0.05 && (
+      { priceImpact >= 0.05 && (
       <div className="bg-red-400/50 dark:bg-red-400/20 rounded-xl text-red-700 p-4 flex items-center gap-4">
         <label className="inline-flex items-center cursor-pointer">
           <div className="relative">
@@ -223,7 +224,7 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
 
       <GenerateOfferButton
         isBuySelected={isBuySelected}
-        disabled={selectedToken == null || pair == null || priceImpact <= -0.05 && !highPriceImpactConfirmed}
+        disabled={selectedToken == null || pair == null || priceImpact >= 0.05 && !highPriceImpactConfirmed}
         onPressed={submitSwapOperation}
       />
     </div>
