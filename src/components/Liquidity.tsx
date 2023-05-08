@@ -170,6 +170,17 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, selec
         disabled={selectedToken == null || pair == null}
         onPressed={submitLiquidityOperation}
       />
+
+      {pair && (
+      <div className="flex flex-col p-6 rounded-2xl mt-2 gap-1 bg-brandDark/0 text-sm">
+        {/* Price */}
+        <div className="flex justify-between w-full">
+          <p>Price</p>
+          <p className="font-medium">1 {selectedToken?.short_name} = {((pair.xch_reserve/1000000000000) / (pair.token_reserve/1000)).toFixed(10)} XCH</p>
+        </div>
+      </div>
+      )}
+
     </div>
   );
 };
