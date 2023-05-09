@@ -35,7 +35,7 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({ token, onChange, ma
       {/* Input/Value */}
       <input
         className={`w-full text-4xl font-bold px-2 focus:outline-none bg-transparent leading-normal ${disabled ? 'bg-gray-100 cursor-not-allowed': ''}`}
-        value={value / Math.pow(10, maxDecimals)}
+        value={value === 0 ? '' : value / Math.pow(10, maxDecimals)}
         onChange={handleInputChange}
         disabled={disabled}
         placeholder="0"
