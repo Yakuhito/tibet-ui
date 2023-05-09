@@ -197,7 +197,7 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
 
       <GenerateOfferButton
         isBuySelected={isBuySelected}
-        disabled={selectedToken == null || pair == null || priceImpact >= 0.05 && !highPriceImpactConfirmed}
+        disabled={selectedToken == null || pair == null || priceImpact >= 0.05 && !highPriceImpactConfirmed || amount0 === 0}
         onPressed={submitSwapOperation}
       />
 

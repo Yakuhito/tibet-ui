@@ -173,7 +173,7 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, selec
 
       <GenerateOfferButton
         isBuySelected={isAddSelected}
-        disabled={selectedToken == null || pair == null}
+        disabled={selectedToken == null || pair == null || amount0 === 0}
         onPressed={submitLiquidityOperation}
       />
 
