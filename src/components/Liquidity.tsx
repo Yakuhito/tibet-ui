@@ -123,7 +123,7 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, selec
 
       {/* Risk notice */}
       <div className="bg-orange-400/50 dark:bg-orange-400/20 rounded-xl text-orange-700 p-4 mt-8 flex items-center gap-4 mb-4 font-medium text-sm animate-fadeIn">
-        <p>Please be aware of potential losses due to market volatility and the possibility of security vulnerabilities.</p>
+        <p>Providing liquidity carries associated risks, such as impermanent loss and the possibility of security vulnerabilities. Please take time to do your own research before adding assets to the protocol.</p>
       </div>
       
       <BooleanSwitch
