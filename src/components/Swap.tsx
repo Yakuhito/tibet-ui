@@ -22,6 +22,7 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
   const [amount1, setAmount1] = useState(0);
   const [devFee, setDevFee] = useState(0.003)
 
+  // Update token pair details every 5 seconds
   useEffect(() => {
     async function updatePair(): Promise<Pair | null> {
       if(selectedToken !== null) {
