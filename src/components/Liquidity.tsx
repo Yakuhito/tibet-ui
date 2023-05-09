@@ -120,6 +120,12 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, selec
 
   return (
     <div className="w-fill">
+
+      {/* Risk notice */}
+      <div className="bg-orange-400/50 dark:bg-orange-400/20 rounded-xl text-orange-700 p-4 mt-8 flex items-center gap-4 mb-4 font-medium text-sm animate-fadeIn">
+        <p>Please be aware of potential losses due to market volatility and the possibility of security vulnerabilities.</p>
+      </div>
+      
       <BooleanSwitch
         isSelected={isAddSelected}
         onChange={ emergency_withdraw ? () => {} : setIsAddSelected }
@@ -177,6 +183,24 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, selec
         <div className="flex justify-between w-full">
           <p>Price</p>
           <p className="font-medium">1 {selectedToken?.short_name} = {((pair.xch_reserve/1000000000000) / (pair.token_reserve/1000)).toFixed(10)} XCH</p>
+        </div>
+
+        {/* Token Liquidity */}
+        <div className="flex justify-between w-full">
+          <p>Token reserve</p>
+          <p className="font-medium">{(pair.token_reserve/1000).toFixed(3)} {selectedToken?.short_name}</p>
+        </div>
+
+        {/* XCH Liquidity */}
+        <div className="flex justify-between w-full">
+          <p>XCH reserve</p>
+          <p className="font-medium">{(pair.xch_reserve/1000000000000).toFixed(3)} XCH</p>
+        </div>
+
+        {/* XCH Liquidity */}
+        <div className="flex justify-between w-full">
+          <p>XCH reserve</p>
+          <p className="font-medium">{(pair.xch_reserve/1000000000000).toFixed(3)} XCH</p>
         </div>
       </div>
       )}
