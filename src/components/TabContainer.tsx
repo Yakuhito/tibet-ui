@@ -1,8 +1,9 @@
+import { getInputPrice, getPairByLauncherId, ActionType } from '../api';
 import React, { useState, useEffect } from 'react';
-import Swap from './Swap';
-import { ActionType, Token, getAllTokens } from '../api';
-import Liquidity from './Liquidity';
 import GenerateOffer from './GenerateOffer';
+import Liquidity from './Liquidity';
+import type { Token } from '../api';
+import Swap from './Swap';
 
 export interface GenerateOfferData {
   pairId: string;
@@ -24,9 +25,39 @@ const TabContainer: React.FC<TabContainerProps> = ({ tokens, selectedToken, setS
   const [activeTab, setActiveTab] = useState<'swap' | 'liquidity'>(SWAP_ENABLED ? 'swap' : 'liquidity');
   const [generateOfferData, setGenerateOfferData] = useState<GenerateOfferData | null>(null);
 
+
+  // Update order rates every 5 seconds
+  useEffect(() => {
+    if(generateOfferData !== null) { // Only start interval if an original offer exists
+      const updateOfferData = async () => {
+        const data = {...generateOfferData}
+        const isBuy = data.offer[0][0].short_name === "XCH"
+        const { xch_reserve, token_reserve } = await getPairByLauncherId(data.pairId) // Get latest reserve amounts
+
+        if (isBuy) {
+          const amount0 = data.offer[0][2]
+          const amount1 = getInputPrice(amount0, xch_reserve, token_reserve) // Get updated token quote
+          data.request[0][2] = amount1
+          setGenerateOfferData(data)
+          console.log("Updating offer data")
+        } else {
+          const amount1 = data.offer[0][2]
+          const amount0 = getInputPrice(amount1, token_reserve, xch_reserve) // Get updated XCH quote
+          data.request[0][2] = amount0;
+          console.log("Updating offer data")
+          setGenerateOfferData(data)
+        }
+      }
+      var updateOfferDataInterval = setInterval(updateOfferData, 5000)
+  }
+  return () => clearInterval(updateOfferDataInterval)
+  }, [generateOfferData])
+
+
+
   const renderContent = (generateOffer: (data: GenerateOfferData) => void, data: GenerateOfferData | null) => {
     if(data !== null) {
-      return <GenerateOffer data={data}/>;
+      return <GenerateOffer data={data} />;
     }
 
     if (activeTab === 'swap') {
