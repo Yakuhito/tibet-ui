@@ -87,7 +87,7 @@ function DevFeeModal({ isOpen, setIsOpen, setDevFee }: DevFeeModalProps) {
                             {options.map((option) => (
                                 <RadioGroup.Option key={option.id} value={option.id} className="outline-none">
                                   {({ active, checked }) => (
-                                  <div className={`${checked || active ? 'border-brandDark ring ring-brandDark/20' : 'hover:border-brandDark/10'} py-8 px-8 bg-brandDark/10 rounded-xl border-4 border-transparent cursor-pointer`}>
+                                  <div className={`${checked ? 'border-brandDark border-2' : 'border-2 border-transparent hover:border-brandDark/10'} ${active ? 'ring-4 ring-brandDark/20' : ''} py-8 px-8 bg-brandDark/10 rounded-xl cursor-pointer`}>
                                     {option.label === "Custom 🙌" &&
                                     <>
                                       <p className="font-medium">Custom 🙌</p>
