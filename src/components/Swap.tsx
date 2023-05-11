@@ -90,7 +90,6 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
     const y = isBuySelected ? pair?.token_reserve : pair?.xch_reserve;
     const dy = isBuySelected ? amount1 : amount0;
     const price_impact = -((y - dy)**2 / y**2 - 1);
-    console.log(price_impact)
     price_impact < 0.05 && setHighPriceImpactConfirmed(false);
     setPriceImpact(price_impact);
   },[amount0, amount1, isBuySelected, pair]);
