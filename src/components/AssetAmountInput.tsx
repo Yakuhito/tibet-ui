@@ -38,6 +38,8 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({ token, onChange, ma
         value={value === 0 ? '' : value / Math.pow(10, maxDecimals)}
         onChange={handleInputChange}
         disabled={disabled}
+        inputMode="decimal"
+        pattern="[0-9]*"
         placeholder="0"
         type="number"
         min={0}
