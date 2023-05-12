@@ -7,9 +7,10 @@ import { useEffect, useState } from 'react';
 type GenerateOfferProps = {
   data: GenerateOfferData;
   setOrderRefreshActive: (value: boolean) => void;
+  devFee: number;
 };
 
-const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActive }) => {
+const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActive, devFee }) => {
     const [step, setStep] = useState<number>(0);
     /*
         steps:
@@ -139,12 +140,13 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         });
     };
 
-    const listAssets = (a: [Token, boolean, number][]) => {
+    const listAssets = (a: [Token, boolean, number][], isOfferingAsset: boolean) => {
         return (
             <ul className="list-none m-0 font-medium">
                 {a.map(e => (
                     <li key={e[0].asset_id}>
-                        {e[2] / Math.pow(10, e[1] ? 12 : 3)} {e[0].name}{" "}
+                        {/* If swap, add dev fee on top of quote */}
+                        {data.action === "SWAP" && isOfferingAsset ? (e[2] / Math.pow(10, e[1] ? 12 : 3)) * (1+devFee) : e[2] / Math.pow(10, e[1] ? 12 : 3)} {e[0].name}{" "}
                         {e[1] ? <></> : <button
                             className="ml-1 bg-brandDark hover:bg-brandDark/80 text-white px-2 rounded-lg"
                             onClick={() => copyToClipboard(e[0].asset_id)}
@@ -176,12 +178,12 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
 
                     <div className="bg-brandDark/10 rounded-xl p-4 mb-4">
                         <p className="mb-2 font-medium text-lg text-brandDark">Offering:</p>
-                        {listAssets(data.offer)}
+                        {listAssets(data.offer, true)}
                     </div>
 
                     <div className="bg-brandDark/10 rounded-xl p-4 mb-4">
                         <p className="mb-2 font-medium text-lg text-brandDark">Requesting:</p>
-                        {listAssets(data.request)}
+                        {listAssets(data.request, false)}
                     </div>
 
                     <p className="bg-brandDark/10 rounded-xl py-2 px-4 font-medium mb-4">Min fee: <span className="font-normal">{(pairAndQuote![1].fee / Math.pow(10, 12)).toFixed(12)} XCH</span></p>

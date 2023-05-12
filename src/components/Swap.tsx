@@ -14,14 +14,15 @@ type SwapProps = {
   generateOffer: (data: GenerateOfferData) => void;
   selectedToken: Token | null;
   setSelectedToken: React.Dispatch<React.SetStateAction<Token | null>>;
+  devFee: number;
+  setDevFee: (value: number) => void;
 };
 
-const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedToken, setSelectedToken }) => {
+const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedToken, setSelectedToken, devFee, setDevFee }) => {
   const [pair, setPair] = useState<Pair | null>(null);
   const [isBuySelected, setIsBuySelected] = useState(true);
   const [amount0, setAmount0] = useState(0);
   const [amount1, setAmount1] = useState(0);
-  const [devFee, setDevFee] = useState(0.003)
 
   // Update token pair details every 5 seconds
   useEffect(() => {

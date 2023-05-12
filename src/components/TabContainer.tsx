@@ -25,6 +25,7 @@ const TabContainer: React.FC<TabContainerProps> = ({ tokens, selectedToken, setS
   const [activeTab, setActiveTab] = useState<'swap' | 'liquidity'>(SWAP_ENABLED ? 'swap' : 'liquidity');
   const [generateOfferData, setGenerateOfferData] = useState<GenerateOfferData | null>(null);
   const [orderRefreshActive, setOrderRefreshActive] = useState(true)
+  const [devFee, setDevFee] = useState(0.003)
 
 
   // Update order rates every 5 seconds
@@ -58,7 +59,7 @@ const TabContainer: React.FC<TabContainerProps> = ({ tokens, selectedToken, setS
 
   const renderContent = (generateOffer: (data: GenerateOfferData) => void, data: GenerateOfferData | null) => {
     if(data !== null) {
-      return <GenerateOffer data={data} setOrderRefreshActive={setOrderRefreshActive} />;
+      return <GenerateOffer data={data} setOrderRefreshActive={setOrderRefreshActive} devFee={devFee} />;
     }
 
     if (activeTab === 'swap') {
@@ -68,6 +69,8 @@ const TabContainer: React.FC<TabContainerProps> = ({ tokens, selectedToken, setS
         generateOffer={generateOffer}
         selectedToken={selectedToken}
         setSelectedToken={setSelectedToken}
+        devFee={devFee}
+        setDevFee={setDevFee}
       />;
     } else {
       return <Liquidity
