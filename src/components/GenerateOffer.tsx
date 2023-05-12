@@ -227,7 +227,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
             return (
                 <div className="mt-16 mb-16">
                     <div className="font-medium">{offerResponse!.success ? 'Offer submission successful!' : 'An error occurred while submitting offer ☹️'}</div>
-                    <textarea className="mt-4 dark:text-brandLight/30 min-h-[10rem] text-brandDark w-full py-2 px-2 border-2 border-transparent bg-brandDark/10 rounded-xl focus:outline-none focus:border-brandDark">{offerResponse!.message}</textarea>
+                    <textarea className="mt-4 dark:text-brandLight/30 min-h-[10rem] text-brandDark w-full py-2 px-2 border-2 border-transparent bg-brandDark/10 rounded-xl focus:outline-none focus:border-brandDark" value={offerResponse!.message} readOnly />
                 </div>
             );
         };
