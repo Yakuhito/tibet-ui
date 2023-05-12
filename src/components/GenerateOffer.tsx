@@ -219,7 +219,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
             if(offerResponse === null) {
                 return (
                 <div className="mt-16 mb-16 flex justify-center items-center flex-col">
-                    <RingLoader size={64} color={"#123abc"} />
+                    <RingLoader size={64} color={"#526e78"} />
                     <div className='mt-4 font-medium'><p>Sending offer...</p></div>
                 </div>
                 );
