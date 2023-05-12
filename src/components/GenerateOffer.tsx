@@ -244,6 +244,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         return (
             <div className="mt-16 mb-16 flex justify-center items-center flex-col font-medium">
                 <div>Something went wrong - please refresh this page</div>
+                <a href="https://discord.gg/Z9px4geHvK" target="_blank" className="text-center text-xl font-medium w-full py-2 px-4 rounded-lg mt-4 bg-[#5865F2] hover:opacity-90 text-brandLight">Join our discord for support</a>
             </div>
         );
     };
