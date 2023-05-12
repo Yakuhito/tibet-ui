@@ -4,14 +4,16 @@ import type { GenerateOfferData } from './TabContainer';
 import RingLoader from 'react-spinners/RingLoader';
 import { useEffect, useState } from 'react';
 import SuccessScreen from './SuccessScreen';
+import CircularLoadingBar from './CircularLoadingBar';
 
 type GenerateOfferProps = {
   data: GenerateOfferData;
   setOrderRefreshActive: (value: boolean) => void;
   devFee: number;
+  dataRefreshPercent: number;
 };
 
-const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActive, devFee }) => {
+const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActive, devFee, dataRefreshPercent }) => {
     const [step, setStep] = useState<number>(0);
     /*
         steps:
@@ -185,6 +187,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
 
                     <div className="bg-brandDark/10 rounded-xl p-4 mb-4">
                         <p className="mb-2 font-medium text-lg text-brandDark">Requesting:</p>
+                        {/* <CircularLoadingBar percent={dataRefreshPercent} /> */}
                         {listAssets(data.request, false)}
                     </div>
 

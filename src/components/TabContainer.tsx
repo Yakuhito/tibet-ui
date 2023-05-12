@@ -26,6 +26,21 @@ const TabContainer: React.FC<TabContainerProps> = ({ tokens, selectedToken, setS
   const [generateOfferData, setGenerateOfferData] = useState<GenerateOfferData | null>(null);
   const [orderRefreshActive, setOrderRefreshActive] = useState(true)
   const [devFee, setDevFee] = useState(0.003)
+  const [dataRefreshPercent, setDataRefreshPercent] = useState(0);
+
+
+  useEffect(() => {
+    if(generateOfferData !== null && orderRefreshActive && activeTab === 'swap') {
+      var interval = setInterval(() => {
+          setDataRefreshPercent(percent => (percent < 100 ? percent + 1 : percent));
+      }, 50); // Update every 50 milliseconds
+    } else {
+      setDataRefreshPercent(0)
+    }
+      return () => {
+        clearInterval(interval);
+      };
+    }, [generateOfferData, orderRefreshActive, activeTab]);
 
 
   // Update order rates every 5 seconds
@@ -49,6 +64,8 @@ const TabContainer: React.FC<TabContainerProps> = ({ tokens, selectedToken, setS
           console.log("Updating offer data")
           generateOfferData !== null ?? setGenerateOfferData(data)
         }
+
+        setDataRefreshPercent(0)
       }
       var updateOfferDataInterval = setInterval(updateOfferData, 5000)
   }
@@ -59,7 +76,7 @@ const TabContainer: React.FC<TabContainerProps> = ({ tokens, selectedToken, setS
 
   const renderContent = (generateOffer: (data: GenerateOfferData) => void, data: GenerateOfferData | null) => {
     if(data !== null) {
-      return <GenerateOffer data={data} setOrderRefreshActive={setOrderRefreshActive} devFee={devFee} />;
+      return <GenerateOffer data={data} setOrderRefreshActive={setOrderRefreshActive} devFee={devFee} dataRefreshPercent={dataRefreshPercent} />;
     }
 
     if (activeTab === 'swap') {
