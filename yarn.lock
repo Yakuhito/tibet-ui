@@ -1233,6 +1233,11 @@
   dependencies:
     "tslib" "^2.4.0"
 
+"@types/canvas-confetti@^1.6.0":
+  "integrity" "sha512-Yq6rIccwcco0TLD5SMUrIM7Fk7Fe/C0jmNRxJJCLtAF6gebDkPuUjK5EHedxecm69Pi/aA+It39Ux4OHmFhjRw=="
+  "resolved" "https://registry.npmjs.org/@types/canvas-confetti/-/canvas-confetti-1.6.0.tgz"
+  "version" "1.6.0"
+
 "@types/eslint-scope@^3.7.3":
   "integrity" "sha512-9K4zoImiZc3HlIp6AVUDE4CWYx22a+lhSZMYNpbjW04+YF0KWj4pJXnEMjdnFTiQibFFmElcsasJXDbdI/EPhA=="
   "resolved" "https://registry.npmjs.org/@types/eslint-scope/-/eslint-scope-3.7.4.tgz"
@@ -1855,6 +1860,11 @@
   "integrity" "sha512-gMhDyXGItTHipJj2ApIvR+iVB5hd0KP3svMWWXDvZOmjzJJassGLMfxRkQCSYgGd2gtdL/ReeiyvMSFD1Ss6Mw=="
   "resolved" "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001478.tgz"
   "version" "1.0.30001478"
+
+"canvas-confetti@^1.6.0":
+  "integrity" "sha512-ej+w/m8Jzpv9Z7W7uJZer14Ke8P2ogsjg4ZMGIuq4iqUOqY2Jq8BNW42iGmNfRwREaaEfFIczLuZZiEVSYNHAA=="
+  "resolved" "https://registry.npmjs.org/canvas-confetti/-/canvas-confetti-1.6.0.tgz"
+  "version" "1.6.0"
 
 "chalk@^2.0.0":
   "integrity" "sha512-Mti+f9lpJNcwF4tWV8/OrTTtF1gZi+f8FqlyAdouralcFWFQWF2+NgCHShjkCb+IFBLq9buZwE1xckQU4peSuQ=="
