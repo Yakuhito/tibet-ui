@@ -57,6 +57,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                         const expectedTokenAmount = getInputPrice(xchAmount, pair.xch_reserve, pair.token_reserve);
                         if(expectedTokenAmount > tokenAmount) {
                             setStep(-1);
+                            setOrderRefreshActive(false);
                         } else {
                             setStep(2);
                         }
@@ -165,7 +166,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         if(step === 0) {
             return (
                 <div className="mt-16 mb-16 flex justify-center items-center flex-col">
-                    <RingLoader size={64} color={"#123abc"} />
+                    <RingLoader size={64} color={"#526e78"} />
                     <div className='mt-4 font-medium'>Verifying trade data...</div>
                 </div>
             );
