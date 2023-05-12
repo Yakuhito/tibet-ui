@@ -24,11 +24,12 @@ const TabContainer: React.FC<TabContainerProps> = ({ tokens, selectedToken, setS
   const SWAP_ENABLED = !emergency_withdraw && process.env.NEXT_PUBLIC_SWAP_ENABLED === 'true';
   const [activeTab, setActiveTab] = useState<'swap' | 'liquidity'>(SWAP_ENABLED ? 'swap' : 'liquidity');
   const [generateOfferData, setGenerateOfferData] = useState<GenerateOfferData | null>(null);
+  const [orderRefreshActive, setOrderRefreshActive] = useState(true)
 
 
   // Update order rates every 5 seconds
   useEffect(() => {
-    if(generateOfferData !== null) { // Only start interval if an original offer exists
+    if(generateOfferData !== null && orderRefreshActive) { // Only start interval if an original offer exists
       const updateOfferData = async () => {
         const data = {...generateOfferData}
         const isBuy = data.offer[0][0].short_name === "XCH"
@@ -38,26 +39,26 @@ const TabContainer: React.FC<TabContainerProps> = ({ tokens, selectedToken, setS
           const amount0 = data.offer[0][2]
           const amount1 = getInputPrice(amount0, xch_reserve, token_reserve) // Get updated token quote
           data.request[0][2] = amount1
-          setGenerateOfferData(data)
+          generateOfferData !== null ?? setGenerateOfferData(data)
           console.log("Updating offer data")
         } else {
           const amount1 = data.offer[0][2]
           const amount0 = getInputPrice(amount1, token_reserve, xch_reserve) // Get updated XCH quote
           data.request[0][2] = amount0;
           console.log("Updating offer data")
-          setGenerateOfferData(data)
+          generateOfferData !== null ?? setGenerateOfferData(data)
         }
       }
       var updateOfferDataInterval = setInterval(updateOfferData, 5000)
   }
   return () => clearInterval(updateOfferDataInterval)
-  }, [generateOfferData])
+  }, [generateOfferData, orderRefreshActive])
 
 
 
   const renderContent = (generateOffer: (data: GenerateOfferData) => void, data: GenerateOfferData | null) => {
     if(data !== null) {
-      return <GenerateOffer data={data} />;
+      return <GenerateOffer data={data} setOrderRefreshActive={setOrderRefreshActive} />;
     }
 
     if (activeTab === 'swap') {

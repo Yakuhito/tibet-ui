@@ -6,9 +6,10 @@ import { useEffect, useState } from 'react';
 
 type GenerateOfferProps = {
   data: GenerateOfferData;
+  setOrderRefreshActive: (value: boolean) => void;
 };
 
-const GenerateOffer: React.FC<GenerateOfferProps> = ({ data }) => {
+const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActive }) => {
     const [step, setStep] = useState<number>(0);
     /*
         steps:
@@ -36,6 +37,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data }) => {
                 );
                 setPairAndQuote([pair, quote]);
             } else if(step === 0) {
+                setOrderRefreshActive(true)
                 const numAssets = data.offer.length + data.request.length;
                 if(numAssets === 2) {
                     const token0IsXCH = data.offer[0][1];
@@ -122,13 +124,14 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data }) => {
                     undefined
                 );
                 setOfferResponse(offerResponse);
+                setOrderRefreshActive(false)
             }
         }
 
         if([0, 3].includes(step)) {
             namelessFunction();
         }
-    }, [data, step, pairAndQuote, offer, offerResponse]);
+    }, [data, step, pairAndQuote, offer, offerResponse, setOrderRefreshActive]);
 
     const copyToClipboard = (text: string) => {
         navigator.clipboard.writeText(text).then(() => {
