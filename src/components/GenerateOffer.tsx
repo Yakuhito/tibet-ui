@@ -3,6 +3,7 @@ import type { OfferResponse, Pair, Quote, Token } from '@/api';
 import type { GenerateOfferData } from './TabContainer';
 import RingLoader from 'react-spinners/RingLoader';
 import { useEffect, useState } from 'react';
+import SuccessScreen from './SuccessScreen';
 
 type GenerateOfferProps = {
   data: GenerateOfferData;
@@ -227,8 +228,15 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
 
             return (
                 <div className="mt-16 mb-16">
-                    <div className="font-medium">{offerResponse!.success ? 'Offer submission successful!' : 'An error occurred while submitting offer ☹️'}</div>
-                    <textarea className="mt-4 dark:text-brandLight/30 min-h-[10rem] text-brandDark w-full py-2 px-2 border-2 border-transparent bg-brandDark/10 rounded-xl focus:outline-none focus:border-brandDark" value={offerResponse!.message} readOnly />
+                    <div className="font-medium">{offerResponse!.success ? '' : offerResponse!.message.includes("Invalid Offer") ? '' : 'An error occurred while submitting offer ☹️'}</div>
+                    {!offerResponse!.success && !offerResponse!.message.includes("Invalid Offer") && <textarea className="mt-4 dark:text-brandLight/30 min-h-[10rem] text-brandDark w-full py-2 px-2 border-2 border-transparent bg-brandDark/10 rounded-xl focus:outline-none focus:border-brandDark" value={offerResponse!.message} readOnly />}
+                    {offerResponse!.message.includes("Invalid Offer") && (
+                        <div className="flex flex-col">
+                            <h2 className="text-xl">Your offer was invalid. Please try again.</h2>
+                            <a href="https://discord.gg/Z9px4geHvK" target="_blank" className="text-center text-xl font-medium w-full py-2 px-4 rounded-lg mt-4 bg-[#5865F2] hover:opacity-90 text-brandLight">Join our discord for support</a>
+                        </div>
+                    )}
+                    {offerResponse!.success && <SuccessScreen offerData={data} devFee={devFee} />}
                 </div>
             );
         };
