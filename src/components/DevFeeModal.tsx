@@ -76,9 +76,9 @@ function DevFeeModal({ isOpen, setIsOpen, setDevFee }: DevFeeModalProps) {
                       leaveFrom="opacity-100 scale-100"
                       leaveTo="opacity-0 scale-95"
                     >
-                      <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                      <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white dark:bg-zinc-900 p-6 text-left align-middle shadow-xl transition-all">
 
-                        <Dialog.Title as="h3" className="text-5xl pt-8 pb-4 font-bold leading-6 text-gray-900">Dev Fee</Dialog.Title>
+                        <Dialog.Title as="h3" className="text-5xl pt-8 pb-4 font-bold leading-6 text-black dark:text-brandLight">Dev Fee</Dialog.Title>
 
                         {/* Options */}
                         <div className="my-8">
@@ -87,7 +87,7 @@ function DevFeeModal({ isOpen, setIsOpen, setDevFee }: DevFeeModalProps) {
                             {options.map((option) => (
                                 <RadioGroup.Option key={option.id} value={option.id} className="outline-none">
                                   {({ active, checked }) => (
-                                  <div className={`${checked ? 'border-brandDark border-2' : 'border-2 border-transparent hover:border-brandDark/10'} ${active ? 'ring-4 ring-brandDark/20' : ''} py-8 px-8 bg-brandDark/10 rounded-xl cursor-pointer`}>
+                                  <div className={`${checked ? 'border-brandDark border-2' : 'border-2 border-transparent hover:border-brandDark/10'} ${active ? 'ring-4 ring-brandDark/20' : ''} py-8 px-8 rounded-xl cursor-pointer bg-brandDark/10`}>
                                     {option.label === "Custom 🙌" &&
                                     <>
                                       <p className="font-medium">Custom 🙌</p>
