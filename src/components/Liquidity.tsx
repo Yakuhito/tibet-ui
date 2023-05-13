@@ -15,7 +15,7 @@ type LiquidityProps = {
   setSelectedToken: React.Dispatch<React.SetStateAction<Token | null>>;
 };
 
-const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, selectedToken, setSelectedToken }) => {
+const Liquidity: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, selectedToken, setSelectedToken }) => {
   const emergency_withdraw = process.env.NEXT_PUBLIC_V1_EMERGENCY_WITHDRAW === "true";
 
   const [pair, setPair] = useState<Pair | null>(null);
@@ -24,6 +24,7 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, selec
   const [amount1, setAmount1] = useState(0);
   const [amount2, setAmount2] = useState(0);
 
+  // Update token pair details every 5 seconds
   useEffect(() => {
     async function updatePair(): Promise<Pair | null> {
       if(selectedToken !== null) {
@@ -185,23 +186,18 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, selec
           <p className="font-medium">1 {selectedToken?.short_name} = {((pair.xch_reserve/1000000000000) / (pair.token_reserve/1000)).toFixed(10)} XCH</p>
         </div>
 
-        {/* Token Liquidity */}
+        {/* Token Reserve */}
         <div className="flex justify-between w-full">
           <p>Token reserve</p>
           <p className="font-medium">{(pair.token_reserve/1000).toFixed(3)} {selectedToken?.short_name}</p>
         </div>
 
-        {/* XCH Liquidity */}
+        {/* XCH Reserve */}
         <div className="flex justify-between w-full">
           <p>XCH reserve</p>
           <p className="font-medium">{(pair.xch_reserve/1000000000000).toFixed(3)} XCH</p>
         </div>
 
-        {/* XCH Liquidity */}
-        <div className="flex justify-between w-full">
-          <p>XCH reserve</p>
-          <p className="font-medium">{(pair.xch_reserve/1000000000000).toFixed(3)} XCH</p>
-        </div>
       </div>
       )}
 
@@ -209,4 +205,4 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, selec
   );
 };
 
-export default Swap;
+export default Liquidity;
