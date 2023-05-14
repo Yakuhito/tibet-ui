@@ -231,7 +231,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         const amountWithFee = (e: [Token, boolean, number]) => {
             // SWAP BUY (add fee to XCH amount)
             if (data.action === "SWAP" && isOfferingAsset && data.offer[0][1]) { // If swap, Buy, Offering XCH
-                return (e[2] + e[2] * devFee) / Math.pow(10, e[1] ? 12 : 3);
+                return (e[2] + Math.floor(e[2] * devFee)) / Math.pow(10, e[1] ? 12 : 3);
             } else if (data.action === "SWAP" && !isOfferingAsset && data.offer[0][1]) { // If swap, Buy, Requesting
                 return e[2] / Math.pow(10, e[1] ? 12 : 3);
             } 
@@ -239,7 +239,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
             else if (data.action === "SWAP" && isOfferingAsset && !data.offer[0][1]) { // If swap, Sell, Offering
                 return e[2] / Math.pow(10, e[1] ? 12 : 3);
             } else if (data.action === "SWAP" && !isOfferingAsset && !data.offer[0][1]) { // If swap, Sell, Requesting XCH
-                return (e[2] - e[2] * devFee) / Math.pow(10, e[1] ? 12 : 3);
+                return (e[2] - Math.floor(e[2] * devFee)) / Math.pow(10, e[1] ? 12 : 3);
             } 
             // Liquidity (no fees required)
             else {
