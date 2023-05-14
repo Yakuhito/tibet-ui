@@ -1,4 +1,4 @@
-import { ActionType, createOfferForPair, getInputPrice, getLiquidityQuote, getPairByLauncherId, getQuoteForPair } from '@/api';
+import { ActionType, createOfferForPair, getInputPrice, getLiquidityQuote, getOutputPrice, getPairByLauncherId, getQuoteForPair } from '@/api';
 import type { OfferResponse, Pair, Quote, Token } from '@/api';
 import type { GenerateOfferData } from './TabContainer';
 import RingLoader from 'react-spinners/RingLoader';
@@ -145,15 +145,29 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                             setStep(-1);
                             setOrderRefreshActive(false);
                         } else {
+                            const expectedXCHAmount = getOutputPrice(tokenAmount, pair.xch_reserve, pair.token_reserve)
+                            if(expectedXCHAmount < xchAmount) {
+                                const newOfferData = {...data};
+                                newOfferData.offer[0][2] = expectedXCHAmount;
+                                console.log("Updating offer data");
+                                setGenerateOfferData(newOfferData);
+                            }
                             setStep(2);
                         }
                     }
                     
                     if(!token0IsXCH) {
                         const expectedXCHAmount = getInputPrice(tokenAmount, pair.token_reserve, pair.xch_reserve);
-                        if(expectedXCHAmount > xchAmount) {
+                        if(expectedXCHAmount < xchAmount) {
                             setStep(-1);
+                            setOrderRefreshActive(false);
                         } else {
+                            if(expectedXCHAmount > xchAmount) {
+                                const newOfferData = {...data};
+                                newOfferData.request[0][2] = expectedXCHAmount;
+                                console.log("Updating offer data");
+                                setGenerateOfferData(newOfferData);
+                            }
                             setStep(2);
                         }
                     }
