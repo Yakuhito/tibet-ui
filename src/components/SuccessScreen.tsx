@@ -72,7 +72,7 @@ function SuccessScreen({ offerData, devFee }: SuccessScreenProps) {
                     {offerData.offer.map(asset => (
                         <div key={asset[0].asset_id} className="text-brandLight flex items-center gap-2 font-medium">
                             <Image src={asset[0].image_url} width={30} height={30} alt="Token logo" className="rounded-full" />
-                            <p>{offerData.action === "SWAP" ? (asset[2] / Math.pow(10, asset[1] ? 12 : 3)) * (1+devFee) : (asset[2] / Math.pow(10, asset[1] ? 12 : 3))}</p> {/* If transaction type is swap, add dev fee on top of offer amount */}
+                            <p>{offerData.action === "SWAP" ? (asset[2] + asset[2] * devFee) / Math.pow(10, asset[1] ? 12 : 3) : (asset[2] / Math.pow(10, asset[1] ? 12 : 3))}</p> {/* If transaction type is swap, add dev fee on top of offer amount */}
                             <p>{asset[0].short_name}</p>
                         </div>
                     ))}
@@ -81,7 +81,7 @@ function SuccessScreen({ offerData, devFee }: SuccessScreenProps) {
                     {offerData.request.map(asset => (
                         <div key={asset[0].asset_id} className="text-brandLight flex items-center gap-2 font-medium pb-2">
                             <Image src={asset[0].image_url} width={30} height={30} alt="Token logo" className="rounded-full" />
-                            <p>{(asset[2] / Math.pow(10, asset[1] ? 12 : 3))}</p>
+                            <p>{offerData.action === "SWAP" ? (asset[2] - asset[2] * devFee) / Math.pow(10, asset[1] ? 12 : 3) : (asset[2] / Math.pow(10, asset[1] ? 12 : 3))}</p> {/* If transaction type is swap, substract dev fee from asset amount */}
                             <p>{asset[0].short_name}</p>
                         </div>
                     ))}

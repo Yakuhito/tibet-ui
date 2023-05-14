@@ -4,7 +4,6 @@ import type { GenerateOfferData } from './TabContainer';
 import RingLoader from 'react-spinners/RingLoader';
 import { useEffect, useState } from 'react';
 import SuccessScreen from './SuccessScreen';
-import CircularLoadingBar from './CircularLoadingBar';
 
 type GenerateOfferProps = {
   data: GenerateOfferData;
@@ -16,7 +15,7 @@ type GenerateOfferProps = {
   activeTab: 'swap' | 'liquidity';
 };
 
-const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActive, devFee, dataRefreshPercent, setGenerateOfferData, setDataRefreshPercent, activeTab }) => {
+const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActive, devFee, setGenerateOfferData, setDataRefreshPercent, activeTab }) => {
     const [step, setStep] = useState<number>(0);
     /*
         steps:
@@ -210,7 +209,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                     pairAndQuote![0].launcher_id,
                     offer,
                     data.action,
-                    undefined
+                    devFee * (data.offer[0][1] ? data.offer[0][2] : data.request[0][2])
                 );
                 setOfferResponse(offerResponse);
                 setOrderRefreshActive(false)
@@ -220,7 +219,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         if([0, 3].includes(step)) {
             namelessFunction();
         }
-    }, [data, step, pairAndQuote, offer, offerResponse, setOrderRefreshActive]);
+    }, [data, step, pairAndQuote, offer, offerResponse, setOrderRefreshActive, devFee]);
 
     const copyToClipboard = (text: string) => {
         navigator.clipboard.writeText(text).then(() => {
@@ -232,7 +231,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         const amountWithFee = (e: [Token, boolean, number]) => {
             // SWAP BUY (add fee to XCH amount)
             if (data.action === "SWAP" && isOfferingAsset && data.offer[0][1]) { // If swap, Buy, Offering XCH
-                return (e[2] / Math.pow(10, e[1] ? 12 : 3)) * (1+devFee);
+                return (e[2] + e[2] * devFee) / Math.pow(10, e[1] ? 12 : 3);
             } else if (data.action === "SWAP" && !isOfferingAsset && data.offer[0][1]) { // If swap, Buy, Requesting
                 return e[2] / Math.pow(10, e[1] ? 12 : 3);
             } 
@@ -240,7 +239,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
             else if (data.action === "SWAP" && isOfferingAsset && !data.offer[0][1]) { // If swap, Sell, Offering
                 return e[2] / Math.pow(10, e[1] ? 12 : 3);
             } else if (data.action === "SWAP" && !isOfferingAsset && !data.offer[0][1]) { // If swap, Sell, Requesting XCH
-                return (e[2] / Math.pow(10, e[1] ? 12 : 3)) * (1-devFee);
+                return (e[2] - e[2] * devFee) / Math.pow(10, e[1] ? 12 : 3);
             } 
             // Liquidity (no fees required)
             else {

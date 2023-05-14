@@ -82,11 +82,18 @@ export async function getQuoteForPair(pairId: string, amountIn?: number, amountO
 }
 
 // Function to create an offer for a pair
-export async function createOfferForPair(pairId: string, offer: string, action: ActionType, returnAddress?: string): Promise<OfferResponse> {
+export async function createOfferForPair(
+  pairId: string,
+   offer: string,
+   action: ActionType,
+   devFee: number,
+): Promise<OfferResponse> {
   const requestBody = {
     offer,
     action,
-    return_address: returnAddress || 'xch10d09t9eqpr2y34thcayk54sjz34qhyv3tmhrejjp6xxvj598sfds5z0xch',
+    total_donation_amount: devFee,
+    donation_addresses: [process.env.NEXT_PUBLIC_DONATION_ADDRESS],
+    donation_weights: [1]
   };
   const response = await axios.post<OfferResponse>(`${BASE_URL}/offer/${pairId}`, requestBody);
   return response.data;
