@@ -31,7 +31,7 @@ const faqs = [
   },
   {
     question: 'Do you provide an API?',
-    answer: 'While you are strongly encouraged to run your own instance of our API, there is nothing stopping you from accessing ours. You can find it <a href="https://api.v2-testnet10.tibetswap.io/docs" target="_blank" rel="noopener noreferrer">here</a>.',
+    answer: `While you are strongly encouraged to run your own instance of our API, there is nothing stopping you from accessing ours. You can find it <a href="${process.env.NEXT_PUBLIC_INFO_BASE_URL}/docs" target="_blank" rel="noopener noreferrer">here</a>.`,
   },
   {
     question: 'How can I make my token tradeable on TibetSwap?',
