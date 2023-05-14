@@ -1,5 +1,5 @@
 import { getInputPrice, getPairByLauncherId, ActionType, getLiquidityQuote } from '../api';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import GenerateOffer from './GenerateOffer';
 import Liquidity from './Liquidity';
 import type { Token } from '../api';
@@ -24,11 +24,11 @@ const TabContainer: React.FC<TabContainerProps> = ({ tokens, selectedToken, setS
   const SWAP_ENABLED = !emergency_withdraw && process.env.NEXT_PUBLIC_SWAP_ENABLED === 'true';
   const [activeTab, setActiveTab] = useState<'swap' | 'liquidity'>(SWAP_ENABLED ? 'swap' : 'liquidity');
   const [generateOfferData, setGenerateOfferData] = useState<GenerateOfferData | null>(null);
-  const [orderRefreshActive, setOrderRefreshActive] = useState(true)
+  const [orderRefreshActive, setOrderRefreshActive] = useState(false)
   const [devFee, setDevFee] = useState(0.003)
   const [dataRefreshPercent, setDataRefreshPercent] = useState(0);
 
-
+  // Update data refresh loader percent
   useEffect(() => {
     if(generateOfferData !== null && orderRefreshActive && activeTab === 'swap') {
       var interval = setInterval(() => {
@@ -42,80 +42,9 @@ const TabContainer: React.FC<TabContainerProps> = ({ tokens, selectedToken, setS
       };
     }, [generateOfferData, orderRefreshActive, activeTab]);
 
-
-  // Update order rates every 5 seconds
-  useEffect(() => {
-    if(generateOfferData !== null && orderRefreshActive) { // Only start interval if an original offer exists
-      
-      // Update Swap Offer Data Function
-      const updateOfferDataSwap = async () => {
-        const data = {...generateOfferData};
-        const isBuy = data.offer[0][0].short_name === "XCH";
-        const { xch_reserve, token_reserve } = await getPairByLauncherId(data.pairId); // Get latest reserve amounts
-
-        if (isBuy) {
-          const amount0 = data.offer[0][2]
-          const amount1 = getInputPrice(amount0, xch_reserve, token_reserve); // Get updated token quote
-          data.request[0][2] = amount1;
-          generateOfferData !== null ? setGenerateOfferData(data) : null;
-          console.log("Updating offer data");
-        } else {
-          const amount1 = data.offer[0][2];
-          const amount0 = getInputPrice(amount1, token_reserve, xch_reserve); // Get updated XCH quote
-          data.request[0][2] = amount0;
-          console.log("Updating offer data");
-          generateOfferData !== null ? setGenerateOfferData(data) : null;
-        }
-
-        setDataRefreshPercent(0)
-      }
-      
-      // Update Liquidity Offer Data Function
-      const updateOfferDataLiquidity = async () => {
-        const data = {...generateOfferData};
-        const isAddLiquidity = data.action === "ADD_LIQUIDITY";
-        const { xch_reserve, token_reserve, liquidity } = await getPairByLauncherId(data.pairId); // Get latest reserve amounts
-        const pairLiquidity = liquidity;
-        
-        
-        if (isAddLiquidity) {
-          const tokenAmount = data.offer[1][2];
-          const liquidity = getLiquidityQuote(tokenAmount, token_reserve, pairLiquidity, false);
-          console.log(liquidity)
-          var xchAmount = getLiquidityQuote(tokenAmount, token_reserve, xch_reserve, false);
-          xchAmount += liquidity;
-
-          data.offer[0][2] = xchAmount; // Update Amount0
-          data.request[0][2] = liquidity; // Update Amount2
-
-          console.log("Updating offer data");
-          generateOfferData !== null ? setGenerateOfferData(data) : null;
-        } else {
-          const liquidityTokens = data.offer[0][2]
-          const tokenAmount = getLiquidityQuote(liquidityTokens, pairLiquidity, token_reserve, true);
-          var xchAmount = getLiquidityQuote(liquidityTokens, liquidity, xch_reserve, true);
-          xchAmount += liquidity;
-          
-          data.request[0][2] = xchAmount; // Update Amount0
-          data.request[1][2] = tokenAmount; // Update Amount1
-
-          console.log("Updating offer data");
-          generateOfferData !== null ? setGenerateOfferData(data) : null;
-        }
-
-      }
-
-      // Set Interval
-      var updateOfferDataInterval = setInterval(activeTab === 'swap' ? updateOfferDataSwap : updateOfferDataLiquidity, 5000)
-  }
-  return () => clearInterval(updateOfferDataInterval)
-  }, [generateOfferData, orderRefreshActive, activeTab])
-
-
-
   const renderContent = (generateOffer: (data: GenerateOfferData) => void, data: GenerateOfferData | null) => {
     if(data !== null) {
-      return <GenerateOffer data={data} setOrderRefreshActive={setOrderRefreshActive} devFee={devFee} dataRefreshPercent={dataRefreshPercent} />;
+      return <GenerateOffer data={data} setOrderRefreshActive={setOrderRefreshActive} devFee={devFee} dataRefreshPercent={dataRefreshPercent} setGenerateOfferData={setGenerateOfferData} setDataRefreshPercent={setDataRefreshPercent} activeTab={activeTab} />;
     }
 
     if (activeTab === 'swap') {
