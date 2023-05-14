@@ -1,5 +1,6 @@
 import type { ChangeEvent } from 'react';
 import type { Token } from '../api';
+import { useState } from 'react';
 import Image from 'next/image';
 
 type AssetAmountInputProps = {
@@ -12,12 +13,30 @@ type AssetAmountInputProps = {
 
 const AssetAmountInput: React.FC<AssetAmountInputProps> = ({ token, onChange, maxDecimals, disabled, value }) => {
 
+  const [inputValue, setInputValue] = useState<number | string>("");
+
+  // const handleInputChange = ({ target }: ChangeEvent<HTMLInputElement>) => {
+  //   const parsed = target.value != "" ? Number(target.value) : 0;
+  //   console.log(parsed)
+  //   if (target.value == "") {
+  //     setInputValue("")
+  //     onChange(0)
+  //   } else {
+  //     onChange(Math.floor(0 * Math.pow(10, maxDecimals)));
+  //     setInputValue(target.value)
+  //   }
+
+  //   console.log(inputValue !== "" && value !== 0, inputValue, value)
+  // }
+
   const handleInputChange = ({ target }: ChangeEvent<HTMLInputElement>) => {
     const parsed = parseFloat(target.value);
     if(Number.isNaN(parsed)) {
       onChange(0);
+      setInputValue("")
     } else {
       onChange(Math.floor(parsed * Math.pow(10, maxDecimals)));
+      setInputValue(target.value)
     }
   }
 
@@ -35,7 +54,8 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({ token, onChange, ma
       {/* Input/Value */}
       <input
         className={`w-full text-4xl font-bold px-2 focus:outline-none bg-transparent leading-normal ${disabled ? 'bg-gray-100 cursor-not-allowed': ''}`}
-        value={value === 0 ? '' : value / Math.pow(10, maxDecimals)}
+        // value={value / Math.pow(10, maxDecimals)}
+        value={value != 0 ? value / Math.pow(10, maxDecimals) : inputValue}
         onChange={handleInputChange}
         disabled={disabled}
         inputMode="decimal"
