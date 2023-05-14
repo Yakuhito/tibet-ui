@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import Swap from './Swap';
-import { ActionType, Token, getAllTokens } from '../api';
-import Liquidity from './Liquidity';
+import { getInputPrice, getPairByLauncherId, ActionType, getLiquidityQuote } from '../api';
+import React, { useState, useEffect, useRef } from 'react';
 import GenerateOffer from './GenerateOffer';
+import Liquidity from './Liquidity';
+import type { Token } from '../api';
+import Swap from './Swap';
 
 export interface GenerateOfferData {
   pairId: string;
@@ -12,29 +13,38 @@ export interface GenerateOfferData {
 }
 
 export interface TabContainerProps {
-  onPairSelect: (pairLauncherId: string | null) => void;
+  tokens: Token[] | null;
+  selectedToken: Token | null;
+  setSelectedToken: React.Dispatch<React.SetStateAction<Token | null>>;
 }
 
-const TabContainer: React.FC<TabContainerProps> = ({ onPairSelect }) => {
+const TabContainer: React.FC<TabContainerProps> = ({ tokens, selectedToken, setSelectedToken }) => {
   const emergency_withdraw = process.env.NEXT_PUBLIC_V1_EMERGENCY_WITHDRAW === "true";
 
   const SWAP_ENABLED = !emergency_withdraw && process.env.NEXT_PUBLIC_SWAP_ENABLED === 'true';
   const [activeTab, setActiveTab] = useState<'swap' | 'liquidity'>(SWAP_ENABLED ? 'swap' : 'liquidity');
-  const [tokens, setTokens] = useState<Token[] | null>(null);
   const [generateOfferData, setGenerateOfferData] = useState<GenerateOfferData | null>(null);
- 
-  useEffect(() => {
-    async function fetchTokens() {
-      const allTokens = await getAllTokens();
-      setTokens(allTokens);
-    }
+  const [orderRefreshActive, setOrderRefreshActive] = useState(false)
+  const [devFee, setDevFee] = useState(0.003)
+  const [dataRefreshPercent, setDataRefreshPercent] = useState(0);
 
-    fetchTokens();
-  }, []);
+  // Update data refresh loader percent
+  useEffect(() => {
+    if(generateOfferData !== null && orderRefreshActive && activeTab === 'swap') {
+      var interval = setInterval(() => {
+          setDataRefreshPercent(percent => (percent < 100 ? percent + 1 : percent));
+      }, 50); // Update every 50 milliseconds
+    } else {
+      setDataRefreshPercent(0)
+    }
+      return () => {
+        clearInterval(interval);
+      };
+    }, [generateOfferData, orderRefreshActive, activeTab]);
 
   const renderContent = (generateOffer: (data: GenerateOfferData) => void, data: GenerateOfferData | null) => {
     if(data !== null) {
-      return <GenerateOffer data={data}/>;
+      return <GenerateOffer data={data} setOrderRefreshActive={setOrderRefreshActive} devFee={devFee} dataRefreshPercent={dataRefreshPercent} setGenerateOfferData={setGenerateOfferData} setDataRefreshPercent={setDataRefreshPercent} activeTab={activeTab} />;
     }
 
     if (activeTab === 'swap') {
@@ -42,28 +52,35 @@ const TabContainer: React.FC<TabContainerProps> = ({ onPairSelect }) => {
         disabled={tokens == null}
         tokens={tokens}
         generateOffer={generateOffer}
-        onPairSelect={onPairSelect}
+        selectedToken={selectedToken}
+        setSelectedToken={setSelectedToken}
+        devFee={devFee}
+        setDevFee={setDevFee}
       />;
     } else {
       return <Liquidity
         disabled={tokens == null}
         tokens={tokens}
         generateOffer={generateOffer}
-        onPairSelect={onPairSelect}
+        selectedToken={selectedToken}
+        setSelectedToken={setSelectedToken}
       />;
     }
   };
 
   return (
-    <div className="bg-white border border-gray-300 rounded-md max-w-screen-sm md:w-[calc(3/5*100%)] m-4">
-      {generateOfferData == null ? (<div className="flex">
+    <div className="rounded-2xl max-w-screen-sm w-full">
+
+      {/* Display buy/sell buttons */}
+      {generateOfferData == null ? (
+      <div className="flex gap-4 px-2 text-xl mb-4">
         <button
-          className={`w-1/2 p-4 text-center ${
-            activeTab === 'swap' ? 'underline' : ''
+          className={`font-medium ${
+            activeTab === 'swap' ? 'text-brandDark' : 'text-brandDark/50 hover:opacity-80'
+            
           }`}
           onClick={() => {
             if(SWAP_ENABLED) {
-              onPairSelect(null);
               setActiveTab('swap')
             } else {
               if(emergency_withdraw) {
@@ -77,33 +94,24 @@ const TabContainer: React.FC<TabContainerProps> = ({ onPairSelect }) => {
           Swap
         </button>
         <button
-          className={`w-1/2 p-4 text-center ${
-            activeTab === 'liquidity' ? 'underline' : ''
+          className={`font-medium ${
+            activeTab === 'liquidity' ? 'text-brandDark' : 'text-brandDark/50 hover:opacity-80'
           }`}
           onClick={() => {
-            onPairSelect(null);
             setActiveTab('liquidity');
           }}
           >
           Liquidity
         </button>
       </div>) : (
-        <div className='flex p-4'>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 16 16"
-            className="h-4 mt-1"
-            onClick={() => setGenerateOfferData(null)}
-          >
-            <path d="M11,14 L2,8 L11,2" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          <p className='text-center w-full'>
-            Generate Offer
-          </p>
+        <div className="w-full mb-12">
+          <div className="rounded-xl inline-flex hover:opacity-80 cursor-pointer" onClick={() => setGenerateOfferData(null)}>
+            <p className="text-xl font-medium text-brandDark dark:text-brandLight">‹ Back</p>
+          </div>
         </div>
       )}
 
-      <div className="border-t border-gray-300">{renderContent(setGenerateOfferData, generateOfferData)}</div>
+      <div className="">{renderContent(setGenerateOfferData, generateOfferData)}</div>
     </div>
   );
 };

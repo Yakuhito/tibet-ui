@@ -11,19 +11,20 @@ type LiquidityProps = {
   disabled: boolean;
   tokens: Token[] | null;
   generateOffer: (data: GenerateOfferData) => void;
-  onPairSelect: (pairLauncherId: string | null) => void;
+  selectedToken: Token | null;
+  setSelectedToken: React.Dispatch<React.SetStateAction<Token | null>>;
 };
 
-const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, onPairSelect }) => {
+const Liquidity: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, selectedToken, setSelectedToken }) => {
   const emergency_withdraw = process.env.NEXT_PUBLIC_V1_EMERGENCY_WITHDRAW === "true";
 
-  const [selectedToken, setSelectedToken] = useState<Token | null>(null);
   const [pair, setPair] = useState<Pair | null>(null);
   const [isAddSelected, setIsAddSelected] = useState(emergency_withdraw ? false : true);
   const [amount0, setAmount0] = useState(0);
   const [amount1, setAmount1] = useState(0);
   const [amount2, setAmount2] = useState(0);
 
+  // Update token pair details every 5 seconds
   useEffect(() => {
     async function updatePair(): Promise<Pair | null> {
       if(selectedToken !== null) {
@@ -35,7 +36,6 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, onPai
           newPair.xch_reserve !== pair?.xch_reserve ||
           newPair.token_reserve !== pair?.token_reserve
         ) {
-          onPairSelect(newPair.launcher_id);
           setPair(newPair);
           return newPair;
         }
@@ -120,11 +120,16 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, onPai
   };
 
   return (
-    <div className="w-fill p-2">
+    <div className="w-fill">
+
+      {/* Risk notice */}
+      <div className="bg-orange-400/50 dark:bg-orange-400/20 rounded-xl text-orange-700 p-4 mt-8 flex items-center gap-4 mb-4 font-medium text-sm animate-fadeIn">
+        <p>Providing liquidity carries associated risks, such as impermanent loss and the possibility of security vulnerabilities. Please take time to do your own research before adding assets to the protocol.</p>
+      </div>
+      
       <BooleanSwitch
         isSelected={isAddSelected}
         onChange={ emergency_withdraw ? () => {} : setIsAddSelected }
-        disabled={disabled}
         trueLabel='Add'
         falseLabel='Remove'/>
 
@@ -169,11 +174,35 @@ const Swap: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, onPai
 
       <GenerateOfferButton
         isBuySelected={isAddSelected}
-        disabled={selectedToken == null || pair == null}
+        disabled={selectedToken == null || pair == null || amount0 === 0}
         onPressed={submitLiquidityOperation}
       />
+
+      {pair && (
+      <div className="flex flex-col p-6 rounded-2xl mt-2 gap-1 bg-brandDark/0 text-sm">
+        {/* Price */}
+        <div className="flex justify-between w-full">
+          <p>Price</p>
+          <p className="font-medium">1 {selectedToken?.short_name} = {((pair.xch_reserve/1000000000000) / (pair.token_reserve/1000)).toFixed(10)} XCH</p>
+        </div>
+
+        {/* Token Reserve */}
+        <div className="flex justify-between w-full">
+          <p>Token reserve</p>
+          <p className="font-medium">{(pair.token_reserve/1000).toFixed(3)} {selectedToken?.short_name}</p>
+        </div>
+
+        {/* XCH Reserve */}
+        <div className="flex justify-between w-full">
+          <p>XCH reserve</p>
+          <p className="font-medium">{(pair.xch_reserve/1000000000000).toFixed(3)} XCH</p>
+        </div>
+
+      </div>
+      )}
+
     </div>
   );
 };
 
-export default Swap;
+export default Liquidity;

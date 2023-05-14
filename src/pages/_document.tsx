@@ -1,4 +1,4 @@
-import { Html, Head, Main, NextScript } from 'next/document'
+import { Html, Head, Main, NextScript } from 'next/document';
 
 export default function Document() {
   return (
@@ -16,10 +16,9 @@ export default function Document() {
         <link rel="apple-touch-icon" href="/logo.jpg" />
         <link rel="apple-touch-icon" sizes="400x400" href="/logo.jpg" />
 
-        <link rel="icon" type="image/jpeg" sizes="400x400" href="/logo.png" />
+        <link rel="icon" type="image/jpeg" sizes="400x400" href="/logo.jpg" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="shortcut icon" href="/logo.jpg" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" />
 
         <meta name="twitter:card" content="TibetSwap v1: An AMM for the Chia blockchain." />
         <meta name="twitter:url" content="https://tibetswap.io" />
@@ -36,8 +35,10 @@ export default function Document() {
 
         <link rel='apple-touch-startup-image' href='/logo.jpg' sizes='400x400' />
       </Head>
-      <body>
-        <Main />
+      <body className="bg-slate-100 dark:bg-zinc-900 dark:text-brandLight">
+        <div className="container mx-auto">
+          <Main />
+        </div>
         <NextScript />
       </body>
     </Html>

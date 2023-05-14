@@ -1,24 +1,25 @@
-import Link from 'next/link';
-import Layout from '../components/Layout';
+import { Token, getAllTokens } from '../api';
 import TabContainer from '../components/TabContainer';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const Home: React.FC = () => {
-  const [pairLauncherId, setPairLauncherId] = useState<string | null>(null);
-  const link = process.env.NEXT_PUBLIC_INFO_BASE_URL + (
-    pairLauncherId === null ? "" : `/pair/${pairLauncherId}`
-  );
+  const [selectedToken, setSelectedToken] = useState<Token | null>(null);
+
+  // Fetch all tokens
+  const [tokens, setTokens] = useState<Token[] | null>(null);
+  useEffect(() => {
+    async function fetchTokens() {
+      const allTokens = await getAllTokens();
+      setTokens(allTokens);
+    }
+    fetchTokens();
+  }, []);
 
   return (
-    <Layout isHomePage>
-      <TabContainer onPairSelect={setPairLauncherId}/>
-      <a target="_blank" href={link} rel="noopener noreferrer" className="mb-1 mt-8">
-      <p className="text-gray-600 underline">Analytics &rarr;</p>
-      </a>
-      <Link href="/faq" className="mb-12">
-        <p className="text-gray-600 underline">FAQ &rarr;</p>
-      </Link>
-    </Layout>
+      <main className="max-w-[28rem] mx-auto">
+        <h1 className="text-5xl font-bold pb-12">Trade</h1>
+        <TabContainer tokens={tokens} selectedToken={selectedToken} setSelectedToken={setSelectedToken} />
+      </main>
   );
 };
 
