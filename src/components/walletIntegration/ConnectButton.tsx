@@ -30,6 +30,7 @@ function ConnectButton() {
 
 
     const connectGobyWallet = async () => {
+        if (!isGobyDetected) return toast.error(<p>You don&apos;t have Goby Wallet installed. You can install it <a href="https://www.goby.app/" className="underline hover:opacity-80" target="_blank">here</a></p>);
         if (!connectedWallet) {
             try {
                 await (window as any).chia.request({ method: "connect" });
@@ -38,7 +39,7 @@ function ConnectButton() {
                 toast.success('Successfully Connected')
             } catch (error: any) {
                 console.log(error)
-                toast.error(`Wallet - ${error?.message || String(error.message)}`);
+                toast.error(`Wallet - ${error?.message || String(error.message)}`); 
             }
         } else {
             console.log('Wallet already connected');
