@@ -1,3 +1,4 @@
+import ConnectButton from './walletIntegration/ConnectButton';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -19,6 +20,9 @@ export default function Navbar() {
             />
         </Link>
 
+        <div className="hidden sm:block ml-auto">
+          <ConnectButton />
+        </div>
         <nav className="flex items-center bg-brandDark/10 dark:bg-brandDark/20 rounded-xl p-1">
           <Link href="/" className={`font-medium text-brandDark px-4 py-1 rounded-lg ${router.asPath === "/" || router.pathname === "/[pair_short_name]" ? 'text-brandLight bg-brandDark' : 'dark:text-brandLight/50'}`}>Swap</Link>
           <Link href="/faq" className={`font-medium text-brandDark px-4 py-1 rounded-lg ${router.asPath === "/faq" ? 'text-brandLight bg-brandDark' : 'dark:text-brandLight/50'}`}>FAQ</Link>
