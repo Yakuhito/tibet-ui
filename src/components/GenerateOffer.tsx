@@ -349,11 +349,12 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         }
         console.log(params)
         try {
-          const response = await (window as any).chia.request({ method: 'createOffer', params })
-          console.log('Fetching offer', response)
-          return response
-        } catch (error) {
-          throw error;
+            const response = await (window as any).chia.request({ method: 'createOffer', params })
+            console.log('Fetching offer', response)
+            return response
+        } catch (error: any) {
+            toast.error(`${error?.message || String(error)}`);
+            throw error;
         }
   
       }
