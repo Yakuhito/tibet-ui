@@ -20,18 +20,18 @@ export default function Document() {
         <link rel="manifest" href="/manifest.json" />
         <link rel="shortcut icon" href="/logo.jpg" />
 
-        <meta name="twitter:card" content="TibetSwap v1: An AMM for the Chia blockchain." />
+        <meta name="twitter:card" content="TibetSwap V2: An AMM for the Chia blockchain." />
         <meta name="twitter:url" content="https://tibetswap.io" />
-        <meta name="twitter:title" content="TibetSwap v1" />
-        <meta name="twitter:description" content="TibetSwap v1: An AMM for the Chia blockchain." />
-        <meta name="twitter:image" content="https://v1-testnet10.tibetswap.io/logo.jpg" />
+        <meta name="twitter:title" content="TibetSwap V2" />
+        <meta name="twitter:description" content="TibetSwap V2: An AMM for the Chia blockchain." />
+        <meta name="twitter:image" content="https://v2.tibetswap.io/logo.jpg" />
         <meta name="twitter:creator" content="@yakuh1t0" />
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="TibetSwap v1" />
-        <meta property="og:description" content="TibetSwap v1: An AMM for the Chia blockchain." />
-        <meta property="og:site_name" content="TibetSwap v1" />
+        <meta property="og:title" content="TibetSwap V2" />
+        <meta property="og:description" content="TibetSwap V2: An AMM for the Chia blockchain." />
+        <meta property="og:site_name" content="TibetSwap V2" />
         <meta property="og:url" content="https://tibetswap.io" />
-        <meta property="og:image" content="https://v1-testnet10.tibetswap.io/logo.jpg" />
+        <meta property="og:image" content="https://v2.tibetswap.io/logo.jpg" />
 
         <link rel='apple-touch-startup-image' href='/logo.jpg' sizes='400x400' />
       </Head>
