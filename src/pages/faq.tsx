@@ -11,7 +11,7 @@ const faqs = [
   },
   {
     question: 'What are the fees associated with using TibetSwap?',
-    answer: 'Aside for the associated blockchain fees, 0.7% of every trade is distributed to liquidity providers for the pool that is involved in the transaction. There is alo a developer fee, which is completely optional and you can set it to any value you want - your donations keep the ecosystem running!',
+    answer: 'Aside for the associated blockchain fees, 0.7% of every trade is distributed to liquidity providers for the pool that is involved in the transaction. There is also a developer fee, which is completely optional and you can set it to any value you want - your donations keep the ecosystem running!',
   },
   {
     question: 'What is liquidity used for, exactly?',
