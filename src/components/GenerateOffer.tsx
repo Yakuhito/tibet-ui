@@ -233,7 +233,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         if([0, 3].includes(step)) {
             namelessFunction();
         }
-    }, [data, step, pairAndQuote, offer, offerResponse, setOrderRefreshActive, devFee]);
+    }, [data, step, pairAndQuote, offer, offerResponse, setOrderRefreshActive, setGenerateOfferData, devFee]);
 
     const copyToClipboard = (text: string) => {
         navigator.clipboard.writeText(text).then(() => {
