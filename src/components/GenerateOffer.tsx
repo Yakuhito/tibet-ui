@@ -4,6 +4,7 @@ import type { GenerateOfferData } from './TabContainer';
 import RingLoader from 'react-spinners/RingLoader';
 import { useEffect, useState } from 'react';
 import SuccessScreen from './SuccessScreen';
+import toast from 'react-hot-toast';
 
 type GenerateOfferProps = {
   data: GenerateOfferData;
@@ -280,6 +281,85 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
     };
     
 
+    const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
+    const [connectedWallet, setConnectedWallet] = useState(false);
+    const [isGobyDetected, setIsGobyDetected] = useState(false);
+    
+    // Detect whether a wallet is already connected
+    useEffect(() => {
+        const { chia } = (window as any);
+        setIsGobyDetected(Boolean(chia && chia.isGoby));
+
+        const eagerlyConnect = async () => {
+            const isSuccessful = await (window as any).chia.request({ method: "connect" , "params": {eager: true}})
+            if (isSuccessful) {
+                setConnectedWallet(true)
+                return true;
+            }
+            return false;
+        }
+
+        if (isGobyDetected) {
+            console.log('Goby wallet detected - attempting to eagerly connect')
+            eagerlyConnect().then((isConnected) => {
+                setConnectedWallet(isConnected);
+              });
+
+            (window as any).chia.on("accountChanged", () => {
+                eagerlyConnect().then((isConnected) => {
+                    setConnectedWallet(isConnected);
+                });
+            });
+
+        }
+    }, [isGobyDetected, connectedWallet])
+
+
+    const completeWithWallet = async () => {
+        console.log('Completing with wallet')
+        const requestAssets = data.request.map(asset => (
+                {
+                    assetId: asset[0].asset_id,
+                    amount: data.action === "SWAP" && !data.offer[0][1] ? Math.ceil(asset[2] * (1-devFee)) : asset[2]
+                }
+            ))
+
+        const offerAssets = data.offer.map(asset => (
+                {
+                    assetId:  asset[0].asset_id,
+                    amount: data.action === "SWAP" && data.offer[0][1] ? Math.floor(asset[2] * (1+devFee)) : asset[2]
+                }
+            ))
+
+        try {
+            const { offer }: any = await generateOffer(requestAssets, offerAssets)
+            setOffer(offer);
+            setStep(3);
+        } catch (error: any) {
+            console.log(error)
+            toast.error(`Wallet - ${error?.message || String(error)}`);
+        }
+
+    }
+
+    const generateOffer = async (requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[]): Promise<void> => {
+        const params = {
+          requestAssets,
+          offerAssets
+        }
+        console.log(params)
+        try {
+            const response = await (window as any).chia.request({ method: 'createOffer', params })
+            console.log('Fetching offer', response)
+            return response
+        } catch (error: any) {
+            toast.error(`${error?.message || String(error)}`);
+            throw error;
+        }
+  
+      }
+
+
     const renderContent = (step: number) => {
         // Loading (verify data)
         if(step === 0) {
@@ -315,12 +395,14 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                         onChange={e => setOffer(e.target.value)}
                         placeholder='offer1...'
                     />
+
+                    {connectedWallet && <button className="w-full bg-brandDark text-white py-4 rounded-lg mt-4 font-medium" onClick={completeWithWallet}>Use Wallet to Complete Order</button>}
                     <button
                         onClick={() => setStep(3)}
                         className={`${offer.length === 0 ? 'bg-brandDark/10 text-brandDark/20 dark:text-brandLight/30 cursor-not-allowed' : 'bg-green-700'} text-brandLight px-4 py-2 rounded-lg w-full mt-8 font-medium`}
                         disabled={offer.length === 0}
                     >
-                        Submit Offer
+                        Submit Manually
                     </button>
                 </div>
             )
@@ -347,11 +429,11 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
 
             return (
                 <div className="mt-16 mb-16">
-                    <div className="font-medium">{offerResponse!.success ? '' : offerResponse!.message.includes("Invalid Offer") ? '' : 'An error occurred while submitting offer ☹️'}</div>
-                    {!offerResponse!.success && !offerResponse!.message.includes("Invalid Offer") && <textarea className="mt-4 dark:text-brandLight/30 min-h-[10rem] text-brandDark w-full py-2 px-2 border-2 border-transparent bg-brandDark/10 rounded-xl focus:outline-none focus:border-brandDark" value={offerResponse!.message} readOnly />}
-                    {offerResponse!.message.includes("Invalid Offer") && (
+                    <div className="font-medium">{offerResponse!.success ? '' : offerResponse!.message.includes("Invalid Offer") ? '' : offerResponse!.message.includes("UNKNOWN_UNSPENT") ? '' : 'An error occurred while submitting offer ☹️'}</div>
+                    {!offerResponse!.success && !offerResponse!.message.includes("Invalid Offer") && !offerResponse!.message.includes("UNKNOWN_UNSPENT") && <textarea className="mt-4 dark:text-brandLight/30 min-h-[10rem] text-brandDark w-full py-2 px-2 border-2 border-transparent bg-brandDark/10 rounded-xl focus:outline-none focus:border-brandDark" value={offerResponse!.message} readOnly />}
+                    {offerResponse!.message.match( /Invalid Offer|UNKNOWN_UNSPENT/ ) && (
                         <div className="flex flex-col">
-                            <h2 className="text-xl">Your offer was invalid. Please try again.</h2>
+                            <h2 className="text-xl">{offerResponse!.message.includes("Invalid Offer") ? 'Your offer was invalid. Please try again.' : 'Please wait ~1 minute before making another transaction'}</h2>
                             <a href="https://discord.gg/Z9px4geHvK" target="_blank" className="text-center text-xl font-medium w-full py-2 px-4 rounded-lg mt-4 bg-[#5865F2] hover:opacity-90 text-brandLight">Join our discord for support</a>
                         </div>
                     )}
