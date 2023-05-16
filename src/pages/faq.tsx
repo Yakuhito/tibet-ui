@@ -3,7 +3,7 @@ import { useState } from 'react';
 const faqs = [
   {
     question: 'What is TibetSwap?',
-    answer: 'TibetSwap is an <a href="https://www.coindesk.com/learn/what-is-an-automated-market-maker/" target="_blank" rel="noopener noreferrer">Automated Market Maker (AMM)</a> running on the <a href="https://www.chia.net/" target="_blank" rel="noopener noreferrer">Chia blockchain</a>. It uses funds provided by some users (liquidity providers) to allow anyone to trade XCH and tokens at what it considers to be a fair price. For each swap, a 0.7% fee is taken and distributed to liquidity providers as an incentive to keep their money in the protocol.',
+    answer: 'TibetSwap is an <a href="https://www.coindesk.com/learn/what-is-an-automated-market-maker/" target="_blank" rel="noopener noreferrer" class="underline hover:text-gray-700">Automated Market Maker (AMM)</a> running on the <a href="https://www.chia.net/" target="_blank" rel="noopener noreferrer" class="underline hover:text-gray-700">Chia blockchain</a>. It uses funds provided by some users (liquidity providers) to allow anyone to trade XCH and tokens at what it considers to be a fair price. For each swap, a 0.7% fee is taken and distributed to liquidity providers as an incentive to keep their money in the protocol.',
   },
   {
     question: 'Why should I trust you with my money?',
@@ -23,19 +23,19 @@ const faqs = [
   },
   {
     question: 'Are there any risks associated with providing liquidity?',
-    answer: 'Yes, there are. The first risk is contract (puzzle) security. Despite thorough testing, there is always a possibility of undiscovered vulnerabilities in the contracts (puzzles) behind TibetSwap. The second major risk is impermanent loss. An introductory article about the topic can be found <a href="https://academy.binance.com/en/articles/impermanent-loss-explained" target="_blank" rel="noopener noreferrer">here</a>. It is essential for liquidity providers to understand and carefully consider these risks before participating in any AMM.',
+    answer: 'Yes, there are. The first risk is contract (puzzle) security. Despite thorough testing, there is always a possibility of undiscovered vulnerabilities in the contracts (puzzles) behind TibetSwap. The second major risk is impermanent loss. An introductory article about the topic can be found <a href="https://academy.binance.com/en/articles/impermanent-loss-explained" target="_blank" rel="noopener noreferrer" class="underline hover:text-gray-700">here</a>. It is essential for liquidity providers to understand and carefully consider these risks before participating in any AMM.',
   },
   {
     question: 'Is the code open-source?',
-    answer: 'Of course! How else would liquidity providers trust us with their money? The smart contracts (puzzles), CLI, and API can be found in <a href="https://github.com/yakuhito/tibet" target="_blank" rel="noopener noreferrer">this repository</a>. For any questions about the code, just reach out to us!',
+    answer: 'Of course! How else would liquidity providers trust us with their money? The smart contracts (puzzles), CLI, and API can be found in <a href="https://github.com/yakuhito/tibet" target="_blank" rel="noopener noreferrer" class="underline hover:text-gray-700">this repository</a>. For any questions about the code, just reach out to us!',
   },
   {
     question: 'Do you provide an API?',
-    answer: `While you are strongly encouraged to run your own instance of our API, there is nothing stopping you from accessing ours. You can find it <a href="${process.env.NEXT_PUBLIC_INFO_BASE_URL}/docs" target="_blank" rel="noopener noreferrer">here</a>.`,
+    answer: `While you are strongly encouraged to run your own instance of our API, there is nothing stopping you from accessing ours. You can find it <a href="${process.env.NEXT_PUBLIC_API_BASE_URL}/docs" target="_blank" rel="noopener noreferrer" class="underline hover:text-gray-700">here</a>.`,
   },
   {
     question: 'How can I make my token tradeable on TibetSwap?',
-    answer: 'Currently, you need to use the <a href="https://github.com/Yakuhito/tibet/" target="_blank" rel="noopener noreferrer">TibetSwap CLI</a> to deploy a pair for your token. However, we are happy to help! Once you have an initial price in mind and some initial liquidity for the pair (50% token, 50% XCH), just message <a href="https://twitter.com/yakuh1t0" target="_blank" rel="noopener noreferrer">yakuhito</a> and he\'ll deploy the pair for you :)',
+    answer: 'Currently, you need to use the <a href="https://github.com/Yakuhito/tibet/" target="_blank" rel="noopener noreferrer">TibetSwap CLI</a> to deploy a pair for your token. However, we are happy to help! Once you have an initial price in mind and some initial liquidity for the pair (50% token, 50% XCH), just message <a href="https://twitter.com/yakuh1t0" target="_blank" rel="noopener noreferrer" class="underline hover:text-gray-700">yakuhito</a> and he\'ll deploy the pair for you :)',
   }
 ];
 
