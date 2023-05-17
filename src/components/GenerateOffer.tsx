@@ -267,7 +267,9 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                 {a.map(e => (
                     <li key={e[0].asset_id}>
                         {/* If swap, add dev fee on top of quote */}
-                        {amountWithFee(e)} {process.env.NEXT_PUBLIC_XCH === "TXCH" && e[0].name === "Chia" ? "Testnet Chia" : e[0].name}{" "}
+                        {amountWithFee(e)}{" "}
+                        {process.env.NEXT_PUBLIC_XCH === "TXCH" && e[0].name === "Chia" ? "Testnet Chia"
+                        : e[0].name === "Pair Liquidity Token" ? e[0].short_name : e[0].name}{" "}
                         {e[1] ? <></> : <button
                             className="ml-1 bg-brandDark hover:bg-brandDark/80 text-white px-2 rounded-lg"
                             onClick={() => copyToClipboard(e[0].asset_id)}
