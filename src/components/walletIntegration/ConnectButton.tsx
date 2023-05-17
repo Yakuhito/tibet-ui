@@ -55,7 +55,7 @@ function ConnectButton() {
 
     return ( 
         <>
-            <button className="bg-brandDark/10 text-brandDark px-4 py-2 font-medium rounded-xl animate-fadeIn hover:opacity-80" onClick={() => setIsWalletModalOpen(true)}>{!connectedWallet ? 'Connect Wallet' : 'Manage Wallet'}</button>
+            <button className="bg-brandDark/10 dark:bg-brandDark/20 text-brandDark px-4 py-2 font-medium rounded-xl animate-fadeIn hover:opacity-80 dark:text-brandLight/50" onClick={() => setIsWalletModalOpen(true)}>{!connectedWallet ? 'Connect Wallet' : 'Manage Wallet'}</button>
             <ConnectWalletModal isOpen={isWalletModalOpen} setIsOpen={setIsWalletModalOpen} connectedWallet={connectedWallet} connectGobyWallet={connectGobyWallet} disconnectWalletFunc={disconnectGobyWallet} />
         </>
      );
