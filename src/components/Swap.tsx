@@ -194,7 +194,7 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
             </div>
           </div>
         </label>
-        <p className="font-medium text-sm">Price impact is very high. You will lose a significant portion of your funds if you proceed. Please tick the box if you would like to continue.</p>
+        <p className="font-medium text-sm">The <a href="https://coinmarketcap.com/alexandria/glossary/price-impact" target="_blank" className="underline">price impact</a> for this trade is very high. Tick the box on the left to continue.</p>
       </div>
       )
       }
@@ -211,7 +211,7 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
           {/* Price */}
           <div className="flex justify-between w-full">
             <p>Price</p>
-            <p className="font-medium">1 {selectedToken?.short_name} = {parseFloat((amount0/amount1/1000000000).toFixed(8))} XCH</p>
+            <p className="font-medium">1 {selectedToken?.short_name} = {parseFloat((amount0/amount1/1000000000).toFixed(8))} {process.env.NEXT_PUBLIC_XCH}</p>
           </div>
 
           {/* Price Impact */}

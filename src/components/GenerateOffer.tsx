@@ -48,7 +48,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         const updateOfferDataSwap = () => {
             if (pair) {
                 const newOfferData = {...data};
-                const isBuy = newOfferData.offer[0][0].short_name === "XCH";
+                const isBuy = newOfferData.offer[0][0].short_name === process.env.NEXT_PUBLIC_XCH;
                 const { xch_reserve, token_reserve } = pair // Get latest reserve amounts
                 
                 if (isBuy) {
@@ -267,7 +267,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                 {a.map(e => (
                     <li key={e[0].asset_id}>
                         {/* If swap, add dev fee on top of quote */}
-                        {amountWithFee(e)} {e[0].name}{" "}
+                        {amountWithFee(e)} {process.env.NEXT_PUBLIC_XCH === "TXCH" && e[0].name === "Chia" ? "Testnet Chia" : e[0].name}{" "}
                         {e[1] ? <></> : <button
                             className="ml-1 bg-brandDark hover:bg-brandDark/80 text-white px-2 rounded-lg"
                             onClick={() => copyToClipboard(e[0].asset_id)}
@@ -387,7 +387,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                         {listAssets(data.request, false)}
                     </div>
 
-                    <p className="bg-brandDark/10 rounded-xl py-2 px-4 font-medium mb-4">Min fee: <span className="font-normal">{(pairAndQuote![1].fee / Math.pow(10, 12)).toFixed(12)} XCH</span></p>
+                    <p className="bg-brandDark/10 rounded-xl py-2 px-4 font-medium mb-4">Min fee: <span className="font-normal">{(pairAndQuote![1].fee / Math.pow(10, 12)).toFixed(12)} {process.env.NEXT_PUBLIC_XCH}</span></p>
                     <p className="px-4 mb-4 font-medium">Please generate the offer, paste it below, and click the button to proceed.</p>
                     <input type="text"
                         value={offer}
