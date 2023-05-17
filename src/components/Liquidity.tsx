@@ -183,7 +183,7 @@ const Liquidity: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, 
         {/* Price */}
         <div className="flex justify-between w-full">
           <p>Price</p>
-          <p className="font-medium">1 {selectedToken?.short_name} = {((pair.xch_reserve/1000000000000) / (pair.token_reserve/1000)).toFixed(10)} XCH</p>
+          <p className="font-medium">1 {selectedToken?.short_name} = {((pair.xch_reserve/1000000000000) / (pair.token_reserve/1000)).toFixed(10)} {process.env.NEXT_PUBLIC_XCH}</p>
         </div>
 
         {/* Token Reserve */}
@@ -194,8 +194,8 @@ const Liquidity: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, 
 
         {/* XCH Reserve */}
         <div className="flex justify-between w-full">
-          <p>XCH reserve</p>
-          <p className="font-medium">{(pair.xch_reserve/1000000000000).toFixed(3)} XCH</p>
+          <p>{process.env.NEXT_PUBLIC_XCH} reserve</p>
+          <p className="font-medium">{(pair.xch_reserve/1000000000000).toFixed(3)} {process.env.NEXT_PUBLIC_XCH}</p>
         </div>
 
       </div>

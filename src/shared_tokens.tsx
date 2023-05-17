@@ -4,7 +4,7 @@ export const XCH: Token = {
     asset_id: '',
     pair_id: '',
     name: 'Chia',
-    short_name: 'XCH',
+    short_name: process.env.NEXT_PUBLIC_XCH || 'XCH',
     image_url: '/assets/xch.webp',
     verified: true
 }
@@ -23,7 +23,7 @@ export function getLiquidityToken(pair: Pair | null, token: Token | null): Token
     asset_id: pair?.liquidity_asset_id ?? '',
     pair_id: pair?.launcher_id ?? '',
     name: 'Pair Liquidity Token',
-    short_name: `TIBET-${token?.short_name ?? 'XXX'}-XCH`,
+    short_name: `TIBET-${token?.short_name ?? 'XXX'}-${process.env.NEXT_PUBLIC_XCH}`,
     image_url: '/logo.jpg',
     verified: true
   }

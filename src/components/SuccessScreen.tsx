@@ -72,7 +72,7 @@ function SuccessScreen({ offerData, devFee }: SuccessScreenProps) {
                     {offerData.offer.map(asset => (
                         <div key={asset[0].asset_id} className="text-brandLight flex items-center gap-2 font-medium">
                             <Image src={asset[0].image_url} width={30} height={30} alt="Token logo" className="rounded-full" />
-                            <p>{asset[0].short_name === "XCH" ? (asset[2] + Math.floor(asset[2] * devFee)) / Math.pow(10, asset[1] ? 12 : 3) : (asset[2] / Math.pow(10, asset[1] ? 12 : 3))}</p> {/* If asset is XCH, add dev fee on top of amount */}
+                            <p>{asset[0].short_name === process.env.NEXT_PUBLIC_XCH ? (asset[2] + Math.floor(asset[2] * devFee)) / Math.pow(10, asset[1] ? 12 : 3) : (asset[2] / Math.pow(10, asset[1] ? 12 : 3))}</p> {/* If asset is XCH, add dev fee on top of amount */}
                             <p>{asset[0].short_name}</p>
                         </div>
                     ))}
@@ -81,7 +81,7 @@ function SuccessScreen({ offerData, devFee }: SuccessScreenProps) {
                     {offerData.request.map(asset => (
                         <div key={asset[0].asset_id} className="text-brandLight flex items-center gap-2 font-medium pb-2">
                             <Image src={asset[0].image_url} width={30} height={30} alt="Token logo" className="rounded-full" />
-                            <p>{asset[0].short_name === "XCH" ? (asset[2] - Math.floor(asset[2] * devFee)) / Math.pow(10, asset[1] ? 12 : 3) : (asset[2] / Math.pow(10, asset[1] ? 12 : 3))}</p> {/* If asset is XCH, substract dev fee from amount */}
+                            <p>{asset[0].short_name === process.env.NEXT_PUBLIC_XCH ? (asset[2] - Math.floor(asset[2] * devFee)) / Math.pow(10, asset[1] ? 12 : 3) : (asset[2] / Math.pow(10, asset[1] ? 12 : 3))}</p> {/* If asset is XCH, substract dev fee from amount */}
                             <p>{asset[0].short_name}</p>
                         </div>
                     ))}

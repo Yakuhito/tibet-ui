@@ -211,7 +211,7 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
           {/* Price */}
           <div className="flex justify-between w-full">
             <p>Price</p>
-            <p className="font-medium">1 {selectedToken?.short_name} = {parseFloat((amount0/amount1/1000000000).toFixed(8))} XCH</p>
+            <p className="font-medium">1 {selectedToken?.short_name} = {parseFloat((amount0/amount1/1000000000).toFixed(8))} {process.env.NEXT_PUBLIC_XCH}</p>
           </div>
 
           {/* Price Impact */}
