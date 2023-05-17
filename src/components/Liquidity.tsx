@@ -148,26 +148,53 @@ const Liquidity: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, 
         amount0={amount0}
         amount1={amount1}
         amount2={amount2}
-        onAmountsChanged={(newAmount0: number, newAmount1: number, newAmount2: number) => {
-            var tokenAmount = 0;
-            var liquidity = 0;
-            var xchAmount = 0;
+        onAmountsChanged={(
+            newAmount0: number, // XCH
+            newAmount1: number, // token
+            newAmount2: number  // liquidity
+        ) => {
+            const xchReserve = pair?.xch_reserve ?? 1
+            const tokenReserve = pair?.token_reserve ?? 1
+            const totalLiquidity = pair?.liquidity ?? 1
             
-            if(isAddSelected) {
-              tokenAmount = newAmount1;
-              liquidity = getLiquidityQuote(tokenAmount, pair?.token_reserve ?? 0, pair?.liquidity ?? 0, false);
-              xchAmount = getLiquidityQuote(tokenAmount, pair?.token_reserve ?? 0, pair?.xch_reserve ?? 0, false);
-              xchAmount += liquidity; // ask for user to offer more XCH (to mint tokens)
+            var liq = 0
+
+            /*
+            This is my own math so pls check it
+            liq - liquidity in input
+            xch - chia to go in
+            -> XCH in is xch + liq (deposit liquidity) or xch - liq
+
+            liq / liqReserve = (xch + liq) / xchReserve
+            want: liq
+
+            liq / liqReserve = xch / xchReserve + liq / xchReserve      // * xchReserve * liqReserve
+            liq * (xchReserve - liqReserve) = xch * liqReserve
+            liq = xch * liqReserve / (xchReserve - liqReserve)
+            */
+            if(newAmount0 !== amount0) {
+                liq = Math.floor(newAmount0 * totalLiquidity / (xchReserve + (isAddSelected ? -1 : 1) * totalLiquidity))
+
+                setAmount0(newAmount0)
+                setAmount1(getLiquidityQuote(liq, totalLiquidity, tokenReserve, !isAddSelected))
+                setAmount2(liq)
+            } else if(newAmount1 !== amount1) {
+                liq = getLiquidityQuote(newAmount1, tokenReserve, totalLiquidity, !isAddSelected)
+
+                setAmount0(
+                    getLiquidityQuote(newAmount1, tokenReserve, xchReserve, !isAddSelected) +
+                    liq * (isAddSelected ? 1 : -1)
+                )
+                setAmount1(newAmount1)
+                setAmount2(liq)
             } else {
-              liquidity = newAmount2;
-              tokenAmount = getLiquidityQuote(liquidity, pair?.liquidity ?? 0, pair?.token_reserve ?? 0, true);
-              xchAmount = getLiquidityQuote(liquidity, pair?.liquidity ?? 0, pair?.xch_reserve ?? 0, true);
-              xchAmount += liquidity; // tell user to request more XCH (from liq. burn)
+                setAmount0(
+                    getLiquidityQuote(newAmount2, totalLiquidity, xchReserve, !isAddSelected) + 
+                    liq * (isAddSelected ? 1 : -1)
+                )
+                setAmount1(getLiquidityQuote(newAmount2, totalLiquidity, tokenReserve, !isAddSelected))
+                setAmount2(newAmount2)
             }
-            
-            setAmount0(xchAmount);
-            setAmount1(tokenAmount);
-            setAmount2(liquidity);
         }}
         disabled={selectedToken == null || pair == null}
       />

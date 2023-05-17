@@ -33,7 +33,7 @@ const LiquidityInput: React.FC<LiquidityInputsProps> = ({
         value={amount0}
         onChange={(val) => onAmountsChanged(val, amount1, amount2)}
         maxDecimals={12}
-        disabled={true}
+        disabled={disabled}
       />
       <div className='mt-2'>
         <AssetAmountInput
@@ -41,7 +41,7 @@ const LiquidityInput: React.FC<LiquidityInputsProps> = ({
           value={amount1}
           onChange={(val) => onAmountsChanged(amount0, val, amount2)}
           maxDecimals={3}
-          disabled={disabled || !isAddSelected}
+          disabled={disabled}
         />
       </div>
       <div className="p-1 items-center justify-center flex w-fill"
@@ -67,7 +67,7 @@ const LiquidityInput: React.FC<LiquidityInputsProps> = ({
         value={amount2}
         onChange={(val) => onAmountsChanged(amount0, amount1, val)}
         maxDecimals={3}
-        disabled={disabled || isAddSelected}
+        disabled={disabled}
       />
     </div>
   );
