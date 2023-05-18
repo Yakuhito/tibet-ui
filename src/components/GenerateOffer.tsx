@@ -173,14 +173,14 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                         }
                     }
                 } else {
-                    const takeAssetsFromOffer = data.offer.length === 2;
+                    const takeAssetsFromOfferingSide = data.offer.length === 2;
 
                     var token0Amount: number,
                         token0IsXCH: boolean,
                         token1Amount: number,
                         liquidityAmount: number;
 
-                    if(takeAssetsFromOffer) {
+                    if(takeAssetsFromOfferingSide) {
                         token0Amount = data.offer[0][2];
                         token0IsXCH = data.offer[0][1];
                         token1Amount = data.offer[1][2];
@@ -212,10 +212,31 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                         expectedXCHAmount += expectedLiquidityAmount;
                         expectedTokenAmount = getLiquidityQuote(liquidityAmount, pair.liquidity, pair.token_reserve, true);
                     }
-                    if(expectedXCHAmount > xchAmount || expectedLiquidityAmount > liquidityAmount || expectedTokenAmount > tokenAmount) {
-                        console.log({tokenAmount, expectedXCHAmount, xchAmount, expectedLiquidityAmount, liquidityAmount})
-                        setStep(-1);
-                    } else {
+
+                    console.log({tokenAmount, expectedXCHAmount, xchAmount, expectedLiquidityAmount, liquidityAmount})
+                    if(takeAssetsFromOfferingSide) { // adding liquidity
+                        if(expectedTokenAmount > tokenAmount) {
+                            setStep(-1);
+                        }
+
+                        const newOfferData = {...data};
+                        newOfferData.offer[0][2] = expectedXCHAmount;
+                        newOfferData.offer[1][2] = expectedTokenAmount;
+                        newOfferData.request[0][2] = expectedLiquidityAmount;
+                        setGenerateOfferData(newOfferData);
+
+                        setStep(2);
+                    } else { // removing liquidity
+                        if(expectedLiquidityAmount > liquidityAmount) {
+                            setStep(-1);
+                        }
+
+                        const newOfferData = {...data};
+                        newOfferData.request[0][2] = expectedXCHAmount;
+                        newOfferData.request[1][2] = expectedTokenAmount;
+                        newOfferData.offer[0][2] = expectedLiquidityAmount;
+                        setGenerateOfferData(newOfferData);
+
                         setStep(2);
                     }
                 }
