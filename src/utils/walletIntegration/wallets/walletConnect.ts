@@ -2,6 +2,7 @@ import WalletIntegrationInterface from '../walletIntegrationInterface';
 
 class WalletConnectIntegration implements WalletIntegrationInterface {
   name = "WalletConnect"
+  image = "/assets/xch.webp"
   
   connect(): void {
     // WalletConnect connection logic

@@ -2,7 +2,8 @@ import WalletIntegrationInterface from '../walletIntegrationInterface';
 import { toast } from 'react-hot-toast';
 
 class hoogiiWallet implements WalletIntegrationInterface {
-  name = "Hoogii"
+  name = "Hoogii";
+  image = "/assets/hoogii.png";
 
   async connect(): Promise<boolean> {
     // Hoogii wallet connection logic

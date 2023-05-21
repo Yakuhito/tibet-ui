@@ -2,7 +2,8 @@ import WalletIntegrationInterface from '../walletIntegrationInterface';
 import { toast } from 'react-hot-toast';
 
 class gobyWallet implements WalletIntegrationInterface {
-  name = "Goby"
+  name = "Goby";
+  image = "/assets/goby.webp";
 
   async connect(): Promise<boolean> {
     // Goby wallet connection logic
