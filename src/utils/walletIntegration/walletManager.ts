@@ -78,6 +78,7 @@ class WalletManager {
         return new GobyWallet();
     } else if (parsedWallet === 'Hoogii') {
         const checkIfStillConnected = await new HoogiiWallet().eagerlyConnect()
+        console.log(checkIfStillConnected, '😈😈')
         if (!checkIfStillConnected) {
             localStorage.removeItem('activeWallet');
             return null
