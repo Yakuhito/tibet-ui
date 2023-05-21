@@ -1,13 +1,11 @@
-import { Dialog, Transition } from '@headlessui/react'
-import { Fragment } from 'react'
-import Image from 'next/image';
-import WalletManager from '@/utils/walletIntegration/walletManager';
-import GobyWallet from '@/utils/walletIntegration/wallets/gobyWallet';
-import WalletConnect from '@/utils/walletIntegration/wallets/walletConnect';
 import WalletIntegrationInterface from '@/utils/walletIntegration/walletIntegrationInterface';
-import { useState, useEffect } from 'react';
+import WalletConnect from '@/utils/walletIntegration/wallets/walletConnect';
 import HoogiiWallet from '@/utils/walletIntegration/wallets/hoogiiWallet';
-import { toast } from 'react-hot-toast';
+import GobyWallet from '@/utils/walletIntegration/wallets/gobyWallet';
+import WalletManager from '@/utils/walletIntegration/walletManager';
+import { Dialog, Transition } from '@headlessui/react'
+import { Fragment } from 'react';
+import Image from 'next/image';
 
 
 interface ConnectWalletModalProps {
@@ -19,36 +17,37 @@ interface ConnectWalletModalProps {
 
 function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet }: ConnectWalletModalProps) {
 
+    // Handle connecting to a wallet when clicking on an option
     const handleConnect = async (walletIdentifier: string) => {
         // Get the wallet integration object based on the identifier
         let walletIntegration: WalletIntegrationInterface | null = null;
         let connectionSuccessful: boolean = false;
         if (walletIdentifier === activeWallet?.name) return // If already connected to that wallet, do nothing (or handle disconnect?)
+
+        // Try connecting to wallet option selected by user
         try {
             if (walletIdentifier === 'Goby') {
-                console.log(activeWallet?.name)
-              walletIntegration = new GobyWallet();
-              const response = await walletIntegration.connect(); // Connect to the Goby wallet asynchronously
-              connectionSuccessful = Boolean(response);
+                walletIntegration = new GobyWallet();
+                const response = await walletIntegration.connect(); // Connect to Goby wallet
+                connectionSuccessful = Boolean(response);
             } else if (walletIdentifier === 'Hoogii') {
                 walletIntegration = new HoogiiWallet();
-                const response = await walletIntegration.connect(); // Connect to the Hoogii wallet
+                const response = await walletIntegration.connect(); // Connect to Hoogii wallet
                 connectionSuccessful = Boolean(response);
             } else if (walletIdentifier === 'WalletConnect') {
-              walletIntegration = new WalletConnect();
-              walletIntegration.connect(); // Connect to the WalletConnect wallet
-              connectionSuccessful = true;
+                walletIntegration = new WalletConnect();
+                const response = await walletIntegration.connect(); // Connect to WalletConnect (Chia Wallet)
+                connectionSuccessful = Boolean(response);
             }
-          } catch (error) {
+        } catch (error) {
             console.error('Error connecting to wallet:', error);
             connectionSuccessful = false;
-          }
-      
-          if (connectionSuccessful && walletIntegration) {
-            console.log('setting active wallet 🚀')
+        }
+        // Update activeWallet state
+        if (connectionSuccessful && walletIntegration) {
             walletManager ? walletManager.setActiveWallet(walletIntegration) : null;
-          }
-        };
+        }
+    };
 
     return (    
         <Transition appear show={isOpen} as={Fragment}>
