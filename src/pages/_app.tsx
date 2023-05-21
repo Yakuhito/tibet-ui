@@ -11,7 +11,21 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <div>
       <Navbar />
-      <Toaster position="bottom-right" />
+      <Toaster position="bottom-right"
+        toastOptions={{
+          success: {
+            iconTheme: {
+              primary: '#166534',
+              secondary: '#EFF4F7'
+            }
+          },
+          error: {
+            iconTheme: {
+              primary: '#B91C1C',
+              secondary: '#EFF4F7'
+            }
+          }
+        }} />
       <div className="min-h-[calc(100svh-96px)] flex flex-col px-4">
         <div className="pt-12">
           <Component {...pageProps}  />
