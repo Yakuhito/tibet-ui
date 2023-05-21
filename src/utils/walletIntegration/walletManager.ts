@@ -13,9 +13,11 @@ class WalletManager {
       .then((storedWallet) => {
         if (storedWallet) {
           this.activeWallet = storedWallet;
+          this.notifyActiveWalletChange();
         }
       })
       .catch((error) => {
+        this.notifyActiveWalletChange();
         console.error('Error retrieving stored wallet:', error);
       });
   }
@@ -35,6 +37,29 @@ class WalletManager {
   public setActiveWallet(wallet: WalletIntegrationInterface): void {
     this.activeWallet = wallet;
     localStorage.setItem('activeWallet', this.activeWallet.name);
+    this.notifyActiveWalletChange();
+  }
+  
+  private notifyActiveWalletChange(): void {
+    if (this.activeWalletChangeHandler) {
+      if (this.activeWallet !== null) {
+        this.activeWalletChangeHandler(this.activeWallet);
+      } else {
+        this.activeWalletChangeHandler(null);
+      }
+    }
+  }
+  
+  private activeWalletChangeHandler: ((wallet: WalletIntegrationInterface | null) => void) | null = null;
+  
+  public registerActiveWalletChangeHandler(handler: (wallet: WalletIntegrationInterface | null) => void): void {
+    this.activeWalletChangeHandler = handler;
+  }
+  
+  public unregisterActiveWalletChangeHandler(handler: (wallet: WalletIntegrationInterface) => void): void {
+    if (this.activeWalletChangeHandler === handler) {
+      this.activeWalletChangeHandler = null;
+    }
   }
 
   public getActiveWallet(): WalletIntegrationInterface | null {
@@ -53,6 +78,7 @@ class WalletManager {
     }
     localStorage.removeItem('activeWallet');
     this.activeWallet = null;
+    this.notifyActiveWalletChange();
   }
 
   public async generateOffer(requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[]): Promise<void> {
@@ -78,7 +104,6 @@ class WalletManager {
         return new GobyWallet();
     } else if (parsedWallet === 'Hoogii') {
         const checkIfStillConnected = await new HoogiiWallet().eagerlyConnect()
-        console.log(checkIfStillConnected, '😈😈')
         if (!checkIfStillConnected) {
             localStorage.removeItem('activeWallet');
             return null

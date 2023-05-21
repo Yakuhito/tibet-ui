@@ -2,11 +2,12 @@ import { ActionType, createOfferForPair, getInputPrice, getLiquidityQuote, getOu
 import type { OfferResponse, Pair, Quote, Token } from '@/api';
 import type { GenerateOfferData } from './TabContainer';
 import RingLoader from 'react-spinners/RingLoader';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import SuccessScreen from './SuccessScreen';
 import toast from 'react-hot-toast';
 import WalletManager from '@/utils/walletIntegration/walletManager';
 import WalletIntegrationInterface from '@/utils/walletIntegration/walletIntegrationInterface';
+import WalletContext from '@/context/WalletContext';
 
 type GenerateOfferProps = {
   data: GenerateOfferData;
@@ -286,18 +287,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
     
 
     
-    const [walletManager, setWalletManager] = useState<WalletManager | null>(null)
-    const [activeWallet, setActiveWallet] = useState<WalletIntegrationInterface | null>(null);
-    
-    useEffect(() => {
-        setWalletManager(WalletManager.getInstance());
-
-        const setActiveWalletState = async () => {
-            setActiveWallet(walletManager ? await walletManager.getActiveWallet() : null);
-        }
-        setActiveWalletState()
-
-    }, [walletManager])
+    const { walletManager, activeWallet } = useContext(WalletContext);
     
     const completeWithWallet = async () => {
         if (!activeWallet) return;

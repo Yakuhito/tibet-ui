@@ -1,26 +1,16 @@
 import ConnectWalletModal from './ConnectedWalletModal';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import toast from 'react-hot-toast';
 import * as React from 'react';
 import WalletManager from '@/utils/walletIntegration/walletManager';
 import WalletIntegrationInterface from '@/utils/walletIntegration/walletIntegrationInterface';
+import WalletContext from '@/context/WalletContext';
 
 
 function ConnectButton() {
 
     const [isWalletModalOpen, setIsWalletModalOpen] = useState(false)
-    const [walletManager, setWalletManager] = useState<WalletManager | null>(null)
-    const [activeWallet, setActiveWallet] = useState<WalletIntegrationInterface | null>(null);
-    
-    useEffect(() => {
-        setWalletManager(WalletManager.getInstance());
-
-        const setActiveWalletState = async () => {
-            setActiveWallet(walletManager ? await walletManager.getActiveWallet() : null);
-        }
-        setActiveWalletState()
-
-    }, [walletManager, isWalletModalOpen])
+    const { walletManager, activeWallet } = useContext(WalletContext);
 
     return ( 
         <>

@@ -7,6 +7,7 @@ import WalletConnect from '@/utils/walletIntegration/wallets/walletConnect';
 import WalletIntegrationInterface from '@/utils/walletIntegration/walletIntegrationInterface';
 import { useState, useEffect } from 'react';
 import HoogiiWallet from '@/utils/walletIntegration/wallets/hoogiiWallet';
+import { toast } from 'react-hot-toast';
 
 
 interface ConnectWalletModalProps {
@@ -20,10 +21,12 @@ function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet }: 
 
     const handleConnect = async (walletIdentifier: string) => {
         // Get the wallet integration object based on the identifier
-        let walletIntegration: GobyWallet | WalletConnect | null = null;
+        let walletIntegration: WalletIntegrationInterface | null = null;
         let connectionSuccessful: boolean = false;
+        if (walletIdentifier === activeWallet?.name) return // If already connected to that wallet, do nothing (or handle disconnect?)
         try {
             if (walletIdentifier === 'Goby') {
+                console.log(activeWallet?.name)
               walletIntegration = new GobyWallet();
               const response = await walletIntegration.connect(); // Connect to the Goby wallet asynchronously
               connectionSuccessful = Boolean(response);
@@ -45,8 +48,6 @@ function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet }: 
             console.log('setting active wallet 🚀')
             walletManager ? walletManager.setActiveWallet(walletIntegration) : null;
           }
-      
-          setIsOpen(false);
         };
 
     return (    
