@@ -5,6 +5,8 @@ import RingLoader from 'react-spinners/RingLoader';
 import { useEffect, useState } from 'react';
 import SuccessScreen from './SuccessScreen';
 import toast from 'react-hot-toast';
+import WalletManager from '@/utils/walletIntegration/walletManager';
+import WalletIntegrationInterface from '@/utils/walletIntegration/walletIntegrationInterface';
 
 type GenerateOfferProps = {
   data: GenerateOfferData;
@@ -283,41 +285,23 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
     };
     
 
-    const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
-    const [connectedWallet, setConnectedWallet] = useState(false);
-    const [isGobyDetected, setIsGobyDetected] = useState(false);
     
-    // Detect whether a wallet is already connected
+    const [walletManager, setWalletManager] = useState<WalletManager | null>(null)
+    const [activeWallet, setActiveWallet] = useState<WalletIntegrationInterface | null>(null);
+    
     useEffect(() => {
-        const { chia } = (window as any);
-        setIsGobyDetected(Boolean(chia && chia.isGoby));
+        setWalletManager(WalletManager.getInstance());
 
-        const eagerlyConnect = async () => {
-            const isSuccessful = await (window as any).chia.request({ method: "connect" , "params": {eager: true}})
-            if (isSuccessful) {
-                setConnectedWallet(true)
-                return true;
-            }
-            return false;
+        const setActiveWalletState = async () => {
+            setActiveWallet(walletManager ? await walletManager.getActiveWallet() : null);
         }
+        setActiveWalletState()
 
-        if (isGobyDetected) {
-            console.log('Goby wallet detected - attempting to eagerly connect')
-            eagerlyConnect().then((isConnected) => {
-                setConnectedWallet(isConnected);
-              });
-
-            (window as any).chia.on("accountChanged", () => {
-                eagerlyConnect().then((isConnected) => {
-                    setConnectedWallet(isConnected);
-                });
-            });
-
-        }
-    }, [isGobyDetected, connectedWallet])
-
-
+    }, [walletManager])
+    
     const completeWithWallet = async () => {
+        if (!activeWallet) return;
+
         console.log('Completing with wallet')
         const requestAssets = data.request.map(asset => (
                 {
@@ -334,32 +318,14 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
             ))
 
         try {
-            const { offer }: any = await generateOffer(requestAssets, offerAssets)
+            const { offer }: any = await activeWallet.generateOffer(requestAssets, offerAssets)
             setOffer(offer);
             setStep(3);
         } catch (error: any) {
             console.log(error)
-            toast.error(`Wallet - ${error?.message || String(error)}`);
         }
 
     }
-
-    const generateOffer = async (requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[]): Promise<void> => {
-        const params = {
-          requestAssets,
-          offerAssets
-        }
-        console.log(params)
-        try {
-            const response = await (window as any).chia.request({ method: 'createOffer', params })
-            console.log('Fetching offer', response)
-            return response
-        } catch (error: any) {
-            toast.error(`${error?.message || String(error)}`);
-            throw error;
-        }
-  
-      }
 
 
     const renderContent = (step: number) => {
@@ -398,7 +364,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                         placeholder='offer1...'
                     />
 
-                    {connectedWallet && <button className="w-full bg-brandDark text-white py-4 rounded-lg mt-4 font-medium" onClick={completeWithWallet}>Use Wallet to Complete Order</button>}
+                    {activeWallet && <button className="w-full bg-brandDark text-white py-4 rounded-lg mt-4 font-medium" onClick={completeWithWallet}>Use Wallet to Complete Order</button>}
                     <button
                         onClick={() => setStep(3)}
                         className={`${offer.length === 0 ? 'bg-brandDark/10 text-brandDark/20 dark:text-brandLight/30 cursor-not-allowed' : 'bg-green-700'} text-brandLight px-4 py-2 rounded-lg w-full mt-8 font-medium`}

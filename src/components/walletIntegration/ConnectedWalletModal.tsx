@@ -1,22 +1,53 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
 import Image from 'next/image';
+import WalletManager from '@/utils/walletIntegration/walletManager';
+import GobyWallet from '@/utils/walletIntegration/wallets/gobyWallet';
+import WalletConnect from '@/utils/walletIntegration/wallets/walletConnect';
+import WalletIntegrationInterface from '@/utils/walletIntegration/walletIntegrationInterface';
+import { useState, useEffect } from 'react';
+import HoogiiWallet from '@/utils/walletIntegration/wallets/hoogiiWallet';
+
 
 interface ConnectWalletModalProps {
     isOpen: boolean;
     setIsOpen: (value: boolean) => void;
-    connectedWallet: any;
-    connectGobyWallet: () => void;
-    disconnectWalletFunc: () => void;
+    walletManager: WalletManager | null;
+    activeWallet: WalletIntegrationInterface | null;
 }
 
-function ConnectWalletModal({ isOpen, setIsOpen, connectedWallet, connectGobyWallet, disconnectWalletFunc }: ConnectWalletModalProps) {
-    // Wallet options user can select
-    const wallets = [
-        {id: 0, label: 'Gobi Wallet', connected: (connectedWallet ? connectedWallet.constructor.name === "GobyWallet" : false), image: '/assets/goby.webp', connectWalletFunc: connectGobyWallet, disconnectWalletFunc: disconnectWalletFunc},
-        {id: 1, label: 'Chia Wallet', value: false, image: '/assets/xch.webp', comingSoon: true},
-    ]
+function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet }: ConnectWalletModalProps) {
 
+    const handleConnect = async (walletIdentifier: string) => {
+        // Get the wallet integration object based on the identifier
+        let walletIntegration: GobyWallet | WalletConnect | null = null;
+        let connectionSuccessful: boolean = false;
+        try {
+            if (walletIdentifier === 'Goby') {
+              walletIntegration = new GobyWallet();
+              const response = await walletIntegration.connect(); // Connect to the Goby wallet asynchronously
+              connectionSuccessful = Boolean(response);
+            } else if (walletIdentifier === 'Hoogii') {
+                walletIntegration = new HoogiiWallet();
+                const response = await walletIntegration.connect(); // Connect to the Hoogii wallet
+                connectionSuccessful = Boolean(response);
+            } else if (walletIdentifier === 'WalletConnect') {
+              walletIntegration = new WalletConnect();
+              walletIntegration.connect(); // Connect to the WalletConnect wallet
+              connectionSuccessful = true;
+            }
+          } catch (error) {
+            console.error('Error connecting to wallet:', error);
+            connectionSuccessful = false;
+          }
+      
+          if (connectionSuccessful && walletIntegration) {
+            console.log('setting active wallet 🚀')
+            walletManager ? walletManager.setActiveWallet(walletIntegration) : null;
+          }
+      
+          setIsOpen(false);
+        };
 
     return (    
         <Transition appear show={isOpen} as={Fragment}>
@@ -52,15 +83,28 @@ function ConnectWalletModal({ isOpen, setIsOpen, connectedWallet, connectGobyWal
                     <div className="mt-10 flex flex-col gap-4">
 
                         {/* Goby Wallet */}
-                        <div onClick={!connectedWallet ? connectGobyWallet : disconnectWalletFunc} className={`${connectedWallet ? 'bg-green-700/20 focus:ring-green-700/20' : 'bg-brandDark/10'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 rounded-xl cursor-pointer`}>
-                            <div className="flex items-center gap-4">
+                        <div onClick={() => handleConnect('Goby')} className={`${activeWallet instanceof GobyWallet ? 'bg-green-700/20 focus:ring-green-700/20' : 'bg-brandDark/10'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 rounded-xl cursor-pointer`}>
+                        <div className="flex items-center gap-4">
                                 <Image src="/assets/goby.webp" height={40} width={40} alt={'Goby Wallet Logo'} className="rounded-full" />
                                 <p className="font-medium text-lg">Goby Wallet</p>
                             </div>
                             <button className={`
-                            ${connectedWallet ? 'outline-none text-green-700' : ''}
+                            ${activeWallet instanceof GobyWallet ? 'outline-none text-green-700' : ''}
                             font-medium rounded-lg px-2 py-1
-                            ${connectedWallet ? "before:content-['Connected']" : "before:content-['Connect']"}`}
+                            ${activeWallet instanceof GobyWallet ? "before:content-['Connected']" : "before:content-['Connect']"}`}
+                            ></button>
+                        </div>
+
+                        {/* Hoogii Wallet */}
+                        <div onClick={() => handleConnect('Hoogii')} className={`${activeWallet instanceof HoogiiWallet ? 'bg-green-700/20 focus:ring-green-700/20' : 'bg-brandDark/10'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 rounded-xl cursor-pointer`}>
+                        <div className="flex items-center gap-4">
+                                <Image src="/assets/hoogii.png" height={40} width={40} alt={'Hoogii Wallet Logo'} className="rounded-full" />
+                                <p className="font-medium text-lg">Hoogii Wallet</p>
+                            </div>
+                            <button className={`
+                            ${activeWallet instanceof HoogiiWallet ? 'outline-none text-green-700' : ''}
+                            font-medium rounded-lg px-2 py-1
+                            ${activeWallet instanceof HoogiiWallet ? "before:content-['Connected']" : "before:content-['Connect']"}`}
                             ></button>
                         </div>
 
