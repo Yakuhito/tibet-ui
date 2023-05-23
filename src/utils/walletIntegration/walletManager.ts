@@ -110,7 +110,7 @@ class WalletManager {
         }
         return new HoogiiWallet();
     } else if (parsedWallet === 'WalletConnect') {
-      const checkIfStillConnected = await new WalletConnect().connect()
+      const checkIfStillConnected = await new WalletConnect().eagerlyConnect()
       if (!checkIfStillConnected) {
           localStorage.removeItem('activeWallet');
           return null
