@@ -6,7 +6,22 @@ import { toast } from 'react-hot-toast';
 class WalletConnectIntegration implements WalletIntegrationInterface {
   name = "WalletConnect"
   image = "/assets/xch.webp"
+  fingerprint
+  topic
   
+  constructor() {
+    const fingerprint = localStorage.getItem('wc_fingerprint')
+    const topic = localStorage.getItem('wc_topic')
+
+    if (fingerprint) {
+      this.fingerprint = JSON.parse(fingerprint);
+    }
+
+    if (topic) {
+      this.topic = JSON.parse(topic);
+    }
+  }
+
   async connect(): Promise<boolean> {
 
     // If existing connection still exists, return true, else display QR code to initiate new connection
@@ -44,7 +59,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
             chia: {
               methods: [
                 "chia_createOfferForIds",
-                "chia_signMessageByAddress"
+                "chia_getWallets",
               ],
               chains: ["chia:mainnet"],
               events: [],
@@ -81,9 +96,46 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
             });
           }
           const session = await approval();
-          console.log('Connected Chia wallet via WalletConnect', session)
+          console.log('Connected Chia wallet via WalletConnect', session, signClient)
+          localStorage.setItem('wc_fingerprint', JSON.stringify(session.namespaces.chia.accounts[0].split(":")[2]))
+          localStorage.setItem('wc_topic', JSON.stringify(session.topic))
+          this.fingerprint = Number(session.namespaces.chia.accounts[0].split(":")[2]);
+          this.topic = session.topic;
           QRCodeModal.close()
           toast.success('Successfully Connected')
+
+
+
+
+
+
+          // const resultOffer = await signClient.request({
+          //   topic: this.topic,
+          //   chainId: "chia:mainnet",
+          //   request: {
+          //     method: "chia_createOfferForIds",
+          //     params: {
+          //       fingerprint: this.fingerprint,
+          //       walletIdsAndAmounts: {
+          //         1: -1002146999,
+          //         3: 617,
+          //       },
+          //       driverDict: {},
+          //       disableJSONFormatting: true
+          //     },
+          //   },
+          // });
+  
+          // console.log('🎉🎉', resultOffer)
+
+
+
+
+
+
+
+
+
           return true
         }
     } catch (error) {
@@ -127,6 +179,8 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
       return false;
     }
 
+    localStorage.removeItem('wc_fingerprint')
+    localStorage.removeItem('wc_topic')
     return false;
   }
 
@@ -161,35 +215,61 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
 
     const client = await onInitializeSignClient();
     
-    if (client) {
-      const getActiveSessionTopic = () => {
-        if (client.session.values.length > 0) {
-          const activeSession = client.session.values.find(session => session.acknowledged === true)
-          if (activeSession) {
-            return activeSession.topic;
+    try {
+      if (client) {
+        const getActiveSessionTopic = () => {
+          if (client.session.values.length > 0) {
+            const activeSession = client.session.values.find(session => session.acknowledged === true)
+            if (activeSession) {
+              return activeSession.topic;
+            }
           }
         }
-      }
 
-      const topic = getActiveSessionTopic()
-      if (!topic) return
+        const topic = getActiveSessionTopic()
+        if (!topic) return
 
-      const result = await client.request({
-        topic: topic,
-        chainId: "chia:mainnet",
-        request: {
-          method: "chia_createOfferForIds",
-          params: {
-            offer: {
-              "": 1002998692503,
-              "d82dd03f8a9ad2f84353cd953c4de6b21dbaaf7de3ba3f4ddd9abe31ecba80ad": -572252,
+        // const result = await client.request({
+        //   topic: this.topic,
+        //   chainId: "chia:mainnet",
+        //   request: {
+        //     method: "chia_getWallets",
+        //     params: {
+        //       fingerprint: this.fingerprint,
+        //       includeData: false,
+        //     },
+        //   },
+        // });
+        
+        // console.log(result)
+
+
+        const resultOffer = await client.request({
+          topic: this.topic,
+          chainId: "chia:mainnet",
+          request: {
+            method: "chia_createOfferForIds",
+            params: {
+              fingerprint: this.fingerprint,
+              walletIdsAndAmounts: {
+                1: -1002146999,
+                3: 617,
+              },
+              driverDict: {},
+              disableJSONFormatting: true
             },
-            driverDict: {},
-            disableJSONFormatting: true
           },
-        },
-      });
+        });
+
+        console.log('🎉🎉', resultOffer)
+
+
+      } 
+    } catch (error) {
+      console.log(error);
+        toast.error(`Wallet - ${error}`)
     }
+    
   }
 
   getBalance(): void {
