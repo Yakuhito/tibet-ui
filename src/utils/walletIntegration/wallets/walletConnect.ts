@@ -1,6 +1,7 @@
 import WalletIntegrationInterface from '../walletIntegrationInterface';
 import QRCodeModal from "@walletconnect/qrcode-modal";
 import SignClient from "@walletconnect/sign-client";
+import Client from '@walletconnect/sign-client';
 import { toast } from 'react-hot-toast';
 
 class WalletConnectIntegration implements WalletIntegrationInterface {
@@ -8,18 +9,18 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
   image = "/assets/xch.webp"
   fingerprint
   topic
+  client: SignClient | undefined
   
   constructor() {
-    const fingerprint = localStorage.getItem('wc_fingerprint')
-    const topic = localStorage.getItem('wc_topic')
+    // console.log('🎉🎉', process.env.WALLETCONNECT_PROJECT_ID)
+    // if (!process.env.WALLETCONNECT_PROJECT_ID) throw new Error('No WALLETCONNECT_PROJECT_ID environment variable found. Please provide this & redeploy.')
 
-    if (fingerprint) {
-      this.fingerprint = JSON.parse(fingerprint);
-    }
-
-    if (topic) {
-      this.topic = JSON.parse(topic);
-    }
+    // Restore active session fingerprint & topic (if any) to object property for later use
+    const fingerprint = localStorage.getItem('wc_fingerprint');
+    if (fingerprint) {this.fingerprint = JSON.parse(fingerprint);}
+    
+    const topic = localStorage.getItem('wc_topic');
+    if (topic) {this.topic = JSON.parse(topic);}
   }
 
   async connect(): Promise<boolean> {
@@ -28,32 +29,10 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     if (await this.eagerlyConnect()) {
       return true;
     }
-
-
-
-    // Sign client
-    async function onInitializeSignClient() {
-      try {
-        const client = await SignClient.init({
-          logger: "info",
-          projectId: 'd8a8954b78975225ab6abcbc7c4c9f00',
-          metadata: {
-            name: "TibetSwap",
-            description: "The first decentralized AMM running on the Chia blockchain.",
-            url: "https://v2.tibetswap.io/",
-            icons: ["https://v2.tibetswap.io/logo.jpg"],
-          },
-        });
-        return client;
-      } catch (e) {
-        console.log(e);
-        toast.error(`Wallet - ${e}`)
-      }
-    }
     
+    // Initiate connection and pass pairing uri to the modal (QR code)
     try {
-      // Initiate connection and pass pairing uri to the modal
-      const signClient = await onInitializeSignClient();
+      const signClient = await this.signClient();
         if (signClient) {
           const namespaces = {
             chia: {
@@ -66,46 +45,28 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
             },
           };
 
-          const getActivePairTopic = () => {
-            if (signClient.pairing.values.length > 0) {
-              const activePairing = signClient.pairing.values.find(pairing => pairing.active === true)
-              if (activePairing) {
-                return activePairing.topic;
-              }
-            }
-          }
+          // Fetch uri to display QR code to establish new wallet connection
+          var { uri, approval } = await signClient.connect({
+            requiredNamespaces: namespaces,
+          });
 
-          if (getActivePairTopic()) {
-            console.log('Persisting previous connection')
-            var { uri, approval } = await signClient.connect({
-              pairingTopic: getActivePairTopic(), // Persist connection on refresh
-              requiredNamespaces: namespaces,
-            });
-          } else {
-            console.log('Creating new connection')
-            var { uri, approval } = await signClient.connect({
-              requiredNamespaces: namespaces,
-            });
-          }
-
-
-
+          // Display QR code to user
           if (uri) {
             QRCodeModal.open(uri, () => {
               console.log("QR modal closed");
             });
           }
+
+          // If new connection established successfully
           const session = await approval();
           console.log('Connected Chia wallet via WalletConnect', session, signClient)
+          // Save session fingerprint to localstorage for persistence
           localStorage.setItem('wc_fingerprint', JSON.stringify(session.namespaces.chia.accounts[0].split(":")[2]))
           localStorage.setItem('wc_topic', JSON.stringify(session.topic))
           this.fingerprint = Number(session.namespaces.chia.accounts[0].split(":")[2]);
           this.topic = session.topic;
           QRCodeModal.close()
           toast.success('Successfully Connected')
-
-
-
 
 
 
@@ -121,21 +82,12 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           //         3: 617,
           //       },
           //       driverDict: {},
-          //       disableJSONFormatting: true
+          //       disableJSONFormatting: true,
           //     },
           //   },
           // });
   
-          // console.log('🎉🎉', resultOffer)
-
-
-
-
-
-
-
-
-
+          // console.log('Offer Response:', resultOffer)
           return true
         }
     } catch (error) {
@@ -146,31 +98,13 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
   }
 
   async eagerlyConnect(): Promise<boolean> {
-    // Sign client
-    async function onInitializeSignClient() {
-      try {
-        const client = await SignClient.init({
-          logger: "info",
-          projectId: 'd8a8954b78975225ab6abcbc7c4c9f00',
-          metadata: {
-            name: "TibetSwap",
-            description: "The first decentralized AMM running on the Chia blockchain.",
-            url: "https://v2.tibetswap.io/",
-            icons: ["https://v2.tibetswap.io/logo.jpg"],
-          },
-        });
-        return client;
-      } catch (error) {
-        console.log(error);
-        toast.error(`Wallet - ${error}`)
-      }
-    }
     
+    // Sign client, fetch pairing data. If active pairing, previous connection must exist.
     try {
-      // Initiate connection and pass pairing uri to the modal
-      const signClient = await onInitializeSignClient();
+      const signClient = await this.signClient();
 
       if (signClient?.pairing.getAll({ active: true }).length) {
+        console.log(signClient.session.keys)
         return true;
       }
     } catch (error) {
@@ -192,42 +126,12 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
 
     console.log(requestAssets, offerAssets)
 
-    // WalletConnect transaction signing logic
+    // Sign client
+    const signClient = await this.signClient();
     
-    async function onInitializeSignClient() {
-      try {
-        const client = await SignClient.init({
-          logger: "info",
-          projectId: 'd8a8954b78975225ab6abcbc7c4c9f00',
-          metadata: {
-            name: "TibetSwap",
-            description: "The first decentralized AMM running on the Chia blockchain.",
-            url: "https://v2.tibetswap.io/",
-            icons: ["https://v2.tibetswap.io/logo.jpg"],
-          },
-        });
-        return client;
-      } catch (e) {
-        console.log(e);
-        toast.error(`Wallet - ${e}`)
-      }
-    }
-
-    const client = await onInitializeSignClient();
-    
+    // Fetch previous connection
     try {
-      if (client) {
-        const getActiveSessionTopic = () => {
-          if (client.session.values.length > 0) {
-            const activeSession = client.session.values.find(session => session.acknowledged === true)
-            if (activeSession) {
-              return activeSession.topic;
-            }
-          }
-        }
-
-        const topic = getActiveSessionTopic()
-        if (!topic) return
+        if (!this.topic || !signClient) return console.log('Not connected via WalletConnect or could not sign client')
 
         // const result = await client.request({
         //   topic: this.topic,
@@ -243,8 +147,8 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
         
         // console.log(result)
 
-
-        const resultOffer = await client.request({
+        // Send request to generate offer via WalletConnect
+        const resultOffer = await signClient.request({
           topic: this.topic,
           chainId: "chia:mainnet",
           request: {
@@ -256,24 +160,47 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
                 3: 617,
               },
               driverDict: {},
-              disableJSONFormatting: true
+              disableJSONFormatting: true,
             },
           },
         });
+        console.log('Offer Response:', resultOffer)
 
-        console.log('🎉🎉', resultOffer)
-
-
-      } 
     } catch (error) {
       console.log(error);
-        toast.error(`Wallet - ${error}`)
+      toast.error(`Wallet - ${error}`)
     }
     
   }
 
   getBalance(): void {
     // WalletConnect balance retrieval logic
+  }
+
+  async signClient(): Promise<void | Client> {
+
+    // const projectId = process.env.WALLETCONNECT_PROJECT_ID;
+
+    // If client has been saved to object, return that instead of completing a new sign
+    if (this.client) return this.client;
+
+    try {
+      const client = await SignClient.init({
+        logger: "info",
+        projectId: 'd8a8954b78975225ab6abcbc7c4c9f00',
+        metadata: {
+          name: "TibetSwap",
+          description: "The first decentralized AMM running on the Chia blockchain.",
+          url: "https://v2.tibetswap.io/",
+          icons: ["https://v2.tibetswap.io/logo.jpg"],
+        },
+      });
+      this.client = client;
+      return client;
+    } catch (e) {
+      console.log(e);
+      toast.error(`Wallet - ${e}`)
+    }
   }
 }
 
