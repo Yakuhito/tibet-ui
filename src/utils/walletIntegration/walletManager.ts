@@ -1,7 +1,7 @@
 import WalletIntegrationInterface from './walletIntegrationInterface';
-import GobyWallet from './wallets/gobyWallet';
 import WalletConnect from './wallets/walletConnect';
 import HoogiiWallet from './wallets/hoogiiWallet';
+import GobyWallet from './wallets/gobyWallet';
 
 class WalletManager {
   private static instance: WalletManager;
