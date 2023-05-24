@@ -34,83 +34,100 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
 
     // Update pair rates every 4 seconds
     useEffect(() => {
-        const fetchUpdatedPairDataInterval = setInterval(async () => {
-            const newPairData = await getPairByLauncherId(data.pairId);
-            setPair(newPairData)
+
+        const updateOrderData = setInterval(async () => {
+
+            const updatePair = async () => {
+                console.log('Updating Pair')
+                const newPairData = await getPairByLauncherId(data.pairId);
+                setPair(newPairData)
+            }
+            updatePair()
+
+
+            // Update order rates every 4 seconds
+            const updateOfferDataSwap = () => {
+                if (pair) {
+                    const newOfferData = {...data};
+                    const isBuy = newOfferData.offer[0][0].short_name === process.env.NEXT_PUBLIC_XCH;
+                    const { xch_reserve, token_reserve } = pair // Get latest reserve amounts
+                    
+                    if (isBuy) {
+                        const amount0 = newOfferData.offer[0][2]
+                        const amount1 = getInputPrice(amount0, xch_reserve, token_reserve); // Get updated token quote
+                        newOfferData.request[0][2] = amount1;
+                        setGenerateOfferData(newOfferData);
+                        console.log("Updating offer data");
+                    } else {
+                      const amount1 = newOfferData.offer[0][2];
+                      const amount0 = getInputPrice(amount1, token_reserve, xch_reserve); // Get updated XCH quote
+                      newOfferData.request[0][2] = amount0;
+                      console.log("Updating offer data");
+                      setGenerateOfferData(newOfferData);
+                    }
+                }
+                setDataRefreshPercent(0)
+            }
+            if (activeTab === 'swap') updateOfferDataSwap()
+
+
+            const updateOfferDataLiquidity = () => {
+                if (pair) {
+                    const newOfferData = {...data};
+                    const isAddLiquidity = newOfferData.action === "ADD_LIQUIDITY";
+                    const { xch_reserve, token_reserve, liquidity } = pair; // Get latest reserve amounts
+                    const pairLiquidity = liquidity;
+                    
+                    
+                    if (isAddLiquidity) {
+                      const tokenAmount = newOfferData.offer[1][2];
+                      const liquidity = getLiquidityQuote(tokenAmount, token_reserve, pairLiquidity, false);
+                      var xchAmount = getLiquidityQuote(tokenAmount, token_reserve, xch_reserve, false);
+                      xchAmount += liquidity;
+    
+                      newOfferData.offer[0][2] = xchAmount; // Update Amount0
+                      newOfferData.request[0][2] = liquidity; // Update Amount2
+    
+                      console.log("Updating offer data");
+                      setGenerateOfferData(newOfferData);
+                    } else {
+                      const liquidityTokens = newOfferData.offer[0][2]
+                      const tokenAmount = getLiquidityQuote(liquidityTokens, pairLiquidity, token_reserve, true);
+                      var xchAmount = getLiquidityQuote(liquidityTokens, liquidity, xch_reserve, true);
+                      xchAmount += liquidity;
+                    
+                      newOfferData.request[0][2] = xchAmount; // Update Amount0
+                      newOfferData.request[1][2] = tokenAmount; // Update Amount1
+    
+                      console.log("Updating offer data");
+                      setGenerateOfferData(newOfferData);
+                    }
+                }
+                setDataRefreshPercent(0)
+            }
+            if (activeTab === 'liquidity') updateOfferDataLiquidity()
+
+
+            // Update fee
+            const updateFee = async () => {
+                if (!pair) return;
+                console.log('Updating Fee')
+                const quote = await getQuoteForPair(
+                    data.pairId,
+                    data.offer[0][2],
+                    undefined,
+                    data.offer[0][1],
+                    true
+                );
+                setPairAndQuote([pair, quote]);
+            }
+            updateFee()
+
         }, 4000)
-        return () => clearInterval(fetchUpdatedPairDataInterval)
-    }, [data.pairId])
+        return () => clearInterval(updateOrderData)
+    }, [data, pair, setDataRefreshPercent, setGenerateOfferData, activeTab])
 
-
-    // Update order rates every 5 seconds
-    useEffect(() => {
-        // Update Swap Offer Data Function
-        const updateOfferDataSwap = () => {
-            if (pair) {
-                const newOfferData = {...data};
-                const isBuy = newOfferData.offer[0][0].short_name === process.env.NEXT_PUBLIC_XCH;
-                const { xch_reserve, token_reserve } = pair // Get latest reserve amounts
-                
-                if (isBuy) {
-                    const amount0 = newOfferData.offer[0][2]
-                    const amount1 = getInputPrice(amount0, xch_reserve, token_reserve); // Get updated token quote
-                    newOfferData.request[0][2] = amount1;
-                    setGenerateOfferData(newOfferData);
-                    console.log("Updating offer data");
-                } else {
-                  const amount1 = newOfferData.offer[0][2];
-                  const amount0 = getInputPrice(amount1, token_reserve, xch_reserve); // Get updated XCH quote
-                  newOfferData.request[0][2] = amount0;
-                  console.log("Updating offer data");
-                  setGenerateOfferData(newOfferData);
-                }
-            }
-
-            setDataRefreshPercent(0)
-        }
-
-
-        // Update Liquidity Offer Data Function
-        const updateOfferDataLiquidity = () => {
-            if (pair) {
-                const newOfferData = {...data};
-                const isAddLiquidity = newOfferData.action === "ADD_LIQUIDITY";
-                const { xch_reserve, token_reserve, liquidity } = pair; // Get latest reserve amounts
-                const pairLiquidity = liquidity;
-                
-                
-                if (isAddLiquidity) {
-                  const tokenAmount = newOfferData.offer[1][2];
-                  const liquidity = getLiquidityQuote(tokenAmount, token_reserve, pairLiquidity, false);
-                  var xchAmount = getLiquidityQuote(tokenAmount, token_reserve, xch_reserve, false);
-                  xchAmount += liquidity;
-
-                  newOfferData.offer[0][2] = xchAmount; // Update Amount0
-                  newOfferData.request[0][2] = liquidity; // Update Amount2
-
-                  console.log("Updating offer data");
-                  setGenerateOfferData(newOfferData);
-                } else {
-                  const liquidityTokens = newOfferData.offer[0][2]
-                  const tokenAmount = getLiquidityQuote(liquidityTokens, pairLiquidity, token_reserve, true);
-                  var xchAmount = getLiquidityQuote(liquidityTokens, liquidity, xch_reserve, true);
-                  xchAmount += liquidity;
-                
-                  newOfferData.request[0][2] = xchAmount; // Update Amount0
-                  newOfferData.request[1][2] = tokenAmount; // Update Amount1
-
-                  console.log("Updating offer data");
-                  setGenerateOfferData(newOfferData);
-                }
-            }
-
-      }
-        
-        const refreshDataInterval = setInterval(activeTab === 'swap' ? updateOfferDataSwap : updateOfferDataLiquidity, 5000)
-
-        return () => clearInterval(refreshDataInterval)
-    }, [data, setGenerateOfferData, pair, setDataRefreshPercent, activeTab])
-
+    
     
     useEffect(() => {
         async function namelessFunction() {
