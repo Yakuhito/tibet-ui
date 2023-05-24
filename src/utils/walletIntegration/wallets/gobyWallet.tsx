@@ -1,9 +1,25 @@
 import WalletIntegrationInterface from '../walletIntegrationInterface';
+import WalletManager from '../walletManager';
 import { toast } from 'react-hot-toast';
 
 class gobyWallet implements WalletIntegrationInterface {
   name = "Goby";
   image = "/assets/goby.webp";
+
+  constructor() {
+    // Detect disconnect via Goby browser extension
+    // Check if Goby extension is installed
+    const { chia } = (window as any);
+    if (Boolean(chia && chia.isGoby)) {
+      const walletManager = WalletManager.getInstance()
+
+      chia.on("accountChanged", () => {
+        console.log(chia)
+        if (chia.selectedAddress) return // If Goby is still connected
+        if (walletManager.getActiveWallet() instanceof gobyWallet) return walletManager.disconnect();
+      });
+    }
+  }
 
   async connect(): Promise<boolean> {
     // Goby wallet connection logic
