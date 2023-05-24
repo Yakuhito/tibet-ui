@@ -6,21 +6,6 @@ class gobyWallet implements WalletIntegrationInterface {
   name = "Goby";
   image = "/assets/goby.webp";
 
-  constructor() {
-    // Detect disconnect via Goby browser extension
-    // Check if Goby extension is installed
-    const { chia } = (window as any);
-    if (Boolean(chia && chia.isGoby)) {
-      const walletManager = WalletManager.getInstance()
-
-      chia.on("accountChanged", () => {
-        console.log(chia)
-        if (chia.selectedAddress) return // If Goby is still connected
-        if (walletManager.getActiveWallet() instanceof gobyWallet) return walletManager.disconnect();
-      });
-    }
-  }
-
   async connect(): Promise<boolean> {
     // Goby wallet connection logic
     console.log('Connecting Goby Wallet')
@@ -79,6 +64,22 @@ class gobyWallet implements WalletIntegrationInterface {
     // Goby wallet balance retrieval logic
     console.log('Getting Goby Wallet Balance')
   }
+
+  // detectEvents(): void {
+  //   // Detect disconnect via Goby browser extension
+  //   // Check if Goby extension is installed
+  //   const { chia } = (window as any);
+  //   if (Boolean(chia && chia.isGoby)) {
+  //     const walletManager = WalletManager.getInstance()
+
+  //     chia.on("accountChanged", () => {
+  //       console.log(chia)
+  //       if (chia.selectedAddress) return // If Goby is still connected
+  //       if (walletManager.getActiveWallet() instanceof gobyWallet) return walletManager.disconnect();
+  //     });
+  //   }
+  // }
+
 }
 
 export default gobyWallet;
