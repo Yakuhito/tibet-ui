@@ -1,13 +1,10 @@
 import { ActionType, createOfferForPair, getInputPrice, getLiquidityQuote, getOutputPrice, getPairByLauncherId, getQuoteForPair } from '@/api';
 import type { OfferResponse, Pair, Quote, Token } from '@/api';
 import type { GenerateOfferData } from './TabContainer';
-import RingLoader from 'react-spinners/RingLoader';
 import { useEffect, useState, useContext } from 'react';
-import SuccessScreen from './SuccessScreen';
-import toast from 'react-hot-toast';
-import WalletManager from '@/utils/walletIntegration/walletManager';
-import WalletIntegrationInterface from '@/utils/walletIntegration/walletIntegrationInterface';
 import WalletContext from '@/context/WalletContext';
+import RingLoader from 'react-spinners/RingLoader';
+import SuccessScreen from './SuccessScreen';
 
 type GenerateOfferProps = {
   data: GenerateOfferData;
