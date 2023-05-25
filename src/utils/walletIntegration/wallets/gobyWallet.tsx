@@ -65,6 +65,39 @@ class gobyWallet implements WalletIntegrationInterface {
     console.log('Getting Goby Wallet Balance')
   }
 
+  async addAsset(assetId: string, symbol: string, logo: string): Promise<void> {
+
+    // Goby wallet transaction signing logic
+    console.log(`Adding ${symbol} to Goby`)
+
+    // Potentially modified values
+    let symbolM = symbol
+    let logoM = logo
+
+    // Ensure symbol is maximum 12 characters (for LP tokens)
+    if (symbol.includes('TIBET-')) {
+      symbolM = symbol.replace('TIBET-', 'TB-');
+      logoM = 'https://v2.tibetswap.io/logo.jpg';
+    }
+
+    try {
+      const params = {
+        type: 'cat',
+        options: {
+          assetId,
+          symbol: symbolM,
+          logo: logoM
+        }
+      }
+      const response = await (window as any).chia.request({ method: 'walletWatchAsset', params })
+      console.log('Fetching offer', response)
+      return response
+    } catch (error: any) {
+        console.log(error)
+        toast.error(`Wallet - ${error?.message || String(error.message)}`);
+    }    
+  }
+
   // detectEvents(): void {
   //   // Detect disconnect via Goby browser extension
   //   // Check if Goby extension is installed

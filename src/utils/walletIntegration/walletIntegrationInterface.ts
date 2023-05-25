@@ -5,6 +5,7 @@ interface WalletIntegrationInterface {
     disconnect(): void;
     generateOffer(requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[]): Promise<void>;
     getBalance(): void;
+    addAsset(assetId: string, symbol: string, logo: string): Promise<void>;
 }
   
 export default WalletIntegrationInterface;

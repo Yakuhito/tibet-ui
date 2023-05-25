@@ -93,6 +93,12 @@ class WalletManager {
     }
   }
 
+  public async addAsset(assetId: string, symbol: string, logo: string): Promise<void> {
+    if (this.activeWallet) {
+      this.activeWallet.addAsset(assetId, symbol, logo);
+    }
+  }
+  
   private async deserializeWallet(): Promise<WalletIntegrationInterface | null> {
     const parsedWallet = localStorage.getItem('activeWallet')
     if (parsedWallet === 'Goby') {
