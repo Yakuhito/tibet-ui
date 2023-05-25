@@ -29,6 +29,10 @@
   },
   "devDependencies": {
     "@types/canvas-confetti": "^1.6.0",
+    "@walletconnect/auth-client": "^2.1.0",
+    "@walletconnect/qrcode-modal": "^1.8.0",
+    "@walletconnect/sign-client": "^2.7.6",
+    "@web3modal/standalone": "^2.4.1",
     "autoprefixer": "^10.4.14",
     "postcss": "^8.4.21",
     "tailwindcss": "^3.3.1"

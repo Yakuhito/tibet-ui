@@ -1,22 +1,52 @@
-import { Dialog, Transition } from '@headlessui/react'
-import { Fragment } from 'react'
+import WalletIntegrationInterface from '@/utils/walletIntegration/walletIntegrationInterface';
+import WalletConnect from '@/utils/walletIntegration/wallets/walletConnect';
+import HoogiiWallet from '@/utils/walletIntegration/wallets/hoogiiWallet';
+import GobyWallet from '@/utils/walletIntegration/wallets/gobyWallet';
+import WalletManager from '@/utils/walletIntegration/walletManager';
+import { Dialog, Transition } from '@headlessui/react';
+import { Fragment } from 'react';
 import Image from 'next/image';
 
 interface ConnectWalletModalProps {
     isOpen: boolean;
     setIsOpen: (value: boolean) => void;
-    connectedWallet: any;
-    connectGobyWallet: () => void;
-    disconnectWalletFunc: () => void;
+    walletManager: WalletManager | null;
+    activeWallet: WalletIntegrationInterface | null;
 }
 
-function ConnectWalletModal({ isOpen, setIsOpen, connectedWallet, connectGobyWallet, disconnectWalletFunc }: ConnectWalletModalProps) {
-    // Wallet options user can select
-    const wallets = [
-        {id: 0, label: 'Gobi Wallet', connected: (connectedWallet ? connectedWallet.constructor.name === "GobyWallet" : false), image: '/assets/goby.webp', connectWalletFunc: connectGobyWallet, disconnectWalletFunc: disconnectWalletFunc},
-        {id: 1, label: 'Chia Wallet', value: false, image: '/assets/xch.webp', comingSoon: true},
-    ]
+function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet }: ConnectWalletModalProps) {
 
+    // Handle connecting to a wallet when clicking on an option
+    const handleConnect = async (walletIdentifier: string) => {
+        // Get the wallet integration object based on the identifier
+        let walletIntegration: WalletIntegrationInterface | null = null;
+        let connectionSuccessful: boolean = false;
+        if (walletIdentifier === activeWallet?.name) return // If already connected to that wallet, do nothing (or handle disconnect?)
+
+        // Try connecting to wallet option selected by user
+        try {
+            if (walletIdentifier === 'Goby') {
+                walletIntegration = new GobyWallet();
+                const response = await walletIntegration.connect(); // Connect to Goby wallet
+                connectionSuccessful = Boolean(response);
+            } else if (walletIdentifier === 'Hoogii') {
+                walletIntegration = new HoogiiWallet();
+                const response = await walletIntegration.connect(); // Connect to Hoogii wallet
+                connectionSuccessful = Boolean(response);
+            } else if (walletIdentifier === 'WalletConnect') {
+                walletIntegration = new WalletConnect();
+                const response = await walletIntegration.connect(); // Connect to WalletConnect (Chia Wallet)
+                connectionSuccessful = Boolean(response);
+            }
+        } catch (error) {
+            console.error('Error connecting to wallet:', error);
+            connectionSuccessful = false;
+        }
+        // Update activeWallet state
+        if (connectionSuccessful && walletIntegration) {
+            walletManager ? walletManager.setActiveWallet(walletIntegration) : null;
+        }
+    };
 
     return (    
         <Transition appear show={isOpen} as={Fragment}>
@@ -52,17 +82,43 @@ function ConnectWalletModal({ isOpen, setIsOpen, connectedWallet, connectGobyWal
                     <div className="mt-10 flex flex-col gap-4">
 
                         {/* Goby Wallet */}
-                        <div onClick={!connectedWallet ? connectGobyWallet : disconnectWalletFunc} className={`${connectedWallet ? 'bg-green-700/20 focus:ring-green-700/20' : 'bg-brandDark/10'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 rounded-xl cursor-pointer`}>
-                            <div className="flex items-center gap-4">
+                        <div onClick={() => handleConnect('Goby')} className={`${activeWallet instanceof GobyWallet ? 'bg-green-700/20 focus:ring-green-700/20' : 'bg-brandDark/10'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 rounded-xl cursor-pointer`}>
+                        <div className="flex items-center gap-4">
                                 <Image src="/assets/goby.webp" height={40} width={40} alt={'Goby Wallet Logo'} className="rounded-full" />
                                 <p className="font-medium text-lg">Goby Wallet</p>
                             </div>
                             <button className={`
-                            ${connectedWallet ? 'outline-none text-green-700' : ''}
+                            ${activeWallet instanceof GobyWallet ? 'outline-none text-green-700' : ''}
                             font-medium rounded-lg px-2 py-1
-                            ${connectedWallet ? "before:content-['Connected']" : "before:content-['Connect']"}`}
+                            ${activeWallet instanceof GobyWallet ? "before:content-['Connected']" : "before:content-['Connect']"}`}
                             ></button>
                         </div>
+
+                        {/* Hoogii Wallet */}
+                        <div onClick={() => handleConnect('Hoogii')} className={`${activeWallet instanceof HoogiiWallet ? 'bg-green-700/20 focus:ring-green-700/20' : 'bg-brandDark/10'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 rounded-xl cursor-pointer`}>
+                        <div className="flex items-center gap-4">
+                                <Image src="/assets/hoogii.png" height={40} width={40} alt={'Hoogii Wallet Logo'} className="rounded-full" />
+                                <p className="font-medium text-lg">Hoogii Wallet</p>
+                            </div>
+                            <button className={`
+                            ${activeWallet instanceof HoogiiWallet ? 'outline-none text-green-700' : ''}
+                            font-medium rounded-lg px-2 py-1
+                            ${activeWallet instanceof HoogiiWallet ? "before:content-['Connected']" : "before:content-['Connect']"}`}
+                            ></button>
+                        </div>
+
+                        {/* Chia Wallet */}
+                        {/* <div onClick={() => handleConnect('WalletConnect')} className={`${activeWallet instanceof WalletConnect ? 'bg-green-700/20 focus:ring-green-700/20' : 'bg-brandDark/10'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 rounded-xl cursor-pointer`}>
+                        <div className="flex items-center gap-4">
+                                <Image src="/assets/xch.webp" height={40} width={40} alt={'Chia Wallet Logo'} className="rounded-full" />
+                                <p className="font-medium text-lg">Chia Wallet</p>
+                            </div>
+                            <button className={`
+                            ${activeWallet instanceof WalletConnect ? 'outline-none text-green-700' : ''}
+                            font-medium rounded-lg px-2 py-1
+                            ${activeWallet instanceof WalletConnect ? "before:content-['Connected']" : "before:content-['Connect']"}`}
+                            ></button>
+                        </div> */}
 
                         {/* Chia Wallet */}
                         <div className={`hover:opacity-80 bg-brandDark/10 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 rounded-xl cursor-pointer`}>
