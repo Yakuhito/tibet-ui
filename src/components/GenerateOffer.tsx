@@ -5,6 +5,7 @@ import { useEffect, useState, useContext } from 'react';
 import WalletContext from '@/context/WalletContext';
 import RingLoader from 'react-spinners/RingLoader';
 import SuccessScreen from './SuccessScreen';
+import Image from 'next/image';
 
 type GenerateOfferProps = {
   data: GenerateOfferData;
@@ -282,17 +283,23 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         return (
             <ul className="list-none m-0 font-medium">
                 {a.map(e => (
-                    <li key={e[0].asset_id}>
+                    <li key={e[0].asset_id} className="flex-col gap-2 items-center pb-2 last:pb-0">
                         {/* If swap, add dev fee on top of quote */}
-                        {amountWithFee(e)}{" "}
-                        {process.env.NEXT_PUBLIC_XCH === "TXCH" && e[0].name === "Chia" ? "Testnet Chia"
-                        : e[0].name === "Pair Liquidity Token" ? e[0].short_name : e[0].name}{" "}
-                        {e[1] ? <></> : <button
-                            className="ml-1 bg-brandDark hover:bg-brandDark/80 text-white px-2 rounded-lg"
-                            onClick={() => copyToClipboard(e[0].asset_id)}
-                        >
-                            Copy Asset ID
-                        </button>}
+                        <div className="flex gap-2 items-center">
+                            <Image src={e[0].image_url} width={30} height={30} alt="Token logo" className="rounded-full outline-brandDark/20 p-0.5" />
+                            <p>{amountWithFee(e)}</p>
+                            <p>{process.env.NEXT_PUBLIC_XCH === "TXCH" && e[0].name === "Chia" ? "Testnet Chia" : e[0].name === "Pair Liquidity Token" ? e[0].short_name : e[0].name}</p>
+                        </div>
+                        
+                        {e[1] ? null :
+                        (<div className="rounded-lg mt-2 mb-4 flex gap-2 ml-4">
+                            <p className="text-brandDark">⤷</p>
+                            <div className="flex gap-2 text-sm font-normal">
+                                <button className="hover:opacity-80 bg-brandDark/10 py-1 px-4 rounded-lg" onClick={() => copyToClipboard(e[0].asset_id)}>Copy Asset ID</button>
+                                <button className="hover:opacity-80 bg-brandDark/10 py-1 px-4 rounded-lg flex items-center gap-2"><Image src={"/assets/goby.webp"} width={15} height={15} alt="Token logo" className="rounded-full" />Add to Goby</button>
+                            </div>
+                        </div>)
+                        }
                     </li>
                 ))}
             </ul>
@@ -346,32 +353,35 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         if(step === 2) {
             return (
                 <div className="text-left w-full">
-                    <p className="text-4xl font-bold mb-8">Order Summary</p>
-
-                    <div className="bg-brandDark/10 rounded-xl p-4 mb-4">
-                        <p className="mb-2 font-medium text-lg text-brandDark">Offering:</p>
+                    {/* <p className="text-4xl font-bold mb-8">Order Summary</p> */}
+                    <div className="mb-4 bg-brandDark/10 rounded-xl px-4 py-4">
+                        <p className="mb-4 font-medium text-2xl text-brandDark">Offering</p>
                         {listAssets(data.offer, true)}
                     </div>
 
-                    <div className="bg-brandDark/10 rounded-xl p-4 mb-4">
-                        <p className="mb-2 font-medium text-lg text-brandDark">Requesting:</p>
+                    <div className="mb-4 mt-4 bg-brandDark/10 rounded-xl px-4 py-4">
+                        <p className="mb-4 font-medium text-2xl text-brandDark">Requesting</p>
                         {/* <CircularLoadingBar percent={dataRefreshPercent} /> */}
                         {listAssets(data.request, false)}
                     </div>
+                    <p className="py-4 px-4 font-medium mb-4 bg-brandDark/10 rounded-xl">
+                        <span>Min fee › </span>
+                        <span className="font-normal">{(pairAndQuote![1].fee / Math.pow(10, 12)).toFixed(12)} {process.env.NEXT_PUBLIC_XCH}</span>
+                    </p>
 
-                    <p className="bg-brandDark/10 rounded-xl py-2 px-4 font-medium mb-4">Min fee: <span className="font-normal">{(pairAndQuote![1].fee / Math.pow(10, 12)).toFixed(12)} {process.env.NEXT_PUBLIC_XCH}</span></p>
-                    <p className="px-4 mb-4 font-medium">Please generate the offer, paste it below, and click the button to proceed.</p>
+                    {/* <p className="px-4 mb-4 font-medium">Generate the offer, paste it below, then submit.</p> */}
+                    {activeWallet && <button className="w-full bg-brandDark text-white py-4 rounded-lg mb-8 font-medium hover:opacity-90" onClick={completeWithWallet}>Use Wallet to Complete Order</button>}
+                    
                     <input type="text"
                         value={offer}
-                        className='w-full py-2 px-4 border-2 text-brandDark dark:border-brandDark dark:bg-brandDark/20 rounded-md focus:outline-none focus:border-brandDark'
+                        className='w-full py-2 px-4 border text-brandDark dark:border-brandDark dark:bg-brandDark/20 rounded-xl focus:outline-none focus:ring focus:ring-brandDark/40'
                         onChange={e => setOffer(e.target.value)}
-                        placeholder='offer1...'
+                        placeholder='Generate the offer and paste it here'
                     />
 
-                    {activeWallet && <button className="w-full bg-brandDark text-white py-4 rounded-lg mt-4 font-medium" onClick={completeWithWallet}>Use Wallet to Complete Order</button>}
                     <button
                         onClick={() => setStep(3)}
-                        className={`${offer.length === 0 ? 'bg-brandDark/10 text-brandDark/20 dark:text-brandLight/30 cursor-not-allowed' : 'bg-green-700'} text-brandLight px-4 py-2 rounded-lg w-full mt-8 font-medium`}
+                        className={`${offer.length === 0 ? 'bg-brandDark/10 text-brandDark/20 dark:text-brandLight/30 cursor-not-allowed' : 'bg-green-700'} text-brandLight px-4 py-2 rounded-lg w-full mt-4 font-medium`}
                         disabled={offer.length === 0}
                     >
                         Submit Manually
