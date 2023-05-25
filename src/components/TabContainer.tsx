@@ -70,10 +70,11 @@ const TabContainer: React.FC<TabContainerProps> = ({ tokens, selectedToken, setS
 
   return (
     <div className="rounded-2xl max-w-screen-sm w-full">
+    <h1 className="text-[2.75rem] leading-10 sm:text-5xl font-bold pb-4">{generateOfferData ? 'Order Summary' : 'Trade'}</h1>
 
       {/* Display buy/sell buttons */}
       {generateOfferData == null ? (
-      <div className="flex gap-4 px-2 text-xl mb-4">
+      <div className="flex gap-4 px-2 text-xl mb-4 mt-8">
         <button
           className={`font-medium ${
             activeTab === 'swap' ? 'text-brandDark' : 'text-brandDark/50 hover:opacity-80'
