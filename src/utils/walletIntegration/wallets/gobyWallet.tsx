@@ -76,7 +76,7 @@ class gobyWallet implements WalletIntegrationInterface {
 
     // Ensure symbol is maximum 12 characters (for LP tokens)
     if (symbol.includes('TIBET-')) {
-      symbolM = symbol.replace('TIBET-', 'TB-');
+      symbolM = symbol.replace('TIBET-', 'TB-').substring(0, 12);
       logoM = 'https://v2.tibetswap.io/logo.jpg';
     }
 

@@ -1,4 +1,5 @@
 import { ActionType, createOfferForPair, getInputPrice, getLiquidityQuote, getOutputPrice, getPairByLauncherId, getQuoteForPair } from '@/api';
+import GobyWallet from '@/utils/walletIntegration/wallets/gobyWallet';
 import type { OfferResponse, Pair, Quote, Token } from '@/api';
 import type { GenerateOfferData } from './TabContainer';
 import { useEffect, useState, useContext } from 'react';
@@ -259,6 +260,12 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         });
     };
 
+    const addAssetToWallet = async (assetId: string, symbol: string, logo: string) => {
+        if (!activeWallet) return console.log('Connect to a wallet before trying to add an asset')
+        console.log('sending request to goby')
+        await activeWallet.addAsset(assetId, symbol, logo)
+    }
+
     const listAssets = (a: [Token, boolean, number][], isOfferingAsset: boolean) => {
         const amountWithFee = (e: [Token, boolean, number]) => {
             // SWAP BUY (add fee to XCH amount)
@@ -294,8 +301,8 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                         (<div className="rounded-lg mt-2 mb-4 flex gap-2 ml-4">
                             <p className="text-brandDark">⤷</p>
                             <div className="flex gap-2 text-sm font-normal">
-                                <button className="hover:opacity-80 bg-brandDark/10 py-1 px-4 rounded-lg" onClick={() => copyToClipboard(e[0].asset_id)}>Copy Asset ID</button>
-                                <button className="hover:opacity-80 bg-brandDark/10 py-1 px-4 rounded-lg flex items-center gap-2"><Image src={"/assets/goby.webp"} width={15} height={15} alt="Token logo" className="rounded-full" />Add to Goby</button>
+                                <button className="hover:opacity-80 bg-brandDark/10 py-1 px-4 whitespace-nowrap rounded-lg" onClick={() => copyToClipboard(e[0].asset_id)}>Copy Asset ID</button>
+                                {activeWallet instanceof GobyWallet && <button onClick={() => addAssetToWallet(e[0].asset_id, e[0].short_name, e[0].image_url)} className="hover:opacity-80 bg-brandDark/10 py-1 px-4 whitespace-nowrap rounded-lg flex items-center gap-2"><Image src={"/assets/goby.webp"} width={15} height={15} alt="Token logo" className="rounded-full" />Add to Goby</button>}
                             </div>
                         </div>)
                         }
@@ -353,34 +360,36 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
             return (
                 <div className="text-left w-full">
                     {/* <p className="text-4xl font-bold mb-8">Order Summary</p> */}
-                    <div className="mb-4 bg-brandDark/10 rounded-xl px-4 py-4">
+                    <div className="mb-4 bg-brandDark/10 rounded-xl p-4">
                         <p className="mb-4 font-medium text-2xl text-brandDark">Offering</p>
                         {listAssets(data.offer, true)}
                     </div>
 
-                    <div className="mb-4 mt-4 bg-brandDark/10 rounded-xl px-4 py-4">
+                    <div className="mb-4 mt-4 bg-brandDark/10 rounded-xl p-4">
                         <p className="mb-4 font-medium text-2xl text-brandDark">Requesting</p>
                         {/* <CircularLoadingBar percent={dataRefreshPercent} /> */}
                         {listAssets(data.request, false)}
                     </div>
-                    <p className="py-4 px-4 font-medium mb-4 bg-brandDark/10 rounded-xl">
+                    <p className="py-4 px-4 font-medium mb-12 bg-brandDark/10 rounded-xl">
                         <span>Min fee › </span>
                         <span className="font-normal">{(pairAndQuote![1].fee / Math.pow(10, 12)).toFixed(12)} {process.env.NEXT_PUBLIC_XCH}</span>
                     </p>
 
                     {/* <p className="px-4 mb-4 font-medium">Generate the offer, paste it below, then submit.</p> */}
-                    {activeWallet && <button className="w-full bg-brandDark text-white py-4 rounded-lg mb-8 font-medium hover:opacity-90" onClick={completeWithWallet}>Use Wallet to Complete Order</button>}
+                    {activeWallet && <button className="w-full bg-brandDark text-white py-4 rounded-lg font-medium hover:opacity-90" onClick={completeWithWallet}>Use Wallet to Complete Order</button>}
                     
+                    {activeWallet && <p className="flex w-full justify-center font-medium my-4">— OR —</p>}
+
                     <input type="text"
                         value={offer}
-                        className='w-full py-2 px-4 border text-brandDark dark:border-brandDark dark:bg-brandDark/20 rounded-xl focus:outline-none focus:ring focus:ring-brandDark/40'
+                        className='w-full py-4 px-4 border text-brandDark dark:border-brandDark dark:bg-brandDark/20 rounded-xl focus:outline-none focus:ring focus:ring-brandDark/40'
                         onChange={e => setOffer(e.target.value)}
                         placeholder='Generate the offer and paste it here'
                     />
 
                     <button
                         onClick={() => setStep(3)}
-                        className={`${offer.length === 0 ? 'bg-brandDark/10 text-brandDark/20 dark:text-brandLight/30 cursor-not-allowed' : 'bg-green-700'} text-brandLight px-4 py-2 rounded-lg w-full mt-4 font-medium`}
+                        className={`${offer.length === 0 ? 'bg-brandDark/10 text-brandDark/20 dark:text-brandLight/30 cursor-not-allowed' : 'bg-green-700'} text-brandLight px-4 py-4 rounded-xl w-full mt-4 font-medium`}
                         disabled={offer.length === 0}
                     >
                         Submit Manually
