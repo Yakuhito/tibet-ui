@@ -361,12 +361,12 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                 <div className="text-left w-full">
                     {/* <p className="text-4xl font-bold mb-8">Order Summary</p> */}
                     <div className="mb-4 bg-brandDark/10 rounded-xl p-4">
-                        <p className="mb-4 font-medium text-2xl text-brandDark">Offering</p>
+                        <p className="mb-4 font-medium text-2xl text-brandDark dark:text-brandLight">Offering</p>
                         {listAssets(data.offer, true)}
                     </div>
 
                     <div className="mb-4 mt-4 bg-brandDark/10 rounded-xl p-4">
-                        <p className="mb-4 font-medium text-2xl text-brandDark">Requesting</p>
+                        <p className="mb-4 font-medium text-2xl text-brandDark dark:text-brandLight">Requesting</p>
                         {/* <CircularLoadingBar percent={dataRefreshPercent} /> */}
                         {listAssets(data.request, false)}
                     </div>
