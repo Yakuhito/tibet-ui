@@ -4,6 +4,7 @@ import type { OfferResponse, Pair, Quote, Token } from '@/api';
 import type { GenerateOfferData } from './TabContainer';
 import { useEffect, useState, useContext } from 'react';
 import WalletContext from '@/context/WalletContext';
+import RingLoader from 'react-spinners/RingLoader';
 import SuccessScreen from './SuccessScreen';
 import Image from 'next/image';
 
@@ -35,98 +36,99 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
 
     // Update pair rates every 4 seconds
     useEffect(() => {
+        if (step !== 3) {
+            const updateOrderData = setInterval(async () => {
 
-        const updateOrderData = setInterval(async () => {
-
-            const updatePair = async () => {
-                console.log('Updating Pair')
-                const newPairData = await getPairByLauncherId(data.pairId);
-                setPair(newPairData)
-            }
-            updatePair()
-
-
-            // Update order rates every 4 seconds
-            const updateOfferDataSwap = () => {
-                if (pair) {
-                    const newOfferData = {...data};
-                    const isBuy = newOfferData.offer[0][0].short_name === process.env.NEXT_PUBLIC_XCH;
-                    const { xch_reserve, token_reserve } = pair // Get latest reserve amounts
-                    
-                    if (isBuy) {
-                        const amount0 = newOfferData.offer[0][2]
-                        const amount1 = getInputPrice(amount0, xch_reserve, token_reserve); // Get updated token quote
-                        newOfferData.request[0][2] = amount1;
-                        setGenerateOfferData(newOfferData);
-                        console.log("Updating offer data");
-                    } else {
-                      const amount1 = newOfferData.offer[0][2];
-                      const amount0 = getInputPrice(amount1, token_reserve, xch_reserve); // Get updated XCH quote
-                      newOfferData.request[0][2] = amount0;
-                      console.log("Updating offer data");
-                      setGenerateOfferData(newOfferData);
-                    }
+                const updatePair = async () => {
+                    console.log('Updating Pair')
+                    const newPairData = await getPairByLauncherId(data.pairId);
+                    setPair(newPairData)
                 }
-                setDataRefreshPercent(0)
-            }
-            if (activeTab === 'swap') updateOfferDataSwap()
+                updatePair()
 
 
-            const updateOfferDataLiquidity = () => {
-                if (pair) {
-                    const newOfferData = {...data};
-                    const isAddLiquidity = newOfferData.action === "ADD_LIQUIDITY";
-                    const { xch_reserve, token_reserve, liquidity } = pair; // Get latest reserve amounts
-                    const pairLiquidity = liquidity;
-                    
-                    
-                    if (isAddLiquidity) {
-                      const tokenAmount = newOfferData.offer[1][2];
-                      const liquidity = getLiquidityQuote(tokenAmount, token_reserve, pairLiquidity, false);
-                      var xchAmount = getLiquidityQuote(tokenAmount, token_reserve, xch_reserve, false);
-                      xchAmount += liquidity;
-    
-                      newOfferData.offer[0][2] = xchAmount; // Update Amount0
-                      newOfferData.request[0][2] = liquidity; // Update Amount2
-    
-                      console.log("Updating offer data");
-                      setGenerateOfferData(newOfferData);
-                    } else {
-                      const liquidityTokens = newOfferData.offer[0][2]
-                      const tokenAmount = getLiquidityQuote(liquidityTokens, pairLiquidity, token_reserve, true);
-                      var xchAmount = getLiquidityQuote(liquidityTokens, liquidity, xch_reserve, true);
-                      xchAmount += liquidity;
-                    
-                      newOfferData.request[0][2] = xchAmount; // Update Amount0
-                      newOfferData.request[1][2] = tokenAmount; // Update Amount1
-    
-                      console.log("Updating offer data");
-                      setGenerateOfferData(newOfferData);
+                // Update order rates every 4 seconds
+                const updateOfferDataSwap = () => {
+                    if (pair) {
+                        const newOfferData = {...data};
+                        const isBuy = newOfferData.offer[0][0].short_name === process.env.NEXT_PUBLIC_XCH;
+                        const { xch_reserve, token_reserve } = pair // Get latest reserve amounts
+
+                        if (isBuy) {
+                            const amount0 = newOfferData.offer[0][2]
+                            const amount1 = getInputPrice(amount0, xch_reserve, token_reserve); // Get updated token quote
+                            newOfferData.request[0][2] = amount1;
+                            setGenerateOfferData(newOfferData);
+                            console.log("Updating offer data");
+                        } else {
+                          const amount1 = newOfferData.offer[0][2];
+                          const amount0 = getInputPrice(amount1, token_reserve, xch_reserve); // Get updated XCH quote
+                          newOfferData.request[0][2] = amount0;
+                          console.log("Updating offer data");
+                          setGenerateOfferData(newOfferData);
+                        }
                     }
+                    setDataRefreshPercent(0)
                 }
-                setDataRefreshPercent(0)
-            }
-            if (activeTab === 'liquidity') updateOfferDataLiquidity()
+                if (activeTab === 'swap') updateOfferDataSwap()
 
 
-            // Update fee
-            const updateFee = async () => {
-                if (!pair) return;
-                console.log('Updating Fee')
-                const quote = await getQuoteForPair(
-                    data.pairId,
-                    data.offer[0][2],
-                    undefined,
-                    data.offer[0][1],
-                    true
-                );
-                setPairAndQuote([pair, quote]);
-            }
-            updateFee()
+                const updateOfferDataLiquidity = () => {
+                    if (pair) {
+                        const newOfferData = {...data};
+                        const isAddLiquidity = newOfferData.action === "ADD_LIQUIDITY";
+                        const { xch_reserve, token_reserve, liquidity } = pair; // Get latest reserve amounts
+                        const pairLiquidity = liquidity;
 
-        }, 4000)
-        return () => clearInterval(updateOrderData)
-    }, [data, pair, setDataRefreshPercent, setGenerateOfferData, activeTab])
+
+                        if (isAddLiquidity) {
+                          const tokenAmount = newOfferData.offer[1][2];
+                          const liquidity = getLiquidityQuote(tokenAmount, token_reserve, pairLiquidity, false);
+                          var xchAmount = getLiquidityQuote(tokenAmount, token_reserve, xch_reserve, false);
+                          xchAmount += liquidity;
+                        
+                          newOfferData.offer[0][2] = xchAmount; // Update Amount0
+                          newOfferData.request[0][2] = liquidity; // Update Amount2
+                        
+                          console.log("Updating offer data");
+                          setGenerateOfferData(newOfferData);
+                        } else {
+                          const liquidityTokens = newOfferData.offer[0][2]
+                          const tokenAmount = getLiquidityQuote(liquidityTokens, pairLiquidity, token_reserve, true);
+                          var xchAmount = getLiquidityQuote(liquidityTokens, liquidity, xch_reserve, true);
+                          xchAmount += liquidity;
+                        
+                          newOfferData.request[0][2] = xchAmount; // Update Amount0
+                          newOfferData.request[1][2] = tokenAmount; // Update Amount1
+                        
+                          console.log("Updating offer data");
+                          setGenerateOfferData(newOfferData);
+                        }
+                    }
+                    setDataRefreshPercent(0)
+                }
+                if (activeTab === 'liquidity') updateOfferDataLiquidity()
+
+
+                // Update fee
+                const updateFee = async () => {
+                    if (!pair) return;
+                    console.log('Updating Fee')
+                    const quote = await getQuoteForPair(
+                        data.pairId,
+                        data.offer[0][2],
+                        undefined,
+                        data.offer[0][1],
+                        true
+                    );
+                    setPairAndQuote([pair, quote]);
+                }
+                updateFee()
+
+            }, 4000)
+            return () => {if (step !== 3) clearInterval(updateOrderData)}
+        }
+    }, [data, pair, setDataRefreshPercent, setGenerateOfferData, activeTab, step])
 
     
     
@@ -352,7 +354,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         if(step === 0) {
             return (
                 <div className="mt-16 mb-16 flex justify-center items-center flex-col">
-                    <Image src="/logo.jpg" width={200} height={200} alt="YakSwap logo" className="rounded-full border-neutral-300 transition dark:opacity-80 animate-pulse" />
+                    <RingLoader size={64} color={"#526e78"} />
                     <div className='mt-4 font-medium'>Verifying trade data</div>
                 </div>
             );
@@ -413,7 +415,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
             if(offerResponse === null) {
                 return (
                 <div className="mt-16 mb-16 flex justify-center items-center flex-col">
-                    <Image src="/logo.jpg" width={200} height={200} alt="YakSwap logo" className="rounded-full border-neutral-300 transition dark:opacity-80 animate-pulse" />
+                    <RingLoader size={64} color={"#526e78"} />
                     <div className='mt-4 font-medium'><p>Sending offer</p></div>
                 </div>
                 );
