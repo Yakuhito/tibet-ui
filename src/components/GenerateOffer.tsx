@@ -3,7 +3,6 @@ import type { OfferResponse, Pair, Quote, Token } from '@/api';
 import type { GenerateOfferData } from './TabContainer';
 import { useEffect, useState, useContext } from 'react';
 import WalletContext from '@/context/WalletContext';
-import RingLoader from 'react-spinners/RingLoader';
 import SuccessScreen from './SuccessScreen';
 import Image from 'next/image';
 
@@ -344,8 +343,8 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         if(step === 0) {
             return (
                 <div className="mt-16 mb-16 flex justify-center items-center flex-col">
-                    <RingLoader size={64} color={"#526e78"} />
-                    <div className='mt-4 font-medium'>Verifying trade data...</div>
+                    <Image src="/logo.jpg" width={200} height={200} alt="YakSwap logo" className="rounded-full border-neutral-300 transition dark:opacity-80 animate-pulse" />
+                    <div className='mt-4 font-medium'>Verifying trade data</div>
                 </div>
             );
         };
@@ -403,8 +402,8 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
             if(offerResponse === null) {
                 return (
                 <div className="mt-16 mb-16 flex justify-center items-center flex-col">
-                    <RingLoader size={64} color={"#526e78"} />
-                    <div className='mt-4 font-medium'><p>Sending offer...</p></div>
+                    <Image src="/logo.jpg" width={200} height={200} alt="YakSwap logo" className="rounded-full border-neutral-300 transition dark:opacity-80 animate-pulse" />
+                    <div className='mt-4 font-medium'><p>Sending offer</p></div>
                 </div>
                 );
             };
