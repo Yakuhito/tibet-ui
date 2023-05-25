@@ -81,9 +81,9 @@ class WalletManager {
     this.notifyActiveWalletChange();
   }
 
-  public async generateOffer(requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[]): Promise<void> {
+  public async generateOffer(requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[], fee: number | undefined): Promise<void> {
     if (this.activeWallet) {
-      this.activeWallet.generateOffer(requestAssets, offerAssets);
+      this.activeWallet.generateOffer(requestAssets, offerAssets, fee);
     }
   }
 

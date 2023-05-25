@@ -334,8 +334,10 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                 }
             ))
 
+        const fee = Number((pairAndQuote![1].fee / Math.pow(10, 12)).toFixed(12))
+
         try {
-            const { offer }: any = await activeWallet.generateOffer(requestAssets, offerAssets)
+            const { offer }: any = await activeWallet.generateOffer(requestAssets, offerAssets, fee)
             setOffer(offer);
             setStep(3);
         } catch (error: any) {
