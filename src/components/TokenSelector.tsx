@@ -14,9 +14,9 @@ const customStyles = {
     return {
       ...provided,
       cursor: 'pointer',
-      color: 'black',
+      color: undefined,
       fontWeight: 500,
-      backgroundColor: state.isSelected ? '#E0E7EC' : state.isFocused ? '#E0E7EC' : 'transparent',
+      backgroundColor: undefined,
       paddingTop: '1rem',
       paddingBottom: '1rem',
       paddingLeft: '.5rem',
@@ -26,11 +26,7 @@ const customStyles = {
       },
       ':active': {
         backgroundColor: undefined,
-      },
-      '@media (prefers-color-scheme: dark)': {
-        color: '#EFF4F7',
-        backgroundColor: state.isSelected ? '#18181b' : state.isFocused ? '#18181b' : 'transparent',
-      },
+      }
     };
   },
   singleValue: (provided: any, state: any) => {
@@ -42,9 +38,7 @@ const customStyles = {
       paddingTop: 10,
       paddingBottom: 10,
       marginLeft: '-1rem',
-      '@media (prefers-color-scheme: dark)': {
-        color: '#EFF4F7',
-      },
+      color: undefined,
     };
   },
   placeholder: (provided: any) => {
@@ -74,19 +68,25 @@ const customStyles = {
   }),
   menu: (provided: any, state: any) => ({
     ...provided,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: undefined,
     borderRadius: '0.75rem',
     border: 0,
     paddingLeft: '4px',
     paddingRight: '4px',
     '@media (prefers-color-scheme: dark)': {
-      backgroundColor: '#1E2124',
       '*::-webkit-scrollbar-thumb': {
         borderColor: '#1E2124',
       }
     },
   }),
 };
+
+// For tailwind dark theme compatibility
+const customClassNames = {
+  menu: (state: any) => "bg-slate-100 dark:bg-[#1E2124]",
+  singleValue: (state: any) => "dark:text-brandLight",
+  option: (state: any) => (`dark:text-brandLight ${state.isSelected ? 'bg-[#E0E7EC] dark:bg-zinc-900' : state.isFocused ? 'bg-[#E0E7EC] dark:bg-zinc-900' : 'transparent'}`)
+}
 
 const TokenSelector: React.FC<TokenSelectorProps> = ({
     selectedToken,
@@ -126,9 +126,10 @@ const TokenSelector: React.FC<TokenSelectorProps> = ({
     };
 
     return (
-      <div className="mt-2">
+      <div className="mt-2 token-selector">
         <Select
           styles={customStyles}
+          classNames={customClassNames}
           value={selectedToken ? tkToOption(selectedToken) : null}
           options={tokens.map(tkToOption)}
           onChange={(value) => onChange(value!.value)}
