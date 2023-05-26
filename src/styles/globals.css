@@ -38,9 +38,15 @@ border: 3px solid #EFF4F7;
 }
 
 @media (prefers-color-scheme: dark) {
-*::-webkit-scrollbar-thumb {
+  *::-webkit-scrollbar-thumb {
+    background: #526e78;
+    border-radius: 1rem;
+    border: 3px solid #18181b;
+  }
+}
+
+.dark *::-webkit-scrollbar-thumb {
   background: #526e78;
   border-radius: 1rem;
   border: 3px solid #18181b;
-}
 }
