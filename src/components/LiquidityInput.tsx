@@ -51,7 +51,7 @@ const LiquidityInput: React.FC<LiquidityInputsProps> = ({
           xmlns="http://www.w3.org/2000/svg"
           className={`h-7 w-7 ${
             disabled ? 'text-gray-300 cursor-not-allowed' :
-            (isAddSelected ? 'text-green-700' : 'text-red-800')
+            (isAddSelected ? 'text-green-700 cursor-pointer' : 'text-red-800 cursor-pointer')
           } ${
             isAddSelected ? '' : 'transform rotate-180'
           }`}
