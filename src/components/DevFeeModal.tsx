@@ -115,10 +115,10 @@ function DevFeeModal({ isOpen, setIsOpen, setDevFee }: DevFeeModalProps) {
                         <div className="mt-4">
                           <button
                             type="button"
-                            className="inline-flex justify-center rounded-md border border-transparent bg-brandDark px-4 py-2 w-full font-medium text-brandLight hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-brandDark focus-visible:ring-offset-2"
+                            className="inline-flex justify-center rounded-xl border border-transparent bg-brandDark px-4 py-4 w-full font-medium text-brandLight hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-brandDark focus-visible:ring-offset-2"
                             onClick={() => setIsOpen(false)}
                           >
-                            Set Dev Fee
+                            Confirm
                           </button>
                         </div>
                       </Dialog.Panel>
