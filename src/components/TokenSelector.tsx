@@ -87,7 +87,7 @@ const customClassNames = {
   menu: (state: any) => "bg-slate-100 dark:bg-[#1E2124]",
   singleValue: (state: any) => "dark:text-brandLight",
   option: (state: any) => (`dark:text-brandLight ${state.isSelected ? 'bg-[#E0E7EC] dark:bg-zinc-900' : state.isFocused ? 'bg-[#E0E7EC] dark:bg-zinc-900' : 'transparent'}`),
-  placeholder: (state: any) => "text-brandDark dark:text-brandLight"
+  placeholder: (state: any) => "text-black dark:text-brandLight"
 }
 
 const TokenSelector: React.FC<TokenSelectorProps> = ({
