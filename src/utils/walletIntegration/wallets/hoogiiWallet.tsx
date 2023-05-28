@@ -111,6 +111,10 @@ class hoogiiWallet implements WalletIntegrationInterface {
     console.log('Getting Hoogii Wallet Balance')
   }
 
+  getAddress() {
+    
+  }
+
   async addAsset(assetId: string, symbol: string, logo: string): Promise<void> {
     console.log('Currently only Goby has support for adding an asset programatically')
   }

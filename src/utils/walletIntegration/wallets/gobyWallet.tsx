@@ -99,6 +99,15 @@ class gobyWallet implements WalletIntegrationInterface {
     }    
   }
 
+  getAddress() {
+    console.log('Fetching Goby wallet address')
+    // Check if Goby extension is installed
+    const { chia } = (window as any);
+      if (!Boolean(chia && chia.goby.selectedAddress)) {
+        return chia.goby.selectedAddress;
+      }
+  }
+
   // detectEvents(): void {
   //   // Detect disconnect via Goby browser extension
   //   // Check if Goby extension is installed

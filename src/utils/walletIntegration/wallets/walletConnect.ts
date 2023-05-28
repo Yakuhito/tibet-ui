@@ -181,6 +181,10 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     console.log('Currently only Goby has support for adding an asset programatically')
   }
 
+  getAddress() {
+    
+  }
+
   async signClient(): Promise<void | Client> {
 
     // const projectId = process.env.WALLETCONNECT_PROJECT_ID;

@@ -99,6 +99,12 @@ class WalletManager {
     }
   }
   
+  public getAddress(): string | void {
+    if (this.activeWallet) {
+      this.activeWallet.getAddress();
+    }
+  }
+
   private async deserializeWallet(): Promise<WalletIntegrationInterface | null> {
     const parsedWallet = localStorage.getItem('activeWallet')
     if (parsedWallet === 'Goby') {
