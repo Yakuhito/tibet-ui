@@ -23,12 +23,12 @@ export default function Navbar() {
         <div className="hidden sm:block ml-auto">
           <ConnectButton />
         </div>
-        <nav className="flex gap-1 items-center bg-brandDark/10 dark:bg-brandDark/20 rounded-xl p-1">
-          <Link href="/" className={`font-medium text-brandDark px-4 py-1 rounded-lg ${router.asPath === "/" || router.pathname === "/[pair_short_name]" ? 'text-brandLight bg-brandDark' : 'dark:text-brandLight/50 hover:opacity-80'}`}>Swap</Link>
-          <Link href="/faq" className={`font-medium text-brandDark px-4 py-1 rounded-lg ${router.asPath === "/faq" ? 'text-brandLight bg-brandDark' : 'dark:text-brandLight/50 hover:opacity-80'}`}>FAQs</Link>
-          <Link href={`${process.env.NEXT_PUBLIC_INFO_BASE_URL}`} className="font-medium text-brandDark dark:text-brandLight/50 px-4 py-1 rounded-lg hover:opacity-80">Stats</Link>
-        </nav>
 
+        <nav className="flex items-center rounded-xl p-1">
+          <Link href="/" className={`font-medium text-brandDark px-6 py-1.5 rounded-xl ${router.asPath === "/" || router.pathname === "/[pair_short_name]" ? 'dark:text-brandLight bg-brandDark/10' : 'text-brandDark/80 dark:text-brandLight/50 hover:opacity-80'}`}>Swap</Link>
+          <Link href="/faq" className={`font-medium text-brandDark px-6 py-1.5 rounded-xl ${router.asPath === "/faq" ? 'dark:text-brandLight bg-brandDark/10' : 'text-brandDark/70 dark:text-brandLight/50 hover:opacity-80'}`}>FAQs</Link>
+          <Link href={`${process.env.NEXT_PUBLIC_INFO_BASE_URL}`} className="font-medium text-brandDark text-brandDark/70 dark:text-brandLight/50 px-6 py-1.5 rounded-xl hover:opacity-80">Stats</Link>
+        </nav>
       </div>
     </header>
   );
