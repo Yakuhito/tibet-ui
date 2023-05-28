@@ -116,7 +116,7 @@ class hoogiiWallet implements WalletIntegrationInterface {
   }
 
   async addAsset(assetId: string, symbol: string, logo: string): Promise<void> {
-    console.log('Currently only Goby has support for adding an asset programatically')
+    toast.error('Currently only Goby has support for adding an asset programatically')
   }
 }
 

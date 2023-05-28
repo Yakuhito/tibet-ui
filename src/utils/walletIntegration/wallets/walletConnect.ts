@@ -178,7 +178,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
   }
 
   async addAsset(assetId: string, symbol: string, logo: string): Promise<void> {
-    console.log('Currently only Goby has support for adding an asset programatically')
+    toast.error('Support for adding assets via WalletConnect will be added soon.')
   }
 
   getAddress() {
