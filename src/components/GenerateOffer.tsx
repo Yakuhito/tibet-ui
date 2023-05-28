@@ -4,7 +4,7 @@ import type { OfferResponse, Pair, Quote, Token } from '@/api';
 import type { GenerateOfferData } from './TabContainer';
 import { useEffect, useState, useContext } from 'react';
 import WalletContext from '@/context/WalletContext';
-import RingLoader from 'react-spinners/RingLoader';
+import BarLoader from 'react-spinners/BarLoader';
 import SuccessScreen from './SuccessScreen';
 import Image from 'next/image';
 
@@ -33,6 +33,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
     const [offer, setOffer] = useState<string>('');
     const [offerResponse, setOfferResponse] = useState<OfferResponse | null>(null);
     const [pair, setPair] = useState<Pair | null>(null);
+    const [copyErrorMessageSuccess, setCopyErrorMessageSuccess] = useState(false);
 
     // Update pair rates every 4 seconds
     useEffect(() => {
@@ -354,7 +355,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         if(step === 0) {
             return (
                 <div className="mt-16 mb-16 flex justify-center items-center flex-col">
-                    <RingLoader size={64} color={"#526e78"} />
+                    <BarLoader width={164} speedMultiplier={2} color={"#526e78"} />
                     <div className='mt-4 font-medium'>Verifying trade data</div>
                 </div>
             );
@@ -415,24 +416,85 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
             if(offerResponse === null) {
                 return (
                 <div className="mt-16 mb-16 flex justify-center items-center flex-col">
-                    <RingLoader size={64} color={"#526e78"} />
+                    <BarLoader width={164} color={"#526e78"} />
                     <div className='mt-4 font-medium'><p>Sending offer</p></div>
                 </div>
                 );
             };
 
+            const handleCopyErrorButtonClick = () => {
+                const message = offerResponse?.message;
+                if (message) {
+                  navigator.clipboard.writeText(message)
+                    .then(() => {
+                      console.log('Text copied to clipboard:', message);
+                      setCopyErrorMessageSuccess(true);
+                      setTimeout(() => {
+                        setCopyErrorMessageSuccess(false);
+                      }, 3000);
+                    })
+                    .catch((error) => {
+                      console.error('Failed to copy text to clipboard:', error);
+                    });
+                }
+              };
+
+            const displayErrorMessage = () => {
+                const error = offerResponse.message;
+                console.log('❗ Display this error message to support if required:', error)
+
+                if (error?.includes("Invalid Offer")) {
+                    return <p>Your offer was invalid. Please try again.</p>
+                } else if (error?.includes("UNKNOWN_UNSPENT")) {
+                    return <p>Please wait ~1 minute before making another transaction</p>
+                } else {
+                    const regex = /'error': 'Failed to include transaction (\w+), error ([^']+)'/;
+                    const match = regex.exec(error);
+                    if (match) {
+                        const transactionId = match[1];
+                        const errorMessage = match[2];
+                        return (<>
+                                <div className="text-base flex gap-2">
+                                    <p className="w-36 font-medium whitespace-nowrap dark:text-red-600">Transaction ID</p>
+                                    <input type="text" value={transactionId} readOnly className="w-full bg-red-700/10 rounded-lg px-2 py-0 text-red-700/90 font-mono animate-fadeIn focus:outline-none focus:ring-2 focus:ring-red-700/20" />
+                                </div>
+                                <div className="mt-2 text-base flex gap-2">
+                                    <p className="w-36 font-medium whitespace-nowrap dark:text-red-600">Reason</p>
+                                    <input type="text" value={errorMessage} readOnly className="w-full bg-red-700/10 rounded-lg px-2 py-0 text-red-700/90 font-mono animate-fadeIn focus:outline-none focus:ring-2 focus:ring-red-700/20" />
+                                </div>
+                            </>)
+                    } else {
+                        return (
+                            <>
+                                <p>An error occurred while trying to submit your offer.</p>
+                                <textarea className="mt-4 dark:text-brandLight/50 min-h-[10rem] text-brandDark w-full py-2 px-2 border-2 border-transparent bg-brandDark/10 rounded-xl focus:outline-none focus:border-brandDark/20" value={error} readOnly />
+                            </>
+                        );
+                    }
+                }
+
+            }
+
             return (
                 <div className="mt-16 mb-16">
-                    <div className="font-medium">{offerResponse!.success ? '' : offerResponse!.message.includes("Invalid Offer") ? '' : offerResponse!.message.includes("UNKNOWN_UNSPENT") ? '' : 'An error occurred while submitting offer ☹️'}</div>
-                    {!offerResponse!.success && !offerResponse!.message.includes("Invalid Offer") && !offerResponse!.message.includes("UNKNOWN_UNSPENT") && <textarea className="mt-4 dark:text-brandLight/30 min-h-[10rem] text-brandDark w-full py-2 px-2 border-2 border-transparent bg-brandDark/10 rounded-xl focus:outline-none focus:border-brandDark" value={offerResponse!.message} readOnly />}
-                    {offerResponse!.message.match( /Invalid Offer|UNKNOWN_UNSPENT/ ) && (
-                        <div className="flex flex-col">
-                            <h2 className="text-xl">{offerResponse!.message.includes("Invalid Offer") ? 'Your offer was invalid. Please try again.' : 'Please wait ~1 minute before making another transaction'}</h2>
-                            <a href="https://discord.gg/Z9px4geHvK" target="_blank" className="text-center text-xl font-medium w-full py-2 px-4 rounded-lg mt-4 bg-[#5865F2] hover:opacity-90 text-brandLight">Join our discord for support</a>
-                        </div>
-                    )}
+                    <div className="flex flex-col">
+                        {!offerResponse!.success && (<>
+                            <div className="bg-red-400/50 dark:bg-red-400/20 rounded-xl text-red-700 dark:text-red-600 p-4 mt-8 flex flex-col">
+                                <div className="flex gap-2 items-center mb-8">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px" className="fill-red-700 dark:fill-red-600"><title>Swap issue</title><path d="M21.5 4.5H26.501V43.5H21.5z" transform="rotate(45.001 24 24)"/><path d="M21.5 4.5H26.5V43.501H21.5z" transform="rotate(135.008 24 24)"/></svg>
+                                    <span className="font-medium text-2xl">Failed to complete {activeTab === 'swap' ? 'swap' : 'transaction'}</span>
+                                </div>
+                                {displayErrorMessage()}
+                                <button onClick={handleCopyErrorButtonClick} className={`${copyErrorMessageSuccess ? 'bg-green-700/70 dark:bg-green-700/50' : 'bg-red-700/70'} text-center text-base font-medium w-full py-2 px-4 rounded-lg mt-8 hover:opacity-90 text-brandLight`}>{copyErrorMessageSuccess ? 'Copied Successfully' : 'Copy Full Error'}</button>
+                                <a href="https://discord.gg/Z9px4geHvK" target="_blank" className="text-center text-xl font-medium w-full py-4 px-4 rounded-lg mt-2 bg-[#5865F2] hover:opacity-90 text-brandLight">Join our discord for support</a>
+                            </div>
+                        </>)}
+                    </div>
                     {offerResponse!.success && <SuccessScreen offerData={data} devFee={devFee} />}
                 </div>
+
+
+
             );
         };
 
