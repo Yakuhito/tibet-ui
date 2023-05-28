@@ -70,7 +70,7 @@ function SuccessScreen({ offerData, devFee }: SuccessScreenProps) {
                 <div className={`absolute overflow-x-clip top-0 w-full p-8 py-12 flex flex-col justify-center bg-brandDark bg-gradient-to-br from-[#7fa9b8] to-brandDark dark:from-brandDark dark:to-[#152f38] rounded-xl`}>
                     <p className="text-brandLight text-5xl mb-4 font-bold">Sent</p>
                     {offerData.offer.map(asset => (
-                        <div key={asset[0].asset_id} className="text-brandLight flex items-center gap-2 font-medium">
+                        <div key={asset[0].asset_id} className="text-brandLight flex items-center gap-2 font-medium pb-2 last:pb-0">
                             <Image src={asset[0].image_url} width={30} height={30} alt="Token logo" className="rounded-full" />
                             <p>{asset[0].short_name === process.env.NEXT_PUBLIC_XCH ? (asset[2] + Math.floor(asset[2] * devFee)) / Math.pow(10, asset[1] ? 12 : 3) : (asset[2] / Math.pow(10, asset[1] ? 12 : 3))}</p> {/* If asset is XCH, add dev fee on top of amount */}
                             <p>{asset[0].short_name}</p>
@@ -79,7 +79,7 @@ function SuccessScreen({ offerData, devFee }: SuccessScreenProps) {
 
                     <p className="text-brandLight text-5xl mb-4 mt-12 font-bold">Received</p>
                     {offerData.request.map(asset => (
-                        <div key={asset[0].asset_id} className="text-brandLight flex items-center gap-2 font-medium pb-2">
+                        <div key={asset[0].asset_id} className="text-brandLight flex items-center gap-2 font-medium pb-2 last:pb-0">
                             <Image src={asset[0].image_url} width={30} height={30} alt="Token logo" className="rounded-full" />
                             <p>{asset[0].short_name === process.env.NEXT_PUBLIC_XCH ? (asset[2] - Math.floor(asset[2] * devFee)) / Math.pow(10, asset[1] ? 12 : 3) : (asset[2] / Math.pow(10, asset[1] ? 12 : 3))}</p> {/* If asset is XCH, substract dev fee from amount */}
                             <p>{asset[0].short_name}</p>

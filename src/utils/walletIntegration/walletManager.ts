@@ -81,15 +81,27 @@ class WalletManager {
     this.notifyActiveWalletChange();
   }
 
-  public async generateOffer(requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[]): Promise<void> {
+  public async generateOffer(requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[], fee: number | undefined): Promise<void> {
     if (this.activeWallet) {
-      this.activeWallet.generateOffer(requestAssets, offerAssets);
+      this.activeWallet.generateOffer(requestAssets, offerAssets, fee);
     }
   }
 
   public getBalance(): void {
     if (this.activeWallet) {
       this.activeWallet.getBalance();
+    }
+  }
+
+  public async addAsset(assetId: string, symbol: string, logo: string): Promise<void> {
+    if (this.activeWallet) {
+      this.activeWallet.addAsset(assetId, symbol, logo);
+    }
+  }
+  
+  public getAddress(): string | void {
+    if (this.activeWallet) {
+      this.activeWallet.getAddress();
     }
   }
 

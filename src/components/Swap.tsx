@@ -172,7 +172,7 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
 
       {/* High price impact warning banner */}
       { priceImpact >= 0.05 && (
-      <div className="bg-red-400/50 dark:bg-red-400/20 rounded-xl text-red-700 p-4 mt-8 flex items-center gap-4">
+      <div className="bg-red-400/50 dark:bg-red-400/20 rounded-xl text-red-700 dark:text-red-600 p-4 mt-8 flex items-center gap-4">
         <label className="inline-flex items-center cursor-pointer">
           <div className="relative">
             <input
@@ -181,7 +181,7 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
               checked={highPriceImpactConfirmed}
               onChange={() => setHighPriceImpactConfirmed(!highPriceImpactConfirmed)}
             />
-            <div className="bg-slate-100 dark:bg-zinc-900 rounded-md w-6 h-6 border peer-checked:bg-red-700 border-red-700 flex items-center justify-center">
+            <div className="bg-slate-100 dark:bg-zinc-900 rounded-md w-6 h-6 border peer-checked:bg-red-700 border-red-700 dark:border-red-600 flex items-center justify-center">
               {highPriceImpactConfirmed && (
                 <svg
                   className="fill-brandLight w-4 h-4"

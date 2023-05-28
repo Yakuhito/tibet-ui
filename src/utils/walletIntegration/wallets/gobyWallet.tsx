@@ -1,6 +1,6 @@
 import WalletIntegrationInterface from '../walletIntegrationInterface';
-import WalletManager from '../walletManager';
 import { toast } from 'react-hot-toast';
+import { bech32m } from 'bech32';
 
 class gobyWallet implements WalletIntegrationInterface {
   name = "Goby";
@@ -43,13 +43,14 @@ class gobyWallet implements WalletIntegrationInterface {
     console.log('Disconnecting Goby Wallet')
   }
 
-  async generateOffer(requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[]): Promise<void> {
+  async generateOffer(requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[], fee: number | undefined): Promise<void> {
     // Goby wallet transaction signing logic
     console.log('Generating offer with Goby Wallet')
     try {
       const params = {
         requestAssets,
-        offerAssets
+        offerAssets,
+        fee
       }
       const response = await (window as any).chia.request({ method: 'createOffer', params })
       console.log('Fetching offer', response)
@@ -63,6 +64,56 @@ class gobyWallet implements WalletIntegrationInterface {
   getBalance(): void {
     // Goby wallet balance retrieval logic
     console.log('Getting Goby Wallet Balance')
+  }
+
+  async addAsset(assetId: string, symbol: string, logo: string): Promise<void> {
+
+    // Goby wallet transaction signing logic
+    console.log(`Adding ${symbol} to Goby`)
+
+    // Potentially modified values
+    let symbolM = symbol
+    let logoM = logo
+
+    // Ensure symbol is maximum 12 characters (for LP tokens)
+    if (symbol.includes('TIBET-')) {
+      symbolM = symbol.replace('TIBET-', 'TB-').substring(0, 12);
+      logoM = 'https://v2.tibetswap.io/logo.jpg';
+    }
+
+    try {
+      const params = {
+        type: 'cat',
+        options: {
+          assetId,
+          symbol: symbolM,
+          logo: logoM
+        }
+      }
+      const response = await (window as any).chia.request({ method: 'walletWatchAsset', params })
+      console.log('Fetching offer', response)
+      return response
+    } catch (error: any) {
+        console.log(error)
+        toast.error(`Wallet - ${error?.message || String(error.message)}`);
+    }    
+  }
+
+  getAddress() {
+    console.log('Fetching Goby wallet address')
+    // Check if Goby extension is installed
+    const { chia } = (window as any);
+      if (Boolean(chia && chia.isGoby)) {
+        const puzzle_hash = chia.selectedAddress;
+        if (puzzle_hash) {
+          // Convert puzzle_hash to Chia address
+          const prefix = process.env.NEXT_PUBLIC_XCH;
+          if (prefix) {
+            const words = bech32m.toWords(Buffer.from(puzzle_hash, 'hex'));
+            return bech32m.encode(prefix, words);
+          }
+        }
+      }
   }
 
   // detectEvents(): void {

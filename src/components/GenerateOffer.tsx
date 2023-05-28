@@ -1,10 +1,13 @@
 import { ActionType, createOfferForPair, getInputPrice, getLiquidityQuote, getOutputPrice, getPairByLauncherId, getQuoteForPair } from '@/api';
+import GobyWallet from '@/utils/walletIntegration/wallets/gobyWallet';
 import type { OfferResponse, Pair, Quote, Token } from '@/api';
 import type { GenerateOfferData } from './TabContainer';
 import { useEffect, useState, useContext } from 'react';
 import WalletContext from '@/context/WalletContext';
-import RingLoader from 'react-spinners/RingLoader';
+import BarLoader from 'react-spinners/BarLoader';
 import SuccessScreen from './SuccessScreen';
+import Image from 'next/image';
+import { RingLoader } from 'react-spinners';
 
 type GenerateOfferProps = {
   data: GenerateOfferData;
@@ -31,86 +34,105 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
     const [offer, setOffer] = useState<string>('');
     const [offerResponse, setOfferResponse] = useState<OfferResponse | null>(null);
     const [pair, setPair] = useState<Pair | null>(null);
+    const [copyErrorMessageSuccess, setCopyErrorMessageSuccess] = useState(false);
 
     // Update pair rates every 4 seconds
     useEffect(() => {
-        const fetchUpdatedPairDataInterval = setInterval(async () => {
-            const newPairData = await getPairByLauncherId(data.pairId);
-            setPair(newPairData)
-        }, 4000)
-        return () => clearInterval(fetchUpdatedPairDataInterval)
-    }, [data.pairId])
+        if (step !== 3) {
+            const updateOrderData = setInterval(async () => {
 
-
-    // Update order rates every 5 seconds
-    useEffect(() => {
-        // Update Swap Offer Data Function
-        const updateOfferDataSwap = () => {
-            if (pair) {
-                const newOfferData = {...data};
-                const isBuy = newOfferData.offer[0][0].short_name === process.env.NEXT_PUBLIC_XCH;
-                const { xch_reserve, token_reserve } = pair // Get latest reserve amounts
-                
-                if (isBuy) {
-                    const amount0 = newOfferData.offer[0][2]
-                    const amount1 = getInputPrice(amount0, xch_reserve, token_reserve); // Get updated token quote
-                    newOfferData.request[0][2] = amount1;
-                    setGenerateOfferData(newOfferData);
-                    console.log("Updating offer data");
-                } else {
-                  const amount1 = newOfferData.offer[0][2];
-                  const amount0 = getInputPrice(amount1, token_reserve, xch_reserve); // Get updated XCH quote
-                  newOfferData.request[0][2] = amount0;
-                  console.log("Updating offer data");
-                  setGenerateOfferData(newOfferData);
+                const updatePair = async () => {
+                    console.log('Updating Pair')
+                    const newPairData = await getPairByLauncherId(data.pairId);
+                    setPair(newPairData)
                 }
-            }
+                updatePair()
 
-            setDataRefreshPercent(0)
+
+                // Update order rates every 4 seconds
+                const updateOfferDataSwap = () => {
+                    if (pair) {
+                        const newOfferData = {...data};
+                        const isBuy = newOfferData.offer[0][0].short_name === process.env.NEXT_PUBLIC_XCH;
+                        const { xch_reserve, token_reserve } = pair // Get latest reserve amounts
+
+                        if (isBuy) {
+                            const amount0 = newOfferData.offer[0][2]
+                            const amount1 = getInputPrice(amount0, xch_reserve, token_reserve); // Get updated token quote
+                            newOfferData.request[0][2] = amount1;
+                            setGenerateOfferData(newOfferData);
+                            console.log("Updating offer data");
+                        } else {
+                          const amount1 = newOfferData.offer[0][2];
+                          const amount0 = getInputPrice(amount1, token_reserve, xch_reserve); // Get updated XCH quote
+                          newOfferData.request[0][2] = amount0;
+                          console.log("Updating offer data");
+                          setGenerateOfferData(newOfferData);
+                        }
+                    }
+                    setDataRefreshPercent(0)
+                }
+                if (activeTab === 'swap') updateOfferDataSwap()
+
+
+                const updateOfferDataLiquidity = () => {
+                    if (pair) {
+                        const newOfferData = {...data};
+                        const isAddLiquidity = newOfferData.action === "ADD_LIQUIDITY";
+                        const { xch_reserve, token_reserve, liquidity } = pair; // Get latest reserve amounts
+                        const pairLiquidity = liquidity;
+
+
+                        if (isAddLiquidity) {
+                          const tokenAmount = newOfferData.offer[1][2];
+                          const liquidity = getLiquidityQuote(tokenAmount, token_reserve, pairLiquidity, false);
+                          var xchAmount = getLiquidityQuote(tokenAmount, token_reserve, xch_reserve, false);
+                          xchAmount += liquidity;
+                        
+                          newOfferData.offer[0][2] = xchAmount; // Update Amount0
+                          newOfferData.request[0][2] = liquidity; // Update Amount2
+                        
+                          console.log("Updating offer data");
+                          setGenerateOfferData(newOfferData);
+                        } else {
+                          const liquidityTokens = newOfferData.offer[0][2]
+                          const tokenAmount = getLiquidityQuote(liquidityTokens, pairLiquidity, token_reserve, true);
+                          var xchAmount = getLiquidityQuote(liquidityTokens, liquidity, xch_reserve, true);
+                          xchAmount += liquidity;
+                        
+                          newOfferData.request[0][2] = xchAmount; // Update Amount0
+                          newOfferData.request[1][2] = tokenAmount; // Update Amount1
+                        
+                          console.log("Updating offer data");
+                          setGenerateOfferData(newOfferData);
+                        }
+                    }
+                    setDataRefreshPercent(0)
+                }
+                if (activeTab === 'liquidity') updateOfferDataLiquidity()
+
+
+                // Update fee
+                const updateFee = async () => {
+                    if (!pair) return;
+                    console.log('Updating Fee')
+                    const quote = await getQuoteForPair(
+                        data.pairId,
+                        data.offer[0][2],
+                        undefined,
+                        data.offer[0][1],
+                        true
+                    );
+                    setPairAndQuote([pair, quote]);
+                }
+                updateFee()
+
+            }, 4000)
+            return () => {if (step !== 3) clearInterval(updateOrderData)}
         }
+    }, [data, pair, setDataRefreshPercent, setGenerateOfferData, activeTab, step])
 
-
-        // Update Liquidity Offer Data Function
-        const updateOfferDataLiquidity = () => {
-            if (pair) {
-                const newOfferData = {...data};
-                const isAddLiquidity = newOfferData.action === "ADD_LIQUIDITY";
-                const { xch_reserve, token_reserve, liquidity } = pair; // Get latest reserve amounts
-                const pairLiquidity = liquidity;
-                
-                
-                if (isAddLiquidity) {
-                  const tokenAmount = newOfferData.offer[1][2];
-                  const liquidity = getLiquidityQuote(tokenAmount, token_reserve, pairLiquidity, false);
-                  var xchAmount = getLiquidityQuote(tokenAmount, token_reserve, xch_reserve, false);
-                  xchAmount += liquidity;
-
-                  newOfferData.offer[0][2] = xchAmount; // Update Amount0
-                  newOfferData.request[0][2] = liquidity; // Update Amount2
-
-                  console.log("Updating offer data");
-                  setGenerateOfferData(newOfferData);
-                } else {
-                  const liquidityTokens = newOfferData.offer[0][2]
-                  const tokenAmount = getLiquidityQuote(liquidityTokens, pairLiquidity, token_reserve, true);
-                  var xchAmount = getLiquidityQuote(liquidityTokens, liquidity, xch_reserve, true);
-                  xchAmount += liquidity;
-                
-                  newOfferData.request[0][2] = xchAmount; // Update Amount0
-                  newOfferData.request[1][2] = tokenAmount; // Update Amount1
-
-                  console.log("Updating offer data");
-                  setGenerateOfferData(newOfferData);
-                }
-            }
-
-      }
-        
-        const refreshDataInterval = setInterval(activeTab === 'swap' ? updateOfferDataSwap : updateOfferDataLiquidity, 5000)
-
-        return () => clearInterval(refreshDataInterval)
-    }, [data, setGenerateOfferData, pair, setDataRefreshPercent, activeTab])
-
+    
     
     useEffect(() => {
         async function namelessFunction() {
@@ -242,6 +264,12 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         });
     };
 
+    const addAssetToWallet = async (assetId: string, symbol: string, logo: string) => {
+        if (!activeWallet) return console.log('Connect to a wallet before trying to add an asset')
+        console.log('sending request to goby')
+        await activeWallet.addAsset(assetId, symbol, logo)
+    }
+
     const listAssets = (a: [Token, boolean, number][], isOfferingAsset: boolean) => {
         const amountWithFee = (e: [Token, boolean, number]) => {
             // SWAP BUY (add fee to XCH amount)
@@ -265,17 +293,23 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         return (
             <ul className="list-none m-0 font-medium">
                 {a.map(e => (
-                    <li key={e[0].asset_id}>
+                    <li key={e[0].asset_id} className="flex-col gap-2 items-center pb-2 last:pb-0">
                         {/* If swap, add dev fee on top of quote */}
-                        {amountWithFee(e)}{" "}
-                        {process.env.NEXT_PUBLIC_XCH === "TXCH" && e[0].name === "Chia" ? "Testnet Chia"
-                        : e[0].name === "Pair Liquidity Token" ? e[0].short_name : e[0].name}{" "}
-                        {e[1] ? <></> : <button
-                            className="ml-1 bg-brandDark hover:bg-brandDark/80 text-white px-2 rounded-lg"
-                            onClick={() => copyToClipboard(e[0].asset_id)}
-                        >
-                            Copy Asset ID
-                        </button>}
+                        <div className="flex gap-2 items-center">
+                            <Image src={e[0].image_url} width={30} height={30} alt="Token logo" className="rounded-full outline-brandDark/20 p-0.5" />
+                            <p>{amountWithFee(e)}</p>
+                            <p>{process.env.NEXT_PUBLIC_XCH === "TXCH" && e[0].name === "Chia" ? "Testnet Chia" : e[0].name === "Pair Liquidity Token" ? e[0].short_name : e[0].name}</p>
+                        </div>
+                        
+                        {e[1] ? null :
+                        (<div className="rounded-lg mt-2 mb-4 flex gap-2 ml-4">
+                            <p className="text-brandDark">⤷</p>
+                            <div className="flex gap-2 text-sm font-normal">
+                                <button className="hover:opacity-80 bg-brandDark/10 py-1 px-4 whitespace-nowrap rounded-lg" onClick={() => copyToClipboard(e[0].asset_id)}>Copy Asset ID</button>
+                                {activeWallet instanceof GobyWallet && <button onClick={() => addAssetToWallet(e[0].asset_id, e[0].short_name, e[0].image_url)} className="hover:opacity-80 bg-brandDark/10 py-1 px-4 whitespace-nowrap rounded-lg flex items-center gap-2"><Image src={"/assets/goby.webp"} width={15} height={15} alt="Token logo" className="rounded-full" />Add to Goby</button>}
+                            </div>
+                        </div>)
+                        }
                     </li>
                 ))}
             </ul>
@@ -304,8 +338,10 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                 }
             ))
 
+        const fee = Number((pairAndQuote![1].fee / Math.pow(10, 12)).toFixed(12))
+
         try {
-            const { offer }: any = await activeWallet.generateOffer(requestAssets, offerAssets)
+            const { offer }: any = await activeWallet.generateOffer(requestAssets, offerAssets, fee)
             setOffer(offer);
             setStep(3);
         } catch (error: any) {
@@ -320,8 +356,8 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         if(step === 0) {
             return (
                 <div className="mt-16 mb-16 flex justify-center items-center flex-col">
-                    <RingLoader size={64} color={"#526e78"} />
-                    <div className='mt-4 font-medium'>Verifying trade data...</div>
+                    <BarLoader width={164} speedMultiplier={2} color={"#526e78"} />
+                    <div className='mt-4 font-medium'>Verifying trade data</div>
                 </div>
             );
         };
@@ -329,32 +365,37 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         if(step === 2) {
             return (
                 <div className="text-left w-full">
-                    <p className="text-4xl font-bold mb-8">Order Summary</p>
-
-                    <div className="bg-brandDark/10 rounded-xl p-4 mb-4">
-                        <p className="mb-2 font-medium text-lg text-brandDark">Offering:</p>
+                    {/* <p className="text-4xl font-bold mb-8">Order Summary</p> */}
+                    <div className="mb-4 bg-brandDark/10 rounded-xl p-4">
+                        <p className="mb-4 font-medium text-2xl text-brandDark dark:text-brandLight">Offering</p>
                         {listAssets(data.offer, true)}
                     </div>
 
-                    <div className="bg-brandDark/10 rounded-xl p-4 mb-4">
-                        <p className="mb-2 font-medium text-lg text-brandDark">Requesting:</p>
+                    <div className="mb-4 mt-4 bg-brandDark/10 rounded-xl p-4">
+                        <p className="mb-4 font-medium text-2xl text-brandDark dark:text-brandLight">Requesting</p>
                         {/* <CircularLoadingBar percent={dataRefreshPercent} /> */}
                         {listAssets(data.request, false)}
                     </div>
+                    <p className="py-4 px-4 font-medium mb-12 bg-brandDark/10 rounded-xl">
+                        <span>Min fee › </span>
+                        <span className="font-normal">{(pairAndQuote![1].fee / Math.pow(10, 12)).toFixed(12)} {process.env.NEXT_PUBLIC_XCH}</span>
+                    </p>
 
-                    <p className="bg-brandDark/10 rounded-xl py-2 px-4 font-medium mb-4">Min fee: <span className="font-normal">{(pairAndQuote![1].fee / Math.pow(10, 12)).toFixed(12)} {process.env.NEXT_PUBLIC_XCH}</span></p>
-                    <p className="px-4 mb-4 font-medium">Please generate the offer, paste it below, and click the button to proceed.</p>
+                    {/* <p className="px-4 mb-4 font-medium">Generate the offer, paste it below, then submit.</p> */}
+                    {activeWallet && <button className="w-full bg-brandDark text-white py-4 rounded-lg font-medium hover:opacity-90" onClick={completeWithWallet}>Use Wallet to Complete Order</button>}
+                    
+                    {activeWallet && <p className="flex w-full justify-center font-medium my-4">— OR —</p>}
+
                     <input type="text"
                         value={offer}
-                        className='w-full py-2 px-4 border-2 text-brandDark dark:border-brandDark dark:bg-brandDark/20 rounded-md focus:outline-none focus:border-brandDark'
+                        className='w-full py-4 px-4 border text-brandDark dark:border-brandDark dark:bg-brandDark/20 rounded-xl focus:outline-none focus:ring focus:ring-brandDark/40'
                         onChange={e => setOffer(e.target.value)}
-                        placeholder='offer1...'
+                        placeholder='Generate the offer and paste it here'
                     />
 
-                    {activeWallet && <button className="w-full bg-brandDark text-white py-4 rounded-lg mt-4 font-medium" onClick={completeWithWallet}>Use Wallet to Complete Order</button>}
                     <button
                         onClick={() => setStep(3)}
-                        className={`${offer.length === 0 ? 'bg-brandDark/10 text-brandDark/20 dark:text-brandLight/30 cursor-not-allowed' : 'bg-green-700'} text-brandLight px-4 py-2 rounded-lg w-full mt-8 font-medium`}
+                        className={`${offer.length === 0 ? 'bg-brandDark/10 text-brandDark/20 dark:text-brandLight/30 cursor-not-allowed' : 'bg-green-700'} text-brandLight px-4 py-4 rounded-xl w-full mt-4 font-medium`}
                         disabled={offer.length === 0}
                     >
                         Submit Manually
@@ -377,23 +418,84 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                 return (
                 <div className="mt-16 mb-16 flex justify-center items-center flex-col">
                     <RingLoader size={64} color={"#526e78"} />
-                    <div className='mt-4 font-medium'><p>Sending offer...</p></div>
+                    <div className='mt-4 font-medium'><p>Sending offer</p></div>
                 </div>
                 );
             };
 
+            const handleCopyErrorButtonClick = () => {
+                const message = offerResponse?.message;
+                if (message) {
+                  navigator.clipboard.writeText(message)
+                    .then(() => {
+                      console.log('Text copied to clipboard:', message);
+                      setCopyErrorMessageSuccess(true);
+                      setTimeout(() => {
+                        setCopyErrorMessageSuccess(false);
+                      }, 3000);
+                    })
+                    .catch((error) => {
+                      console.error('Failed to copy text to clipboard:', error);
+                    });
+                }
+              };
+
+            const displayErrorMessage = () => {
+                const error = offerResponse.message;
+                console.log('❗ Display this error message to support if required:', error)
+
+                if (error?.includes("Invalid Offer")) {
+                    return <p>Your offer was invalid. Please try again.</p>
+                } else if (error?.includes("UNKNOWN_UNSPENT")) {
+                    return <p>Please wait ~1 minute before making another transaction</p>
+                } else {
+                    const regex = /'error': 'Failed to include transaction (\w+), error ([^']+)'/;
+                    const match = regex.exec(error);
+                    if (match) {
+                        const transactionId = match[1];
+                        const errorMessage = match[2];
+                        return (<>
+                                <div className="text-base flex gap-2">
+                                    <p className="w-36 font-medium whitespace-nowrap dark:text-red-600">Transaction ID</p>
+                                    <input type="text" value={transactionId} readOnly className="w-full bg-red-700/10 rounded-lg px-2 py-0 text-red-700/90 font-mono animate-fadeIn focus:outline-none focus:ring-2 focus:ring-red-700/20" />
+                                </div>
+                                <div className="mt-2 text-base flex gap-2">
+                                    <p className="w-36 font-medium whitespace-nowrap dark:text-red-600">Reason</p>
+                                    <input type="text" value={errorMessage} readOnly className="w-full bg-red-700/10 rounded-lg px-2 py-0 text-red-700/90 font-mono animate-fadeIn focus:outline-none focus:ring-2 focus:ring-red-700/20" />
+                                </div>
+                            </>)
+                    } else {
+                        return (
+                            <>
+                                <p>An error occurred while trying to submit your offer.</p>
+                                <textarea className="mt-4 dark:text-brandLight/50 min-h-[10rem] text-brandDark w-full py-2 px-2 border-2 border-transparent bg-brandDark/10 rounded-xl focus:outline-none focus:border-brandDark/20" value={error} readOnly />
+                            </>
+                        );
+                    }
+                }
+
+            }
+
             return (
                 <div className="mt-16 mb-16">
-                    <div className="font-medium">{offerResponse!.success ? '' : offerResponse!.message.includes("Invalid Offer") ? '' : offerResponse!.message.includes("UNKNOWN_UNSPENT") ? '' : 'An error occurred while submitting offer ☹️'}</div>
-                    {!offerResponse!.success && !offerResponse!.message.includes("Invalid Offer") && !offerResponse!.message.includes("UNKNOWN_UNSPENT") && <textarea className="mt-4 dark:text-brandLight/30 min-h-[10rem] text-brandDark w-full py-2 px-2 border-2 border-transparent bg-brandDark/10 rounded-xl focus:outline-none focus:border-brandDark" value={offerResponse!.message} readOnly />}
-                    {offerResponse!.message.match( /Invalid Offer|UNKNOWN_UNSPENT/ ) && (
-                        <div className="flex flex-col">
-                            <h2 className="text-xl">{offerResponse!.message.includes("Invalid Offer") ? 'Your offer was invalid. Please try again.' : 'Please wait ~1 minute before making another transaction'}</h2>
-                            <a href="https://discord.gg/Z9px4geHvK" target="_blank" className="text-center text-xl font-medium w-full py-2 px-4 rounded-lg mt-4 bg-[#5865F2] hover:opacity-90 text-brandLight">Join our discord for support</a>
-                        </div>
-                    )}
+                    <div className="flex flex-col">
+                        {!offerResponse!.success && (<>
+                            <div className="bg-red-400/50 dark:bg-red-400/20 rounded-xl text-red-700 dark:text-red-600 p-4 mt-8 flex flex-col">
+                                <div className="flex gap-2 items-center mb-8">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px" className="fill-red-700 dark:fill-red-600"><title>Swap issue</title><path d="M21.5 4.5H26.501V43.5H21.5z" transform="rotate(45.001 24 24)"/><path d="M21.5 4.5H26.5V43.501H21.5z" transform="rotate(135.008 24 24)"/></svg>
+                                    <span className="font-medium text-2xl">Failed to complete {activeTab === 'swap' ? 'swap' : 'transaction'}</span>
+                                </div>
+                                {displayErrorMessage()}
+                                <button onClick={handleCopyErrorButtonClick} className={`${copyErrorMessageSuccess ? 'bg-green-700/70 dark:bg-green-700/50' : 'bg-red-700/70'} text-center text-base font-medium w-full py-2 px-4 rounded-lg mt-8 hover:opacity-90 text-brandLight`}>{copyErrorMessageSuccess ? 'Copied Successfully' : 'Copy Full Error'}</button>
+                                <a href="https://discord.gg/Z9px4geHvK" target="_blank" className="text-center text-xl font-medium w-full py-4 px-4 rounded-lg mt-2 bg-[#5865F2] hover:opacity-90 text-brandLight">Join our discord for support</a>
+                            </div>
+                        </>)}
+                    </div>
                     {offerResponse!.success && <SuccessScreen offerData={data} devFee={devFee} />}
                 </div>
+
+
+
             );
         };
 

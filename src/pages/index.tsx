@@ -17,7 +17,6 @@ const Home: React.FC = () => {
 
   return (
       <main className="max-w-[28rem] mx-auto">
-        <h1 className="text-5xl font-bold pb-12">Trade</h1>
         <TabContainer tokens={tokens} selectedToken={selectedToken} setSelectedToken={setSelectedToken} />
       </main>
   );

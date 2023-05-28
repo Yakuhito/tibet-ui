@@ -15,20 +15,6 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({ token, onChange, ma
 
   const [inputValue, setInputValue] = useState<number | string>("");
 
-  // const handleInputChange = ({ target }: ChangeEvent<HTMLInputElement>) => {
-  //   const parsed = target.value != "" ? Number(target.value) : 0;
-  //   console.log(parsed)
-  //   if (target.value == "") {
-  //     setInputValue("")
-  //     onChange(0)
-  //   } else {
-  //     onChange(Math.floor(0 * Math.pow(10, maxDecimals)));
-  //     setInputValue(target.value)
-  //   }
-
-  //   console.log(inputValue !== "" && value !== 0, inputValue, value)
-  // }
-
   const handleInputChange = ({ target }: ChangeEvent<HTMLInputElement>) => {
     const parsed = parseFloat(target.value);
     if(Number.isNaN(parsed)) {
@@ -41,7 +27,7 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({ token, onChange, ma
   }
 
   return (
-    <div className={`flex justify-between bg-brandDark/10 p-6 rounded-2xl relative pt-[59px] ${disabled ? 'opacity-30' : ''}`}>
+    <div className={`flex justify-between bg-brandDark/10 p-6 rounded-xl relative pt-[59px] ${disabled ? 'opacity-30' : ''}`}>
 
       {/* Token Short_Name */}
       <div className={`absolute top-6 ${disabled ? 'cursor-not-allowed': ''}`}>
