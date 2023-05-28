@@ -28,6 +28,14 @@ const TabContainer: React.FC<TabContainerProps> = ({ tokens, selectedToken, setS
   const [devFee, setDevFee] = useState(0.003)
   const [dataRefreshPercent, setDataRefreshPercent] = useState(0);
 
+  // Remember & restore user dev fee preference (if >= 0.3%)
+  useEffect(() => {
+    const devFee = localStorage.getItem('devFee');
+    if (devFee && parseFloat(devFee) >= 0.003) {
+      setDevFee(parseFloat(devFee));
+    }
+  }, []);
+
   // Update data refresh loader percent
   useEffect(() => {
     if(generateOfferData !== null && orderRefreshActive && activeTab === 'swap') {

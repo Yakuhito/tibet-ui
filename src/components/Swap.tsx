@@ -234,7 +234,7 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
             </div>
             <p className="font-medium">{(devFee * 100).toFixed(2) + '%'}</p>
           </div>
-          <DevFeeModal isOpen={isDevFeeModalOpen} setIsOpen={setIsDevFeeModalOpen} setDevFee={setDevFee} />
+          <DevFeeModal isOpen={isDevFeeModalOpen} setIsOpen={setIsDevFeeModalOpen} setDevFee={setDevFee} devFee={devFee} />
           
         </div>
         )
