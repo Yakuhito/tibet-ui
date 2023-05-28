@@ -4,10 +4,11 @@ import { Dialog, Transition, RadioGroup } from '@headlessui/react'
 interface DevFeeModalProps {
     isOpen: boolean;
     setIsOpen: (value: boolean) => void;
+    devFee: number;
     setDevFee: (value: number) => void;
 }
 
-function DevFeeModal({ isOpen, setIsOpen, setDevFee }: DevFeeModalProps) {
+function DevFeeModal({ isOpen, setIsOpen, setDevFee, devFee }: DevFeeModalProps) {
 
     // Current value of custom dev fee input
     const [customInputValue, setCustomInputValue] = useState<number | string>("");
@@ -25,7 +26,7 @@ function DevFeeModal({ isOpen, setIsOpen, setDevFee }: DevFeeModalProps) {
         if (inputValue === "") setCustomInputValue(0.00)
         if (Number(inputValue) >= 0 && Number(inputValue) <= 100) {
             setCustomInputValue(inputValue);
-            setDevFee(Number(inputValue)/100)
+            setDevFee(parseFloat(inputValue)/100);
         }
     };
 
@@ -42,15 +43,27 @@ function DevFeeModal({ isOpen, setIsOpen, setDevFee }: DevFeeModalProps) {
 
     // Executes when user switches option
     const handleOptionChange = (option: number) => {
-        setSelectedOption(option)
-        setDevFee(Number(options[option].value)/100)
+      setSelectedOption(option);
+      const newDevFeeNotRounded = Number(options[option].value) / 100;
+      const newDevFee = parseFloat(newDevFeeNotRounded.toFixed(6));
+    
+      setDevFee(newDevFee);
+    };
+
+    const handleNewDevFeeSelection = () => {
+      setIsOpen(false);
+      // Save new devFee value to localstorage
+      try {
+        if (typeof window !== 'undefined' && window.localStorage) {
+          localStorage.setItem('devFee', devFee.toString());
+        }
+      } catch (error) {
+        console.error('Error accessing or saving to localStorage:', error);
+      }
     }
 
-
-    return ( 
-        <>
-            {/* dev fee (editable) - 0.3% (0.3%, 0.7%, custom) (if 0%, yak goes hungry) */}
-      
+    return (
+        <>      
             <Transition appear show={isOpen} as={Fragment}>
               <Dialog as="div" className="relative z-20" onClose={() => setIsOpen(false)}>
                 <Transition.Child
@@ -80,7 +93,7 @@ function DevFeeModal({ isOpen, setIsOpen, setDevFee }: DevFeeModalProps) {
 
                         <Dialog.Title as="h3" className="text-5xl pt-8 pb-4 font-bold leading-6 text-black dark:text-brandLight">Dev Fee</Dialog.Title>
 
-                        {/* Options */}
+                        {/* Options (0.3%, 0.7%, Custom input) */}
                         <div className="my-8">
                           <RadioGroup className="flex flex-col gap-4" value={selectedOption} onChange={handleOptionChange}>
 
@@ -116,7 +129,7 @@ function DevFeeModal({ isOpen, setIsOpen, setDevFee }: DevFeeModalProps) {
                           <button
                             type="button"
                             className="inline-flex justify-center rounded-xl border border-transparent bg-brandDark px-4 py-4 w-full font-medium text-brandLight hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-brandDark focus-visible:ring-offset-2"
-                            onClick={() => setIsOpen(false)}
+                            onClick={() => handleNewDevFeeSelection()}
                           >
                             Confirm
                           </button>
