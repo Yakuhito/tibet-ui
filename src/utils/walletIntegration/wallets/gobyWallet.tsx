@@ -1,6 +1,6 @@
 import WalletIntegrationInterface from '../walletIntegrationInterface';
-import WalletManager from '../walletManager';
 import { toast } from 'react-hot-toast';
+import { bech32m } from 'bech32';
 
 class gobyWallet implements WalletIntegrationInterface {
   name = "Goby";
@@ -103,8 +103,16 @@ class gobyWallet implements WalletIntegrationInterface {
     console.log('Fetching Goby wallet address')
     // Check if Goby extension is installed
     const { chia } = (window as any);
-      if (!Boolean(chia && chia.goby.selectedAddress)) {
-        return chia.goby.selectedAddress;
+      if (Boolean(chia && chia.isGoby)) {
+        const puzzle_hash = chia.selectedAddress;
+        if (puzzle_hash) {
+          // Convert puzzle_hash to Chia address
+          const prefix = process.env.NEXT_PUBLIC_XCH;
+          if (prefix) {
+            const words = bech32m.toWords(Buffer.from(puzzle_hash, 'hex'));
+            return bech32m.encode(prefix, words);
+          }
+        }
       }
   }
 
