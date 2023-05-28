@@ -7,6 +7,7 @@ import WalletContext from '@/context/WalletContext';
 import BarLoader from 'react-spinners/BarLoader';
 import SuccessScreen from './SuccessScreen';
 import Image from 'next/image';
+import { RingLoader } from 'react-spinners';
 
 type GenerateOfferProps = {
   data: GenerateOfferData;
@@ -416,7 +417,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
             if(offerResponse === null) {
                 return (
                 <div className="mt-16 mb-16 flex justify-center items-center flex-col">
-                    <BarLoader width={164} color={"#526e78"} />
+                    <RingLoader size={64} color={"#526e78"} />
                     <div className='mt-4 font-medium'><p>Sending offer</p></div>
                 </div>
                 );
