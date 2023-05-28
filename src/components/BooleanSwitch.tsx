@@ -13,14 +13,14 @@ const BooleanSwitch: React.FC<BooleanSwitchProps> = ({ onChange, isSelected, tru
 
         <button
           onClick={() => onChange(true)}
-          className={`${isSelected ? 'bg-green-800 text-white' : 'text-brandDark'} px-4 py-2 rounded-lg focus:outline-none w-full transition duration-100`}
+          className={`${isSelected ? 'bg-green-800 text-brandLight' : 'text-black/50'} px-4 py-2 rounded-lg focus:outline-none w-full transition duration-100`}
         >
           {trueLabel}
         </button>
 
         <button
           onClick={() => onChange(false)}
-          className={`${isSelected ? 'text-brandDark' : 'bg-red-700 text-white'} px-4 py-2 rounded-lg focus:outline-none w-full transition duration-100`}
+          className={`${isSelected ? 'text-black/50' : 'bg-red-700 text-brandLight'} px-4 py-2 rounded-lg focus:outline-none w-full transition duration-100`}
         >
           {falseLabel}
         </button>
