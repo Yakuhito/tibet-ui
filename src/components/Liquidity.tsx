@@ -176,6 +176,7 @@ const Liquidity: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, 
         isBuySelected={isAddSelected}
         disabled={selectedToken == null || pair == null || amount0 === 0}
         onPressed={submitLiquidityOperation}
+        text={(isAddSelected ? 'Add' : 'Remove') + ' Liquidity'}
       />
 
       {pair && (
