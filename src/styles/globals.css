@@ -6,6 +6,11 @@ html {
   overflow-y: scroll;
 }
 
+*::selection {
+  background: #526e78;
+  color: #EFF4F7;
+}
+
 .faq-answer a {
     text-decoration: underline;
 }
