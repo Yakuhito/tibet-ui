@@ -488,7 +488,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                                 </div>
                                 {displayErrorMessage()}
                                 <button onClick={handleCopyErrorButtonClick} className={`${copyErrorMessageSuccess ? 'bg-green-700/70 dark:bg-green-700/50' : 'bg-red-700/70'} text-center text-base font-medium w-full py-2 px-4 rounded-lg mt-8 hover:opacity-90 text-brandLight`}>{copyErrorMessageSuccess ? 'Copied Successfully' : 'Copy Full Error'}</button>
-                                <a href="https://discord.gg/Z9px4geHvK" target="_blank" className="text-center text-xl font-medium w-full py-4 px-4 rounded-lg mt-2 bg-[#5865F2] hover:opacity-90 text-brandLight">Join our discord for support</a>
+                                <a href="https://discord.gg/Z9px4geHvK" target="_blank" className="text-center text-base font-medium w-full py-4 px-4 rounded-lg mt-2 bg-[#5865F2] hover:opacity-90 text-brandLight">Join our discord for support</a>
                             </div>
                         </>)}
                     </div>
