@@ -6,8 +6,9 @@ import { useEffect, useState, useContext } from 'react';
 import WalletContext from '@/context/WalletContext';
 import BarLoader from 'react-spinners/BarLoader';
 import SuccessScreen from './SuccessScreen';
-import Image from 'next/image';
 import { RingLoader } from 'react-spinners';
+import { toast } from 'react-hot-toast';
+import Image from 'next/image';
 
 type GenerateOfferProps = {
   data: GenerateOfferData;
@@ -265,7 +266,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
     };
 
     const addAssetToWallet = async (assetId: string, symbol: string, logo: string) => {
-        if (!activeWallet) return console.log('Connect to a wallet before trying to add an asset')
+        if (!activeWallet) return toast.error('Connect to a wallet before trying to add an asset')
         console.log('sending request to goby')
         await activeWallet.addAsset(assetId, symbol, logo)
     }
