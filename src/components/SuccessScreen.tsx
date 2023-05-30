@@ -69,7 +69,7 @@ function SuccessScreen({ offerData, devFee, offerResponse }: SuccessScreenProps)
                 leaveFrom="opacity-100 rotate-0 scale-100 "
                 leaveTo="opacity-0 scale-95 "
             >
-                <div className={`absolute overflow-x-clip top-0 w-full p-8 py-12 flex flex-col justify-center bg-brandDark bg-gradient-to-br from-[#7fa9b8] to-brandDark dark:from-brandDark dark:to-[#152f38] rounded-xl`}>
+                <div className={`absolute overflow-x-clip top-0 w-full p-8 flex flex-col justify-center bg-brandDark bg-gradient-to-br from-[#7fa9b8] to-brandDark dark:from-brandDark dark:to-[#152f38] rounded-xl`}>
                     <p className="text-brandLight text-5xl mb-4 font-bold">Sent</p>
                     {offerData.offer.map(asset => (
                         <div key={asset[0].asset_id} className="text-brandLight flex items-center gap-2 font-medium pb-2 last:pb-0">
@@ -87,11 +87,11 @@ function SuccessScreen({ offerData, devFee, offerResponse }: SuccessScreenProps)
                             <p>{asset[0].short_name}</p>
                         </div>
                     ))}
-
                     {/* Track status on Dexie Button */}
-                    {/* {offerResponse?.offerId && (
-                        <a href={`https://dexie.space/offers/${offerResponse.offerId}`} target="_blank" className="bg-brandLight dark:bg-brandLight/80 dark:text-black rounded-xl py-4 flex items-center font-medium justify-center mt-12 hover:opacity-90">
+                    {offerResponse?.offer_id && (
+                        <a href={`https://${process.env.NEXT_PUBLIC_XCH === "TXCH" && "testnet."}dexie.space/offers/${offerResponse.offer_id}`} target="_blank" className="bg-brandLight dark:bg-brandLight/80 dark:text-black rounded-xl py-4 flex items-center font-medium justify-center mt-12 hover:opacity-90">
 
+                            {/* Dexie Duck Icon */}
                             <svg version="1.0" xmlns="http://www.w3.org/2000/svg" className="w-8 h-8"
                                  width="635.000000pt" height="710.000000pt" viewBox="0 0 635.000000 710.000000">
                                 <g transform="translate(0.000000,710.000000) scale(0.100000,-0.100000)"
@@ -125,7 +125,7 @@ function SuccessScreen({ offerData, devFee, offerResponse }: SuccessScreenProps)
                             </svg>
                             Track Offer On Dexie
                         </a>
-                    )} */}
+                    )}
 
                 </div>
 
