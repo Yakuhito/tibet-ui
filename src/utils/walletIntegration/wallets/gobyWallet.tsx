@@ -19,6 +19,7 @@ class gobyWallet implements WalletIntegrationInterface {
     try {
       await (window as any).chia.request({ method: "connect" });
       toast.success('Successfully Connected')
+      this.detectEvents()
       return true
     } catch (error: any) {
         console.log(error)
@@ -30,6 +31,7 @@ class gobyWallet implements WalletIntegrationInterface {
   async eagerlyConnect(): Promise<boolean> {
     try {
       await (window as any).chia.request({ method: "connect" , "params": {eager: true}})
+      this.detectEvents()
       return true
     } catch (error: any) {
         console.log(error)
@@ -116,20 +118,12 @@ class gobyWallet implements WalletIntegrationInterface {
       }
   }
 
-  // detectEvents(): void {
-  //   // Detect disconnect via Goby browser extension
-  //   // Check if Goby extension is installed
-  //   const { chia } = (window as any);
-  //   if (Boolean(chia && chia.isGoby)) {
-  //     const walletManager = WalletManager.getInstance()
-
-  //     chia.on("accountChanged", () => {
-  //       console.log(chia)
-  //       if (chia.selectedAddress) return // If Goby is still connected
-  //       if (walletManager.getActiveWallet() instanceof gobyWallet) return walletManager.disconnect();
-  //     });
-  //   }
-  // }
+  detectEvents(): void {
+    console.log('Detecting Goby events');
+    const { chia } = window as any;
+    chia.on("chainChanged", () => window.location.reload());
+    chia.on("accountChanged", () => window.location.reload());
+  }
 
 }
 
