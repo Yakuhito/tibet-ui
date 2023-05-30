@@ -43,6 +43,7 @@ export interface Quote {
 export interface OfferResponse {
     success: boolean;
     message: string;
+    offer_id: string;
 }  
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL; 
