@@ -99,7 +99,7 @@ class gobyWallet implements WalletIntegrationInterface {
     }    
   }
 
-  getAddress() {
+  async getAddress() {
     console.log('Fetching Goby wallet address')
     // Check if Goby extension is installed
     const { chia } = (window as any);
@@ -107,7 +107,7 @@ class gobyWallet implements WalletIntegrationInterface {
         const puzzle_hash = chia.selectedAddress;
         if (puzzle_hash) {
           // Convert puzzle_hash to Chia address
-          const prefix = process.env.NEXT_PUBLIC_XCH;
+          const prefix = chia.chainId === "0x01" ? "XCH" : "TXCH";
           if (prefix) {
             const words = bech32m.toWords(Buffer.from(puzzle_hash, 'hex'));
             return bech32m.encode(prefix, words);

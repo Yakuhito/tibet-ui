@@ -1,5 +1,6 @@
 import WalletIntegrationInterface from '../walletIntegrationInterface';
 import { toast } from 'react-hot-toast';
+import { bech32m } from 'bech32';
 
 class hoogiiWallet implements WalletIntegrationInterface {
   name = "Hoogii";
@@ -112,8 +113,21 @@ class hoogiiWallet implements WalletIntegrationInterface {
     console.log('Getting Hoogii Wallet Balance')
   }
 
-  getAddress() {
-    
+  async getAddress() {
+    console.log('Fetching Hoogii wallet address')
+    // Check if Goby extension is installed
+    const { chia } = (window as any);
+    if (Boolean(chia && chia.hoogii.isHoogii)) {
+      try {
+        const puzzle_hash = await chia.hoogii.request({ method: 'accounts' });
+        if (puzzle_hash.length) {
+          return puzzle_hash[0];
+        }
+      } catch (error: any) {
+        console.log(error)
+        toast.error(`Wallet - ${error?.message || String(error.message)}`);
+      }
+    }
   }
 
   async addAsset(assetId: string, symbol: string, logo: string): Promise<void> {

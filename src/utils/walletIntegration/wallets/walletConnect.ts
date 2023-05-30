@@ -181,7 +181,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     toast.error('Support for adding assets via WalletConnect will be added soon.')
   }
 
-  getAddress() {
+  async getAddress() {
     
   }
 
