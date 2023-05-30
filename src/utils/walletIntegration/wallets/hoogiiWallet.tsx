@@ -89,13 +89,14 @@ class hoogiiWallet implements WalletIntegrationInterface {
     console.log('Disconnecting Hoogii Wallet')
   }
 
-  async generateOffer(requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[]): Promise<void> {
+  async generateOffer(requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[], fee: number | undefined): Promise<void> {
     // Hoogii wallet transaction signing logic
     console.log('Generating offer with Hoogii Wallet')
     try {
       const params = {
         requestAssets,
-        offerAssets
+        offerAssets,
+        fee
       }
       const response = await (window as any).chia.hoogii.request({ method: 'createOffer', params })
       console.log('Fetching offer', response)
