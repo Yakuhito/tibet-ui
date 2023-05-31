@@ -98,8 +98,8 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                         } else {
                           const liquidityTokens = newOfferData.offer[0][2]
                           const tokenAmount = getLiquidityQuote(liquidityTokens, pairLiquidity, token_reserve, true);
-                          var xchAmount = getLiquidityQuote(liquidityTokens, liquidity, xch_reserve, true);
-                          xchAmount += liquidity;
+                          var xchAmount = getLiquidityQuote(liquidityTokens, pairLiquidity, xch_reserve, true);
+                          xchAmount += liquidityTokens;
                         
                           newOfferData.request[0][2] = xchAmount; // Update Amount0
                           newOfferData.request[1][2] = tokenAmount; // Update Amount1
