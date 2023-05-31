@@ -99,7 +99,7 @@ class WalletManager {
     }
   }
   
-  public getAddress(): string | void {
+  public async getAddress(): Promise<string | void> {
     if (this.activeWallet) {
       this.activeWallet.getAddress();
     }

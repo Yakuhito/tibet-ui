@@ -6,8 +6,9 @@ import { useEffect, useState, useContext } from 'react';
 import WalletContext from '@/context/WalletContext';
 import BarLoader from 'react-spinners/BarLoader';
 import SuccessScreen from './SuccessScreen';
-import Image from 'next/image';
 import { RingLoader } from 'react-spinners';
+import { toast } from 'react-hot-toast';
+import Image from 'next/image';
 
 type GenerateOfferProps = {
   data: GenerateOfferData;
@@ -265,7 +266,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
     };
 
     const addAssetToWallet = async (assetId: string, symbol: string, logo: string) => {
-        if (!activeWallet) return console.log('Connect to a wallet before trying to add an asset')
+        if (!activeWallet) return toast.error('Connect to a wallet before trying to add an asset')
         console.log('sending request to goby')
         await activeWallet.addAsset(assetId, symbol, logo)
     }
@@ -480,18 +481,18 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                 <div className="mt-16 mb-16">
                     <div className="flex flex-col">
                         {!offerResponse!.success && (<>
-                            <div className="bg-red-400/50 dark:bg-red-400/20 rounded-xl text-red-700 dark:text-red-600 p-4 mt-8 flex flex-col">
+                            <div className="bg-red-400/50 dark:bg-red-400/20 rounded-xl text-red-700 dark:text-red-600 p-4 sm:p-8 mt-8 flex flex-col">
                                 <div className="flex gap-2 items-center mb-8">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px" className="fill-red-700 dark:fill-red-600"><title>Swap issue</title><path d="M21.5 4.5H26.501V43.5H21.5z" transform="rotate(45.001 24 24)"/><path d="M21.5 4.5H26.5V43.501H21.5z" transform="rotate(135.008 24 24)"/></svg>
                                     <span className="font-medium text-2xl">Failed to complete {activeTab === 'swap' ? 'swap' : 'transaction'}</span>
                                 </div>
                                 {displayErrorMessage()}
                                 <button onClick={handleCopyErrorButtonClick} className={`${copyErrorMessageSuccess ? 'bg-green-700/70 dark:bg-green-700/50' : 'bg-red-700/70'} text-center text-base font-medium w-full py-2 px-4 rounded-lg mt-8 hover:opacity-90 text-brandLight`}>{copyErrorMessageSuccess ? 'Copied Successfully' : 'Copy Full Error'}</button>
-                                <a href="https://discord.gg/Z9px4geHvK" target="_blank" className="text-center text-xl font-medium w-full py-4 px-4 rounded-lg mt-2 bg-[#5865F2] hover:opacity-90 text-brandLight">Join our discord for support</a>
+                                <a href="https://discord.gg/Z9px4geHvK" target="_blank" className="text-center text-base font-medium w-full py-4 px-4 rounded-lg mt-2 bg-[#5865F2] hover:opacity-90 text-brandLight">Join our discord for support</a>
                             </div>
                         </>)}
                     </div>
-                    {offerResponse!.success && <SuccessScreen offerData={data} devFee={devFee} />}
+                    {offerResponse!.success && <SuccessScreen offerData={data} devFee={devFee} offerResponse={offerResponse} />}
                 </div>
 
 

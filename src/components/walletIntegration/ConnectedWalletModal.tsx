@@ -12,9 +12,10 @@ interface ConnectWalletModalProps {
     setIsOpen: (value: boolean) => void;
     walletManager: WalletManager | null;
     activeWallet: WalletIntegrationInterface | null;
+    isWalletOnWrongChain: boolean;
 }
 
-function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet }: ConnectWalletModalProps) {
+function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet,isWalletOnWrongChain }: ConnectWalletModalProps) {
 
     // Handle connecting to a wallet when clicking on an option
     const handleConnect = async (walletIdentifier: string) => {
@@ -82,29 +83,35 @@ function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet }: 
                     <div className="mt-10 flex flex-col gap-4">
 
                         {/* Goby Wallet */}
-                        <div onClick={() => handleConnect('Goby')} className={`${activeWallet instanceof GobyWallet ? 'bg-green-700/20 focus:ring-green-700/20' : 'bg-brandDark/10'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 rounded-xl cursor-pointer`}>
-                        <div className="flex items-center gap-4">
-                                <Image src="/assets/goby.webp" height={40} width={40} alt={'Goby Wallet Logo'} className="rounded-full" />
-                                <p className="font-medium text-lg">Goby Wallet</p>
+                        <div>
+                            <div onClick={() => handleConnect('Goby')} className={`${activeWallet instanceof GobyWallet ? 'bg-green-700/20 focus:ring-green-700/20' : 'bg-brandDark/10'} ${isWalletOnWrongChain && activeWallet instanceof GobyWallet ? 'rounded-t-xl' : 'rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
+                            <div className="flex items-center gap-4">
+                                    <Image src="/assets/goby.webp" height={40} width={40} alt={'Goby Wallet Logo'} className="rounded-full" />
+                                    <p className="font-medium text-lg">Goby Wallet</p>
+                                </div>
+                                <button className={`
+                                ${activeWallet instanceof GobyWallet ? 'outline-none text-green-700' : ''}
+                                font-medium rounded-lg px-2 py-1
+                                ${activeWallet instanceof GobyWallet ? "before:content-['Connected']" : "before:content-['Connect']"}`}
+                                ></button>
                             </div>
-                            <button className={`
-                            ${activeWallet instanceof GobyWallet ? 'outline-none text-green-700' : ''}
-                            font-medium rounded-lg px-2 py-1
-                            ${activeWallet instanceof GobyWallet ? "before:content-['Connected']" : "before:content-['Connect']"}`}
-                            ></button>
+                            {isWalletOnWrongChain && activeWallet instanceof GobyWallet && <p className="animate-fadeIn text-sm bg-red-700/80 font-medium text-brandLight px-2 py-1 rounded-b-xl text-center">Incorrect chain selected ({process.env.NEXT_PUBLIC_XCH === "TXCH" ? 'Mainnet' : 'Testnet'})</p>}
                         </div>
 
                         {/* Hoogii Wallet */}
-                        <div onClick={() => handleConnect('Hoogii')} className={`${activeWallet instanceof HoogiiWallet ? 'bg-green-700/20 focus:ring-green-700/20' : 'bg-brandDark/10'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 rounded-xl cursor-pointer`}>
-                        <div className="flex items-center gap-4">
-                                <Image src="/assets/hoogii.png" height={40} width={40} alt={'Hoogii Wallet Logo'} className="rounded-full" />
-                                <p className="font-medium text-lg">Hoogii Wallet</p>
+                        <div>
+                            <div onClick={() => handleConnect('Hoogii')} className={`${activeWallet instanceof HoogiiWallet ? 'bg-green-700/20 focus:ring-green-700/20' : 'bg-brandDark/10'} ${isWalletOnWrongChain && activeWallet instanceof HoogiiWallet ? 'rounded-t-xl' : 'rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
+                            <div className="flex items-center gap-4">
+                                    <Image src="/assets/hoogii.png" height={40} width={40} alt={'Hoogii Wallet Logo'} className="rounded-full" />
+                                    <p className="font-medium text-lg">Hoogii Wallet</p>
+                                </div>
+                                <button className={`
+                                ${activeWallet instanceof HoogiiWallet ? 'outline-none text-green-700' : ''}
+                                font-medium rounded-lg px-2 py-1
+                                ${activeWallet instanceof HoogiiWallet ? "before:content-['Connected']" : "before:content-['Connect']"}`}
+                                ></button>
                             </div>
-                            <button className={`
-                            ${activeWallet instanceof HoogiiWallet ? 'outline-none text-green-700' : ''}
-                            font-medium rounded-lg px-2 py-1
-                            ${activeWallet instanceof HoogiiWallet ? "before:content-['Connected']" : "before:content-['Connect']"}`}
-                            ></button>
+                            {isWalletOnWrongChain && activeWallet instanceof HoogiiWallet && <p className="animate-fadeIn text-sm bg-red-700/80 font-medium text-brandLight px-2 py-1 rounded-b-xl text-center">Incorrect chain selected ({process.env.NEXT_PUBLIC_XCH === "TXCH" ? 'Mainnet' : 'Testnet'})</p>}
                         </div>
 
                         {/* Chia Wallet */}

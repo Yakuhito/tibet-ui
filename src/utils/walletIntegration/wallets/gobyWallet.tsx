@@ -8,7 +8,6 @@ class gobyWallet implements WalletIntegrationInterface {
 
   async connect(): Promise<boolean> {
     // Goby wallet connection logic
-    console.log('Connecting Goby Wallet')
     // Check if Goby extension is installed
     const { chia } = (window as any);
     if (!Boolean(chia && chia.isGoby)) {
@@ -19,6 +18,7 @@ class gobyWallet implements WalletIntegrationInterface {
     try {
       await (window as any).chia.request({ method: "connect" });
       toast.success('Successfully Connected')
+      this.detectEvents()
       return true
     } catch (error: any) {
         console.log(error)
@@ -30,6 +30,7 @@ class gobyWallet implements WalletIntegrationInterface {
   async eagerlyConnect(): Promise<boolean> {
     try {
       await (window as any).chia.request({ method: "connect" , "params": {eager: true}})
+      this.detectEvents()
       return true
     } catch (error: any) {
         console.log(error)
@@ -40,12 +41,10 @@ class gobyWallet implements WalletIntegrationInterface {
 
   disconnect(): void {
     // Goby wallet disconnection logic
-    console.log('Disconnecting Goby Wallet')
   }
 
   async generateOffer(requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[], fee: number | undefined): Promise<void> {
     // Goby wallet transaction signing logic
-    console.log('Generating offer with Goby Wallet')
     try {
       const params = {
         requestAssets,
@@ -53,7 +52,6 @@ class gobyWallet implements WalletIntegrationInterface {
         fee
       }
       const response = await (window as any).chia.request({ method: 'createOffer', params })
-      console.log('Fetching offer', response)
       return response
     } catch (error: any) {
         console.log(error)
@@ -63,15 +61,9 @@ class gobyWallet implements WalletIntegrationInterface {
 
   getBalance(): void {
     // Goby wallet balance retrieval logic
-    console.log('Getting Goby Wallet Balance')
   }
 
   async addAsset(assetId: string, symbol: string, logo: string): Promise<void> {
-
-    // Goby wallet transaction signing logic
-    console.log(`Adding ${symbol} to Goby`)
-
-    // Potentially modified values
     let symbolM = symbol
     let logoM = logo
 
@@ -91,7 +83,7 @@ class gobyWallet implements WalletIntegrationInterface {
         }
       }
       const response = await (window as any).chia.request({ method: 'walletWatchAsset', params })
-      console.log('Fetching offer', response)
+      toast.success(`Adding ${symbol} to Goby`)
       return response
     } catch (error: any) {
         console.log(error)
@@ -99,15 +91,14 @@ class gobyWallet implements WalletIntegrationInterface {
     }    
   }
 
-  getAddress() {
-    console.log('Fetching Goby wallet address')
+  async getAddress() {
     // Check if Goby extension is installed
     const { chia } = (window as any);
       if (Boolean(chia && chia.isGoby)) {
         const puzzle_hash = chia.selectedAddress;
         if (puzzle_hash) {
           // Convert puzzle_hash to Chia address
-          const prefix = process.env.NEXT_PUBLIC_XCH;
+          const prefix = chia.chainId === "0x01" ? "XCH" : "TXCH";
           if (prefix) {
             const words = bech32m.toWords(Buffer.from(puzzle_hash, 'hex'));
             return bech32m.encode(prefix, words);
@@ -116,20 +107,11 @@ class gobyWallet implements WalletIntegrationInterface {
       }
   }
 
-  // detectEvents(): void {
-  //   // Detect disconnect via Goby browser extension
-  //   // Check if Goby extension is installed
-  //   const { chia } = (window as any);
-  //   if (Boolean(chia && chia.isGoby)) {
-  //     const walletManager = WalletManager.getInstance()
-
-  //     chia.on("accountChanged", () => {
-  //       console.log(chia)
-  //       if (chia.selectedAddress) return // If Goby is still connected
-  //       if (walletManager.getActiveWallet() instanceof gobyWallet) return walletManager.disconnect();
-  //     });
-  //   }
-  // }
+  detectEvents(): void {
+    const { chia } = window as any;
+    chia.on("chainChanged", () => window.location.reload());
+    chia.on("accountChanged", () => window.location.reload());
+  }
 
 }
 
