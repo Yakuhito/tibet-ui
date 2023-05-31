@@ -89,7 +89,7 @@ function SuccessScreen({ offerData, devFee, offerResponse }: SuccessScreenProps)
                     ))}
                     {/* Track status on Dexie Button */}
                     {offerResponse?.offer_id && (
-                        <a href={`https://${process.env.NEXT_PUBLIC_XCH === "TXCH" && "testnet."}dexie.space/offers/${offerResponse.offer_id}`} target="_blank" className="bg-brandLight dark:bg-brandLight/80 dark:text-black rounded-xl py-4 flex items-center font-medium justify-center mt-12 hover:opacity-90">
+                        <a href={`https://${process.env.NEXT_PUBLIC_XCH === "TXCH" ? "testnet." : ""}dexie.space/offers/${offerResponse.offer_id}`} target="_blank" className="bg-brandLight dark:bg-brandLight/80 dark:text-black rounded-xl py-4 flex items-center font-medium justify-center mt-12 hover:opacity-90">
 
                             {/* Dexie Duck Icon */}
                             <svg version="1.0" xmlns="http://www.w3.org/2000/svg" className="w-8 h-8"
