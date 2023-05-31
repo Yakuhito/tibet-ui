@@ -8,7 +8,6 @@ class hoogiiWallet implements WalletIntegrationInterface {
 
   async connect(): Promise<boolean> {
     // Hoogii wallet connection logic
-    console.log('Connecting Hoogii Wallet')
     // Check if Hoogii extension is installed
     const { chia } = (window as any);
     if (!Boolean(chia && chia.hoogii.isHoogii)) {
@@ -89,12 +88,10 @@ class hoogiiWallet implements WalletIntegrationInterface {
 
   disconnect(): void {
     // Hoogii wallet disconnection logic
-    console.log('Disconnecting Hoogii Wallet')
   }
 
   async generateOffer(requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[], fee: number | undefined): Promise<void> {
     // Hoogii wallet transaction signing logic
-    console.log('Generating offer with Hoogii Wallet')
     try {
       const params = {
         requestAssets,
@@ -102,7 +99,6 @@ class hoogiiWallet implements WalletIntegrationInterface {
         fee
       }
       const response = await (window as any).chia.hoogii.request({ method: 'createOffer', params })
-      console.log('Fetching offer', response)
       return response
     } catch (error: any) {
         console.log(error)
@@ -112,11 +108,9 @@ class hoogiiWallet implements WalletIntegrationInterface {
 
   getBalance(): void {
     // Hoogii wallet balance retrieval logic
-    console.log('Getting Hoogii Wallet Balance')
   }
 
   async getAddress() {
-    console.log('Fetching Hoogii wallet address')
     // Check if Goby extension is installed
     const { chia } = (window as any);
     if (Boolean(chia && chia.hoogii.isHoogii)) {
@@ -137,7 +131,6 @@ class hoogiiWallet implements WalletIntegrationInterface {
   }
 
   detectEvents(): void {
-    console.log('Detecting Goby events');
     const { chia } = window as any;
     chia.hoogii.on("chainChanged", () => window.location.reload());
   }

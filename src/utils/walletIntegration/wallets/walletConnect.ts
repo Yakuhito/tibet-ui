@@ -53,7 +53,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           // Display QR code to user
           if (uri) {
             QRCodeModal.open(uri, () => {
-              console.log("QR modal closed");
+              // On QR modal close
             });
           }
 
@@ -131,7 +131,10 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     
     // Fetch previous connection
     try {
-        if (!this.topic || !signClient) return console.log('Not connected via WalletConnect or could not sign client')
+        if (!this.topic || !signClient) {
+          toast.error('Not connected via WalletConnect or could not sign client')
+          return;
+        }
 
         // const result = await client.request({
         //   topic: this.topic,
@@ -164,7 +167,6 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
             },
           },
         });
-        console.log('Offer Response:', resultOffer)
 
     } catch (error) {
       console.log(error);

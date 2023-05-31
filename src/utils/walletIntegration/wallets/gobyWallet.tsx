@@ -8,7 +8,6 @@ class gobyWallet implements WalletIntegrationInterface {
 
   async connect(): Promise<boolean> {
     // Goby wallet connection logic
-    console.log('Connecting Goby Wallet')
     // Check if Goby extension is installed
     const { chia } = (window as any);
     if (!Boolean(chia && chia.isGoby)) {
@@ -42,12 +41,10 @@ class gobyWallet implements WalletIntegrationInterface {
 
   disconnect(): void {
     // Goby wallet disconnection logic
-    console.log('Disconnecting Goby Wallet')
   }
 
   async generateOffer(requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[], fee: number | undefined): Promise<void> {
     // Goby wallet transaction signing logic
-    console.log('Generating offer with Goby Wallet')
     try {
       const params = {
         requestAssets,
@@ -55,7 +52,6 @@ class gobyWallet implements WalletIntegrationInterface {
         fee
       }
       const response = await (window as any).chia.request({ method: 'createOffer', params })
-      console.log('Fetching offer', response)
       return response
     } catch (error: any) {
         console.log(error)
@@ -65,15 +61,9 @@ class gobyWallet implements WalletIntegrationInterface {
 
   getBalance(): void {
     // Goby wallet balance retrieval logic
-    console.log('Getting Goby Wallet Balance')
   }
 
   async addAsset(assetId: string, symbol: string, logo: string): Promise<void> {
-
-    // Goby wallet transaction signing logic
-    console.log(`Adding ${symbol} to Goby`)
-
-    // Potentially modified values
     let symbolM = symbol
     let logoM = logo
 
@@ -93,7 +83,7 @@ class gobyWallet implements WalletIntegrationInterface {
         }
       }
       const response = await (window as any).chia.request({ method: 'walletWatchAsset', params })
-      console.log('Fetching offer', response)
+      toast.success(`Adding ${symbol} to Goby`)
       return response
     } catch (error: any) {
         console.log(error)
@@ -102,7 +92,6 @@ class gobyWallet implements WalletIntegrationInterface {
   }
 
   async getAddress() {
-    console.log('Fetching Goby wallet address')
     // Check if Goby extension is installed
     const { chia } = (window as any);
       if (Boolean(chia && chia.isGoby)) {
@@ -119,7 +108,6 @@ class gobyWallet implements WalletIntegrationInterface {
   }
 
   detectEvents(): void {
-    console.log('Detecting Goby events');
     const { chia } = window as any;
     chia.on("chainChanged", () => window.location.reload());
     chia.on("accountChanged", () => window.location.reload());
