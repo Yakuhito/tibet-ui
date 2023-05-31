@@ -19,6 +19,7 @@ class hoogiiWallet implements WalletIntegrationInterface {
     try {
       await (window as any).chia.hoogii.request({ method: "connect" });
       toast.success('Successfully Connected')
+      this.detectEvents()
       return true
     } catch (error: any) {
         console.log(error)
@@ -49,6 +50,7 @@ class hoogiiWallet implements WalletIntegrationInterface {
             .request({ method: 'connect', params: { eager: true } })
             .then(() => {
               clearInterval(intervalId);
+              this.detectEvents()
               resolve(true);
             })
             .catch((error: any) => {
@@ -132,6 +134,12 @@ class hoogiiWallet implements WalletIntegrationInterface {
 
   async addAsset(assetId: string, symbol: string, logo: string): Promise<void> {
     toast.error('Currently only Goby has support for adding an asset programatically')
+  }
+
+  detectEvents(): void {
+    console.log('Detecting Goby events');
+    const { chia } = window as any;
+    chia.hoogii.on("chainChanged", () => window.location.reload());
   }
 }
 
