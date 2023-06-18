@@ -92,6 +92,7 @@ class hoogiiWallet implements WalletIntegrationInterface {
 
   async generateOffer(requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[], fee: number | undefined): Promise<void> {
     // Hoogii wallet transaction signing logic
+    fee = Math.floor((fee ?? 0) * 10 ** 12)
     try {
       const params = {
         requestAssets,
