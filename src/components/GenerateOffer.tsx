@@ -382,7 +382,6 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                         <span className="font-normal">{(pairAndQuote![1].fee / Math.pow(10, 12)).toFixed(12)} {process.env.NEXT_PUBLIC_XCH}</span>
                     </p>
 
-                    {/* <p className="px-4 mb-4 font-medium">Generate the offer, paste it below, then submit.</p> */}
                     {activeWallet && <button className="w-full bg-brandDark text-white py-4 rounded-lg font-medium hover:opacity-90" onClick={completeWithWallet}>Use Wallet to Complete Order</button>}
                     
                     {activeWallet && <p className="flex w-full justify-center font-medium my-4">— OR —</p>}
