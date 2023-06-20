@@ -36,6 +36,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
     const [offerResponse, setOfferResponse] = useState<OfferResponse | null>(null);
     const [pair, setPair] = useState<Pair | null>(null);
     const [copyErrorMessageSuccess, setCopyErrorMessageSuccess] = useState(false);
+    const [highFeeConfirmed, setHighFeeConfirmed] = useState(false);
 
     // Update pair rates every 4 seconds
     useEffect(() => {
@@ -364,9 +365,16 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         };
         // Verified - display summary of order & ask user to confirm
         if(step === 2) {
+
+            // Calculate whether the suggested fee is too high
+            const fee = pairAndQuote![1].fee / parseFloat(Math.pow(10, 12).toFixed(12));
+            const findChiaAmount = () => (data.offer.find(item => item[1]) || data.request.find(item => item[1]) || [])[2]; // Look through order data and find Chia amount
+            const chiaAmount = findChiaAmount();
+            const chiaAmountProper = chiaAmount ? (Math.floor(chiaAmount)) / Math.pow(10, 12) : null;
+            const ishighFee = chiaAmountProper ? fee > chiaAmountProper * 0.1 : false;
+
             return (
                 <div className="text-left w-full">
-                    {/* <p className="text-4xl font-bold mb-8">Order Summary</p> */}
                     <div className="mb-4 bg-brandDark/10 rounded-xl p-4">
                         <p className="mb-4 font-medium text-2xl text-brandDark dark:text-brandLight">Offering</p>
                         {listAssets(data.offer, true)}
@@ -379,13 +387,43 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                     </div>
                     <p className="py-4 px-4 font-medium mb-12 bg-brandDark/10 rounded-xl">
                         <span>Min fee › </span>
-                        <span className="font-normal">{(pairAndQuote![1].fee / Math.pow(10, 12)).toFixed(12)} {process.env.NEXT_PUBLIC_XCH}</span>
+                        <span className="font-normal">{fee} {process.env.NEXT_PUBLIC_XCH}</span>
                     </p>
 
-                    {activeWallet && <button className="w-full bg-brandDark text-white py-4 rounded-lg font-medium hover:opacity-90" onClick={completeWithWallet}>Use Wallet to Complete Order</button>}
-                    
+                    {/* High fee warning banner */}
+                    {ishighFee && (
+                    <div className="bg-red-400/50 dark:bg-red-400/20 rounded-xl text-red-700 dark:text-red-600 p-4 mb-4 flex items-center gap-4">
+                      <label className="inline-flex items-center cursor-pointer">
+                        <div className="relative">
+                          <input
+                            type="checkbox"
+                            className="opacity-0 absolute h-0 w-0 peer"
+                            checked={highFeeConfirmed}
+                            onChange={() => setHighFeeConfirmed(!highFeeConfirmed)}
+                          />
+                          <div className="bg-slate-100 dark:bg-zinc-900 rounded-md w-6 h-6 border peer-checked:bg-red-700 border-red-700 dark:border-red-600 flex items-center justify-center">
+                            {highFeeConfirmed && (
+                              <svg
+                                className="fill-brandLight w-4 h-4"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                              >
+                                <path d="M0 11l2-2 5 5L18 3l2 2L7 18z" />
+                              </svg>
+                            )}
+                          </div>
+                        </div>
+                      </label>
+                      <p className="font-medium text-sm">The suggested fee for this trade is high. Tick the box on the left to acknowledge and continue.</p>
+                    </div>
+                    )
+                    }
+
+                    {/* Complete with Wallet Integration Button */}
+                    {activeWallet && <button className={`${ishighFee && !highFeeConfirmed ? 'bg-brandDark/10 text-brandDark/20 dark:text-brandLight/30 cursor-not-allowed' : 'bg-brandDark hover:opacity-90'} text-brandLight w-full py-4 rounded-xl font-medium`} onClick={completeWithWallet}>Use Wallet to Complete Order</button>}
                     {activeWallet && <p className="flex w-full justify-center font-medium my-4">— OR —</p>}
 
+                    {/* Input for user to paste manually generated offer in */}
                     <input type="text"
                         value={offer}
                         className='w-full py-4 px-4 border text-brandDark dark:border-brandDark dark:bg-brandDark/20 rounded-xl focus:outline-none focus:ring focus:ring-brandDark/40'
@@ -393,10 +431,11 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                         placeholder='Generate the offer and paste it here'
                     />
 
+                    {/* Submit offer manually button */}
                     <button
                         onClick={() => setStep(3)}
-                        className={`${offer.length === 0 ? 'bg-brandDark/10 text-brandDark/20 dark:text-brandLight/30 cursor-not-allowed' : 'bg-green-700'} text-brandLight px-4 py-4 rounded-xl w-full mt-4 font-medium`}
-                        disabled={offer.length === 0}
+                        className={`${offer.length === 0 || ishighFee && !highFeeConfirmed ? 'bg-brandDark/10 dark:text-brandLight/30 cursor-not-allowed' : 'bg-green-700 hover:opacity-90'} text-brandLight px-4 py-4 rounded-xl w-full mt-4 font-medium`}
+                        disabled={offer.length === 0 || ishighFee && !highFeeConfirmed}
                     >
                         Submit Manually
                     </button>
