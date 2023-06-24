@@ -40,7 +40,7 @@ function SettingsModal({ isOpen, setIsOpen, theme, setTheme }: ConnectWalletModa
 
                     <Dialog.Title as="h3" className="text-[2.5rem] sm:text-5xl pt-4 pb-4 font-bold text-black dark:text-brandLight">Settings</Dialog.Title>
 
-                    {/* Wallet Options */}
+                    {/* Settings Options */}
                     <div className="mt-10 flex flex-col gap-4">
 
                         <ThemeSwitcher theme={theme} setTheme={setTheme} />
