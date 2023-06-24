@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Head from 'next/head';
 
 const faqs = [
   {
@@ -47,27 +48,32 @@ const FAQ: React.FC = () => {
   };
 
   return (
-    <main className="max-w-[28rem] mx-auto">
-      <h1 className="text-5xl font-bold pb-12">FAQ</h1>
-      <div className="mb-4 max-w-[28rem]">
-        {faqs.map((faq, index) => (
-          <div key={index} className="mb-4">
-            <button
-              onClick={() => toggleAnswer(index)}
-              className={`text-left font-semibold text-lg px-4 py-4 bg-brandDark/10 rounded-xl focus:outline-none w-full ${activeIndex === index ? 'rounded-b-none' : ''}`}
-            >
-              {faq.question}
-            </button>
-            {activeIndex === index && (
-              <div
-                className="px-4 py-2 pb-6 bg-brandDark/10 text-left rounded-b-xl w-full"
-                dangerouslySetInnerHTML={{ __html: faq.answer }} 
-              />
-            )}
-          </div>
-        ))}
-      </div>
-    </main>
+    <>
+      <Head>
+        <title>FAQs - TibetSwap</title>
+      </Head>
+      <main className="max-w-[28rem] mx-auto">
+        <h1 className="text-5xl font-bold pb-12">FAQs</h1>
+        <div className="mb-4 max-w-[28rem]">
+          {faqs.map((faq, index) => (
+            <div key={index} className="mb-4">
+              <button
+                onClick={() => toggleAnswer(index)}
+                className={`text-left font-semibold text-lg px-4 py-4 bg-brandDark/10 rounded-xl focus:outline-none w-full ${activeIndex === index ? 'rounded-b-none' : ''}`}
+              >
+                {faq.question}
+              </button>
+              {activeIndex === index && (
+                <div
+                  className="px-4 py-2 pb-6 bg-brandDark/10 text-left rounded-b-xl w-full"
+                  dangerouslySetInnerHTML={{ __html: faq.answer }} 
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      </main>
+    </>
   );
 };
 
