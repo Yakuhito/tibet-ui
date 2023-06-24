@@ -1,5 +1,5 @@
 import ConnectButton from './walletIntegration/ConnectButton';
-import SettingsModal from './SettingsModal';
+import SettingsModal from './modals/SettingsModal';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import Image from 'next/image';

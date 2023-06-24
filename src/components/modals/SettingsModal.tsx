@@ -1,5 +1,5 @@
 import { Dialog, Transition } from '@headlessui/react';
-import ThemeSwitcher from './ThemeSwitcher';
+import ThemeSwitcher from '../ThemeSwitcher';
 import { Fragment } from 'react';
 
 interface ConnectWalletModalProps {
