@@ -50,7 +50,7 @@ const FAQ: React.FC = () => {
   return (
     <>
       <Head>
-        <title>FAQs - TibetSwap</title>
+        <title>FAQs | TibetSwap</title>
       </Head>
       <main className="max-w-[28rem] mx-auto">
         <h1 className="text-5xl font-bold pb-12">FAQs</h1>

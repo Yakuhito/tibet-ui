@@ -19,7 +19,7 @@ const Home: React.FC = () => {
   return (
     <>
       <Head>
-        <title>TibetSwap - DeFi /  DEX on Chia</title>
+        <title>TibetSwap | The First AMM on Chia</title>
       </Head>
       <main className="max-w-[28rem] mx-auto">
         <TabContainer tokens={tokens} selectedToken={selectedToken} setSelectedToken={setSelectedToken} />
