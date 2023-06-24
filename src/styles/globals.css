@@ -2,8 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
+html, body {
   overflow-y: scroll;
+}
+
+@supports (scrollbar-gutter: stable) {
+  html, body {
+    scrollbar-gutter: stable;
+    overflow-y: unset;
+  }
 }
 
 *::selection {
@@ -23,8 +30,6 @@ input[type="number"]::-webkit-outer-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
-
-
 
 /* Remove vertical line on <TokenSelector /> */
 span.css-1u9des2-indicatorSeparator {
