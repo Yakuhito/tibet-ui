@@ -1,41 +1,11 @@
-import { useState, useEffect } from 'react';
-import * as React from 'react';
+interface ThemeSwitcherProps {
+  theme: "dark" | "light" | "auto";
+  setTheme: (theme: ThemeSwitcherProps['theme']) => void;
+}
 
+function ThemeSwitcher({ theme, setTheme }: ThemeSwitcherProps) {
 
-function ThemeSwitcher() {
-
-    // Theme detector
-    const [theme, setTheme] = useState<"dark" | "light" | "auto" | undefined>();
-    useEffect(() => {
-      const detectTheme = () => {
-        if (typeof window !== 'undefined') {
-          if (localStorage.theme === 'dark') {
-            document.documentElement.classList.add('dark');
-            setTheme('dark');
-          } else if (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            document.documentElement.classList.add('dark');
-            setTheme('auto')
-          } else if (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: light)').matches) {
-            document.documentElement.classList.remove('dark');
-            setTheme('auto')
-          } else {
-            document.documentElement.classList.remove('dark');
-            setTheme('light');
-          }
-        }
-      }
-      detectTheme()
-
-      // Detect user preference change
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', detectTheme);
-
-      return () => {
-        window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', detectTheme);
-      };
-
-    }, [theme]);
-
-    const switchTheme = (newTheme: "dark" | "light" | "auto") => {
+    const switchTheme = (newTheme: ThemeSwitcherProps['theme']) => {
       switch (newTheme) {
         case "dark":
           localStorage.setItem('theme', 'dark')

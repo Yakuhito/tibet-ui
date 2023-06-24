@@ -1,14 +1,15 @@
 import { Dialog, Transition } from '@headlessui/react';
 import ThemeSwitcher from './ThemeSwitcher';
 import { Fragment } from 'react';
-import Image from 'next/image';
 
 interface ConnectWalletModalProps {
     isOpen: boolean;
     setIsOpen: (value: boolean) => void;
+    theme: "dark" | "light" | "auto";
+    setTheme: (theme: ConnectWalletModalProps['theme']) => void;
 }
 
-function SettingsModal({ isOpen, setIsOpen }: ConnectWalletModalProps) {
+function SettingsModal({ isOpen, setIsOpen, theme, setTheme }: ConnectWalletModalProps) {
     return (    
         <Transition appear show={isOpen} as={Fragment}>
             <Dialog as="div" className="relative z-20" onClose={() => setIsOpen(false)}>
@@ -42,7 +43,7 @@ function SettingsModal({ isOpen, setIsOpen }: ConnectWalletModalProps) {
                     {/* Wallet Options */}
                     <div className="mt-10 flex flex-col gap-4">
 
-                        <ThemeSwitcher />
+                        <ThemeSwitcher theme={theme} setTheme={setTheme} />
 
                         {/* Example Settings Menu Item */}
                         {/* <div className={`hover:opacity-80 bg-brandDark/10 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 rounded-xl cursor-pointer`}>
