@@ -5,7 +5,7 @@ import { UNKNWN, XCH } from '@/shared_tokens';
 import { useState, useEffect } from 'react';
 import TokenSelector from './TokenSelector';
 import BooleanSwitch from './BooleanSwitch';
-import DevFeeModal from './DevFeeModal';
+import DevFeeModal from './modals/DevFeeModal';
 import SwapInput from './SwapInput';
 
 type SwapProps = {

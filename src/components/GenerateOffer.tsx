@@ -260,9 +260,13 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
     }, [data, step, pairAndQuote, offer, offerResponse, setOrderRefreshActive, setGenerateOfferData, devFee]);
 
     const copyToClipboard = (text: string) => {
-        navigator.clipboard.writeText(text).then(() => {
-            alert(`Copied to clipboard: ${text}`);
-        });
+        navigator.clipboard.writeText(text)
+        .then(() => {
+            toast.success(<p className="break-words max-w-[18rem]">Copied asset ID to clipboard: <span className="font-mono bg-brandDark/10 text-brandDark/90 px-1 rounded-sm">{text}</span></p>)
+        })
+        .catch(() => {
+            alert(`Failed to copy asset ID: ${text}`)
+        })
     };
 
     const addAssetToWallet = async (assetId: string, symbol: string, logo: string) => {
