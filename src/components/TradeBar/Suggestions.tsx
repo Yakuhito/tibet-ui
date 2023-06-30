@@ -7,7 +7,7 @@ interface SuggestionsProps {
     isInputFocused: boolean;
     predictedText: string;
     setPredictedText: React.Dispatch<React.SetStateAction<string>>;
-    tokens: string[];
+    tokens: string[] | null;
 }
 
 function Suggestions({ userInput, setUserInput, isInputFocused, predictedText, setPredictedText, tokens }: SuggestionsProps) {
