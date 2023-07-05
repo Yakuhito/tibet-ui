@@ -4,13 +4,7 @@
 
 html, body {
   overflow-y: scroll;
-}
-
-@supports (scrollbar-gutter: stable) {
-  html, body {
-    scrollbar-gutter: stable;
-    overflow-y: unset;
-  }
+  scrollbar-gutter: stable;
 }
 
 *::selection {
