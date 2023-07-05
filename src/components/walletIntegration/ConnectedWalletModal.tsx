@@ -115,7 +115,7 @@ function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet,isW
                         </div>
 
                         {/* Chia Wallet */}
-                        {/* <div onClick={() => handleConnect('WalletConnect')} className={`${activeWallet instanceof WalletConnect ? 'bg-green-700/20 focus:ring-green-700/20' : 'bg-brandDark/10'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 rounded-xl cursor-pointer`}>
+                        <div onClick={() => handleConnect('WalletConnect')} className={`${activeWallet instanceof WalletConnect ? 'bg-green-700/20 focus:ring-green-700/20' : 'bg-brandDark/10'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 rounded-xl cursor-pointer`}>
                         <div className="flex items-center gap-4">
                                 <Image src="/assets/xch.webp" height={40} width={40} alt={'Chia Wallet Logo'} className="rounded-full" />
                                 <p className="font-medium text-lg">Chia Wallet</p>
@@ -125,16 +125,16 @@ function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet,isW
                             font-medium rounded-lg px-2 py-1
                             ${activeWallet instanceof WalletConnect ? "before:content-['Connected']" : "before:content-['Connect']"}`}
                             ></button>
-                        </div> */}
+                        </div>
 
                         {/* Chia Wallet */}
-                        <div className={`hover:opacity-80 bg-brandDark/10 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 rounded-xl cursor-pointer`}>
+                        {/* <div className={`hover:opacity-80 bg-brandDark/10 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 rounded-xl cursor-pointer`}>
                             <div className="flex items-center gap-4">
                                 <Image src="/assets/xch.webp" height={40} width={40} alt={'Chia Wallet Logo'} className="rounded-full" />
                                 <p className="font-medium text-lg">Chia Wallet</p>
                             </div>
                             <button className={`font-medium rounded-lg px-2 py-1 before:content-['Coming_Soon']`}></button>
-                        </div>
+                        </div> */}
 
                     </div>
                     </Dialog.Panel>

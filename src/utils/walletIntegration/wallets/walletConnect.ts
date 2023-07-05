@@ -122,9 +122,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     // WalletConnect disconnection logic
   }
 
-  async generateOffer(requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[]): Promise<void> {
-
-    console.log(requestAssets, offerAssets)
+  async generateOffer(requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[], fee: number | undefined): Promise<void> {
 
     // Sign client
     const signClient = await this.signClient();
@@ -136,20 +134,6 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           return;
         }
 
-        // const result = await client.request({
-        //   topic: this.topic,
-        //   chainId: "chia:mainnet",
-        //   request: {
-        //     method: "chia_getWallets",
-        //     params: {
-        //       fingerprint: this.fingerprint,
-        //       includeData: false,
-        //     },
-        //   },
-        // });
-        
-        // console.log(result)
-
         // Send request to generate offer via WalletConnect
         const resultOffer = await signClient.request({
           topic: this.topic,
@@ -158,10 +142,11 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
             method: "chia_createOfferForIds",
             params: {
               fingerprint: this.fingerprint,
-              walletIdsAndAmounts: {
+              offer: {
                 1: -1002146999,
                 3: 617,
               },
+              fee,
               driverDict: {},
               disableJSONFormatting: true,
             },
@@ -169,7 +154,6 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
         });
 
     } catch (error) {
-      console.log(error);
       toast.error(`Wallet - ${error}`)
     }
     
