@@ -124,6 +124,9 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
 
   async generateOffer(requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[], fee: number | undefined): Promise<void> {
 
+    this.getWallets()
+    return
+
     // Sign client
     const signClient = await this.signClient();
     
@@ -161,6 +164,46 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
 
   getBalance(): void {
     // WalletConnect balance retrieval logic
+  }
+
+  async getWallets() {
+    // Sign client
+    const signClient = await this.signClient();
+    
+    // Fetch previous connection
+    try {
+        if (!this.topic || !signClient) {
+          toast.error('Not connected via WalletConnect or could not sign client')
+          return;
+        }
+
+        // Send request to get Wallets via WalletConnect
+        const wallets = await signClient.request({
+          topic: this.topic,
+          chainId: "chia:mainnet",
+          request: {
+            method: "chia_getWallets",
+            params: {
+              includeData: true
+            },
+          },
+        });
+
+        console.log(wallets)
+
+    } catch (error: any) {
+      toast.error(`Wallet - ${error.message}`)
+    }
+
+
+
+
+
+
+
+
+
+
   }
 
   async addAsset(assetId: string, symbol: string, logo: string): Promise<void> {
