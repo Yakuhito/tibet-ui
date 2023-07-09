@@ -224,7 +224,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     try {
       const client = await SignClient.init({
         logger: "info",
-        projectId: 'd8a8954b78975225ab6abcbc7c4c9f00',
+        projectId: '4f20af8b3b6f6274527fe9daa104942c',
         metadata: {
           name: "TibetSwap",
           description: "The first decentralized AMM running on the Chia blockchain.",
