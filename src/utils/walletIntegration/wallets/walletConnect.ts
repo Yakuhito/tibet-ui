@@ -124,7 +124,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
 
   async generateOffer(requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[], fee: number | undefined): Promise<void> {
 
-    this.getWallets()
+    await this.getWallets()
     return
 
     // Sign client
@@ -184,12 +184,13 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           request: {
             method: "chia_getWallets",
             params: {
+              fingerprint: this.fingerprint,
               includeData: true
             },
           },
         });
 
-        console.log(wallets)
+        console.log({ wallets })
 
     } catch (error: any) {
       toast.error(`Wallet - ${error.message}`)
