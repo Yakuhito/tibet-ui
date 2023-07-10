@@ -12,9 +12,6 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
   client: SignClient | undefined
   
   constructor() {
-    // console.log('🎉🎉', process.env.WALLETCONNECT_PROJECT_ID)
-    // if (!process.env.WALLETCONNECT_PROJECT_ID) throw new Error('No WALLETCONNECT_PROJECT_ID environment variable found. Please provide this & redeploy.')
-
     // Restore active session fingerprint & topic (if any) to object property for later use
     const fingerprint = localStorage.getItem('wc_fingerprint');
     if (fingerprint) {this.fingerprint = JSON.parse(fingerprint);}
@@ -24,7 +21,6 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
   }
 
   async connect(): Promise<boolean> {
-
     // If existing connection still exists, return true, else display QR code to initiate new connection
     if (await this.eagerlyConnect()) {
       return true;
@@ -68,26 +64,6 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           QRCodeModal.close()
           toast.success('Successfully Connected')
 
-
-
-          // const resultOffer = await signClient.request({
-          //   topic: this.topic,
-          //   chainId: "chia:mainnet",
-          //   request: {
-          //     method: "chia_createOfferForIds",
-          //     params: {
-          //       fingerprint: this.fingerprint,
-          //       walletIdsAndAmounts: {
-          //         1: -1002146999,
-          //         3: 617,
-          //       },
-          //       driverDict: {},
-          //       disableJSONFormatting: true,
-          //     },
-          //   },
-          // });
-  
-          // console.log('Offer Response:', resultOffer)
           return true
         }
     } catch (error) {
@@ -98,7 +74,6 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
   }
 
   async eagerlyConnect(): Promise<boolean> {
-    
     // Sign client, fetch pairing data. If active pairing, previous connection must exist.
     try {
       const signClient = await this.signClient();
@@ -122,11 +97,8 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     // WalletConnect disconnection logic
   }
 
+  // seems strange that this is returning Promise<void>
   async generateOffer(requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[], fee: number | undefined): Promise<void> {
-
-    await this.getWallets()
-    return
-
     // Sign client
     const signClient = await this.signClient();
     
@@ -195,16 +167,6 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     } catch (error: any) {
       toast.error(`Wallet - ${error.message}`)
     }
-
-
-
-
-
-
-
-
-
-
   }
 
   async addAsset(assetId: string, symbol: string, logo: string): Promise<void> {
@@ -216,9 +178,6 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
   }
 
   async signClient(): Promise<void | Client> {
-
-    // const projectId = process.env.WALLETCONNECT_PROJECT_ID;
-
     // If client has been saved to object, return that instead of completing a new sign
     if (this.client) return this.client;
 

@@ -81,7 +81,19 @@ function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet,isW
 
                     {/* Wallet Options */}
                     <div className="mt-10 flex flex-col gap-4">
-
+                        {/* Chia Wallet */}
+                        <div onClick={() => handleConnect('WalletConnect')} className={`${activeWallet instanceof WalletConnect ? 'bg-green-700/20 focus:ring-green-700/20' : 'bg-brandDark/10'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 rounded-xl cursor-pointer`}>
+                        <div className="flex items-center gap-4">
+                                <Image src="/assets/xch.webp" height={40} width={40} alt={'Chia Wallet Logo'} className="rounded-full" />
+                                <p className="font-medium text-lg">Chia Wallet</p>
+                            </div>
+                            <button className={`
+                            ${activeWallet instanceof WalletConnect ? 'outline-none text-green-700' : ''}
+                            font-medium rounded-lg px-2 py-1
+                            ${activeWallet instanceof WalletConnect ? "before:content-['Connected']" : "before:content-['Connect']"}`}
+                            ></button>
+                        </div>
+                        
                         {/* Goby Wallet */}
                         <div>
                             <div onClick={() => handleConnect('Goby')} className={`${activeWallet instanceof GobyWallet ? 'bg-green-700/20 focus:ring-green-700/20' : 'bg-brandDark/10'} ${isWalletOnWrongChain && activeWallet instanceof GobyWallet ? 'rounded-t-xl' : 'rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
@@ -113,29 +125,6 @@ function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet,isW
                             </div>
                             {isWalletOnWrongChain && activeWallet instanceof HoogiiWallet && <p className="animate-fadeIn text-sm bg-red-700/80 font-medium text-brandLight px-2 py-1 rounded-b-xl text-center">Incorrect chain selected ({process.env.NEXT_PUBLIC_XCH === "TXCH" ? 'Mainnet' : 'Testnet'})</p>}
                         </div>
-
-                        {/* Chia Wallet */}
-                        <div onClick={() => handleConnect('WalletConnect')} className={`${activeWallet instanceof WalletConnect ? 'bg-green-700/20 focus:ring-green-700/20' : 'bg-brandDark/10'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 rounded-xl cursor-pointer`}>
-                        <div className="flex items-center gap-4">
-                                <Image src="/assets/xch.webp" height={40} width={40} alt={'Chia Wallet Logo'} className="rounded-full" />
-                                <p className="font-medium text-lg">Chia Wallet</p>
-                            </div>
-                            <button className={`
-                            ${activeWallet instanceof WalletConnect ? 'outline-none text-green-700' : ''}
-                            font-medium rounded-lg px-2 py-1
-                            ${activeWallet instanceof WalletConnect ? "before:content-['Connected']" : "before:content-['Connect']"}`}
-                            ></button>
-                        </div>
-
-                        {/* Chia Wallet */}
-                        {/* <div className={`hover:opacity-80 bg-brandDark/10 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 rounded-xl cursor-pointer`}>
-                            <div className="flex items-center gap-4">
-                                <Image src="/assets/xch.webp" height={40} width={40} alt={'Chia Wallet Logo'} className="rounded-full" />
-                                <p className="font-medium text-lg">Chia Wallet</p>
-                            </div>
-                            <button className={`font-medium rounded-lg px-2 py-1 before:content-['Coming_Soon']`}></button>
-                        </div> */}
-
                     </div>
                     </Dialog.Panel>
                 </Transition.Child>
