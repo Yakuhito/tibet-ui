@@ -1,12 +1,13 @@
 import WalletIntegrationInterface from '../walletIntegrationInterface';
-import QRCodeModal from "@walletconnect/qrcode-modal";
 import SignClient from "@walletconnect/sign-client";
 import Client from '@walletconnect/sign-client';
 import { toast } from 'react-hot-toast';
+import { closeWalletConnectModal, showWalletConnectModal } from '../WalletConnectModal';
 
 class WalletConnectIntegration implements WalletIntegrationInterface {
   name = "WalletConnect"
   image = "/assets/xch.webp"
+  chainId = process.env.NEXT_PUBLIC_XCH === "TXCH" ? "chia:testnet" : "chia:mainnet"
   fingerprint
   topic
   client: SignClient | undefined
@@ -48,9 +49,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
 
           // Display QR code to user
           if (uri) {
-            QRCodeModal.open(uri, () => {
-              // On QR modal close
-            });
+            showWalletConnectModal(uri)
           }
 
           // If new connection established successfully
@@ -61,7 +60,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           localStorage.setItem('wc_topic', JSON.stringify(session.topic))
           this.fingerprint = Number(session.namespaces.chia.accounts[0].split(":")[2]);
           this.topic = session.topic;
-          QRCodeModal.close()
+          closeWalletConnectModal()
           toast.success('Successfully Connected')
 
           return true
