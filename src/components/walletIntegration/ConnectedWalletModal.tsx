@@ -113,7 +113,7 @@ function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet,isW
                                 ${activeWallet instanceof WalletConnect ? "before:content-['Connected']" : "before:content-['Connect']"}`}
                                 ></button>
                             </div>
-                            <div className="animate-fadeIn text-sm bg-brandDark/10 font-medium px-4 py-4 rounded-b-xl flex flex-col gap-2 border-2 border-transparent hover:border-brandDark/10">
+                            {activeWallet instanceof WalletConnect && <div className="animate-fadeIn text-sm bg-brandDark/10 font-medium px-4 py-4 rounded-b-xl flex flex-col gap-2 border-2 border-transparent hover:border-brandDark/10">
                                 <p className="text-base">Your Wallets</p>
                                 <ul className="flex">
                                 {
@@ -122,7 +122,7 @@ function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet,isW
                                     ))
                                 }
                                 </ul>
-                            </div>
+                            </div>}
                         </div>
                         
                         {/* Goby Wallet */}
