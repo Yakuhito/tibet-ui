@@ -1,4 +1,5 @@
 import { ActionType, createOfferForPair, getInputPrice, getLiquidityQuote, getOutputPrice, getPairByLauncherId, getQuoteForPair } from '@/api';
+import WalletConnect from '@/utils/walletIntegration/wallets/walletConnect';
 import GobyWallet from '@/utils/walletIntegration/wallets/gobyWallet';
 import type { OfferResponse, Pair, Quote, Token } from '@/api';
 import type { GenerateOfferData } from './TabContainer';
@@ -311,7 +312,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                             <p className="text-brandDark">⤷</p>
                             <div className="flex gap-2 text-sm font-normal">
                                 <button className="hover:opacity-80 bg-brandDark/10 py-1 px-4 whitespace-nowrap rounded-lg" onClick={() => copyToClipboard(e[0].asset_id)}>Copy Asset ID</button>
-                                {activeWallet instanceof GobyWallet && <button onClick={() => addAssetToWallet(e[0].asset_id, e[0].short_name, e[0].image_url)} className="hover:opacity-80 bg-brandDark/10 py-1 px-4 whitespace-nowrap rounded-lg flex items-center gap-2"><Image src={"/assets/goby.webp"} width={15} height={15} alt="Token logo" className="rounded-full" />Add to Goby</button>}
+                                {activeWallet instanceof GobyWallet ||  activeWallet instanceof WalletConnect && <button onClick={() => addAssetToWallet(e[0].asset_id, e[0].short_name, e[0].image_url)} className="hover:opacity-80 bg-brandDark/10 py-1 px-4 whitespace-nowrap rounded-lg flex items-center gap-2"><Image src={activeWallet instanceof GobyWallet ? "/assets/goby.webp" : "/assets/xch.webp"} width={15} height={15} alt="Token logo" className="rounded-full" />Add to Wallet</button>}
                             </div>
                         </div>)
                         }
