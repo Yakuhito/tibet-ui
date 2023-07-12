@@ -4,19 +4,40 @@ import Client from '@walletconnect/sign-client';
 import { toast } from 'react-hot-toast';
 import { closeWalletConnectModal, showWalletConnectModal } from '../WalletConnectModal';
 
+interface wallet {
+  data: string
+  id: number
+  name: string
+  type: 6
+  meta: {
+    assetId: string
+    name: string
+  }
+}
+
+interface wallets {
+  data: wallet[]
+  isError: boolean
+  isSuccess: boolean
+}
+
 class WalletConnectIntegration implements WalletIntegrationInterface {
   name = "WalletConnect"
   image = "/assets/xch.webp"
   chainId = process.env.NEXT_PUBLIC_XCH === "TXCH" ? "chia:testnet" : "chia:mainnet"
-  fingerprint
+  fingerprints
+  selectedFingerprint
   topic
   client: SignClient | undefined
   
   constructor() {
     // Restore active session fingerprint & topic (if any) to object property for later use
-    const fingerprint = localStorage.getItem('wc_fingerprint');
-    if (fingerprint) {this.fingerprint = JSON.parse(fingerprint);}
+    const fingerprints = localStorage.getItem('wc_fingerprints');
+    if (fingerprints) {this.fingerprints = JSON.parse(fingerprints);}
     
+    const selectedFingerprint = localStorage.getItem('wc_selectedFingerprint');
+    if (selectedFingerprint) {this.selectedFingerprint = JSON.parse(selectedFingerprint);}
+
     const topic = localStorage.getItem('wc_topic');
     if (topic) {this.topic = JSON.parse(topic);}
   }
@@ -36,6 +57,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
               methods: [
                 "chia_createOfferForIds",
                 "chia_getWallets",
+                'chia_addCATToken',
               ],
               chains: ["chia:mainnet"],
               events: [],
@@ -56,9 +78,12 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           const session = await approval();
           console.log('Connected Chia wallet via WalletConnect', session, signClient)
           // Save session fingerprint to localstorage for persistence
-          localStorage.setItem('wc_fingerprint', JSON.stringify(session.namespaces.chia.accounts[0].split(":")[2]))
           localStorage.setItem('wc_topic', JSON.stringify(session.topic))
-          this.fingerprint = Number(session.namespaces.chia.accounts[0].split(":")[2]);
+          this.fingerprints = session.namespaces.chia.accounts.map(wallet => {
+            return Number(wallet.split(":")[2]);
+          });
+          localStorage.setItem('wc_fingerprints', JSON.stringify(this.fingerprints))
+          localStorage.setItem('wc_selectedFingerprint', JSON.stringify(this.fingerprints[0]))
           this.topic = session.topic;
           closeWalletConnectModal()
           toast.success('Successfully Connected')
@@ -97,7 +122,67 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
   }
 
   // seems strange that this is returning Promise<void>
-  async generateOffer(requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[], fee: number | undefined): Promise<void> {
+  async generateOffer(requestAssets: {assetId: string; amount: number; walletId?: number;}[], offerAssets: {assetId: string; amount: number; walletId?: number;}[], fee: number | undefined): Promise<void> {
+    await this.updateFingerprint()
+    // Send request to fetch users wallets
+    const wallets = await this.getWallets();
+    if (!wallets) return;
+
+    const userMustAddTheseAssetsToWallet: string[] = []
+
+    // Match assetIds to users wallet to find the wallet ID (required to send a create offer)
+
+    // For offering assets
+    offerAssets.forEach(offerItem => {
+      // If item is Chia, set walletId to 1 as this is the default
+      if (offerItem.assetId === "") return offerItem.walletId = 1;
+
+      const matchingChiaWallet = wallets.data.find(item => item.meta.assetId === offerItem.assetId);
+      if (matchingChiaWallet) {
+        offerItem.walletId = matchingChiaWallet.id;
+      } else {
+        toast.error(`Token with asset ID ${offerItem.assetId} not found in your wallet. Please add it.`);
+        userMustAddTheseAssetsToWallet.push(offerItem.assetId)
+      }
+    })
+
+    // For requesting assets
+    requestAssets.forEach(requestItem => {
+      // If item is Chia, set walletId to 1 as this is the default
+      if (requestItem.assetId === "") return requestItem.walletId = 1;
+
+      const matchingChiaWallet = wallets.data.find(item => item.meta.assetId == requestItem.assetId);
+      if (matchingChiaWallet) {
+        requestItem.walletId = matchingChiaWallet.id;
+      } else {
+        toast.error(`Token with asset ID ${requestItem.assetId} not found in your wallet. Please add it.`);
+        userMustAddTheseAssetsToWallet.push(requestItem.assetId)
+      }
+    })
+
+    if (userMustAddTheseAssetsToWallet.length) {
+      toast.error(`Please add all assets to your wallet before continuing`)
+      return
+    }
+
+    // Generate offer object
+    let offer: {[key: number]: number} = {};
+    offerAssets.forEach((asset) => {
+      if (!asset.walletId) return
+      offer[asset.walletId] = -Math.abs(asset.amount);;
+    })
+
+    // Generate request object
+    let request: {[key: number]: number} = {};
+    requestAssets.forEach((asset) => {
+      if (!asset.walletId) return
+      request[asset.walletId] = asset.amount;
+    })
+
+    // Create final object for WalletConnect request
+    const compressedOffer = {...offer, ...request}
+
+
     // Sign client
     const signClient = await this.signClient();
     
@@ -115,11 +200,8 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           request: {
             method: "chia_createOfferForIds",
             params: {
-              fingerprint: this.fingerprint,
-              offer: {
-                1: -1002146999,
-                3: 617,
-              },
+              fingerprint: this.selectedFingerprint,
+              offer: compressedOffer,
               fee,
               driverDict: {},
               disableJSONFormatting: true,
@@ -128,7 +210,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
         });
 
     } catch (error) {
-      toast.error(`Wallet - ${error}`)
+      toast.error(`Wallet - Failed to generate offer`)
     }
     
   }
@@ -137,7 +219,47 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     // WalletConnect balance retrieval logic
   }
 
-  async getWallets() {
+  async getWallets(): Promise<wallets | undefined> {
+    // Sign client
+    const signClient = await this.signClient();
+    
+    // Fetch previous connection
+    try {
+        if (!this.topic || !signClient) {
+          toast.error('Not connected via WalletConnect or could not sign client')
+          return;
+        }
+        
+        // Send request to get Wallets via WalletConnect
+        const request: Promise<wallets> = signClient.request({
+          topic: this.topic,
+          chainId: "chia:mainnet",
+          request: {
+            method: "chia_getWallets",
+            params: {
+              fingerprint: this.selectedFingerprint,
+              includeData: true
+            },
+          },
+        });
+        
+        toast.promise(request, {
+          loading: 'Sent request to your Chia Wallet',
+          success: 'Request accepted',
+          error: 'Unable to fetch your wallets'
+        })
+        const wallets = await request;
+        
+        if (wallets.isSuccess) {
+          return wallets;
+        } else throw Error('Fetching wallet request unsuccessful')
+        
+      } catch (error: any) {
+      console.log(error.message)
+    }
+  }
+
+  async addAsset(assetId: string, symbol: string, logo: string, fullName: string): Promise<void> {
     // Sign client
     const signClient = await this.signClient();
     
@@ -149,27 +271,38 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
         }
 
         // Send request to get Wallets via WalletConnect
-        const wallets = await signClient.request({
+        const request = signClient.request({
           topic: this.topic,
           chainId: "chia:mainnet",
           request: {
-            method: "chia_getWallets",
+            method: "chia_addCATToken",
             params: {
-              fingerprint: this.fingerprint,
-              includeData: true
+              fingerprint: this.selectedFingerprint,
+              name: fullName,
+              assetId: assetId
             },
           },
         });
 
-        console.log({ wallets })
+        toast.promise(request, {
+          loading: 'Sent request to your Chia Wallet',
+          success: 'Request accepted',
+          error: 'Failed to add asset to wallet'
+        })
+        const response = await request;
 
     } catch (error: any) {
-      toast.error(`Wallet - ${error.message}`)
+      console.log(`Wallet - ${error.message}`)
     }
   }
 
-  async addAsset(assetId: string, symbol: string, logo: string): Promise<void> {
-    toast.error('Support for adding assets via WalletConnect will be added soon.')
+  // Must be called before any action
+  async updateFingerprint() {
+    const fingerprints = localStorage.getItem('wc_fingerprints');
+    if (fingerprints) {this.fingerprints = JSON.parse(fingerprints);}
+    
+    const selectedFingerprint = localStorage.getItem('wc_selectedFingerprint');
+    if (selectedFingerprint) {this.selectedFingerprint = JSON.parse(selectedFingerprint);}
   }
 
   async getAddress() {
