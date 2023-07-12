@@ -46,6 +46,9 @@ export default function App({ Component, pageProps }: AppProps) {
         <Navbar theme={theme} setTheme={setTheme} />
         <Toaster position="bottom-right"
           toastOptions={{
+            loading: {
+              duration: 45000,
+            },
             success: {
               iconTheme: {
                 primary: '#166534',
