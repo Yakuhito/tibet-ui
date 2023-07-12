@@ -5,7 +5,7 @@ interface WalletIntegrationInterface {
     disconnect(): void;
     generateOffer(requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[], fee: number | undefined): Promise<void>;
     getBalance(): void;
-    addAsset(assetId: string, symbol: string, logo: string): Promise<void>;
+    addAsset(assetId: string, symbol: string, logo: string, fullName: string): Promise<void>;
     getAddress(): Promise<string | void>;
 }
   

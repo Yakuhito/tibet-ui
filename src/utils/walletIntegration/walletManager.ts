@@ -93,9 +93,9 @@ class WalletManager {
     }
   }
 
-  public async addAsset(assetId: string, symbol: string, logo: string): Promise<void> {
+  public async addAsset(assetId: string, symbol: string, logo: string, fullName: string): Promise<void> {
     if (this.activeWallet) {
-      this.activeWallet.addAsset(assetId, symbol, logo);
+      this.activeWallet.addAsset(assetId, symbol, logo, fullName);
     }
   }
   

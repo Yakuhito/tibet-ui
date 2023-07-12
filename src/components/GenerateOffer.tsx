@@ -270,10 +270,9 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         })
     };
 
-    const addAssetToWallet = async (assetId: string, symbol: string, logo: string) => {
+    const addAssetToWallet = async (assetId: string, symbol: string, logo: string, fullName: string) => {
         if (!activeWallet) return toast.error('Connect to a wallet before trying to add an asset')
-        console.log('sending request to goby')
-        await activeWallet.addAsset(assetId, symbol, logo)
+        await activeWallet.addAsset(assetId, symbol, logo, fullName)
     }
 
     const listAssets = (a: [Token, boolean, number][], isOfferingAsset: boolean) => {
@@ -312,7 +311,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                             <p className="text-brandDark">⤷</p>
                             <div className="flex gap-2 text-sm font-normal">
                                 <button className="hover:opacity-80 bg-brandDark/10 py-1 px-4 whitespace-nowrap rounded-lg" onClick={() => copyToClipboard(e[0].asset_id)}>Copy Asset ID</button>
-                                {activeWallet instanceof GobyWallet ||  activeWallet instanceof WalletConnect && <button onClick={() => addAssetToWallet(e[0].asset_id, e[0].short_name, e[0].image_url)} className="hover:opacity-80 bg-brandDark/10 py-1 px-4 whitespace-nowrap rounded-lg flex items-center gap-2"><Image src={activeWallet instanceof GobyWallet ? "/assets/goby.webp" : "/assets/xch.webp"} width={15} height={15} alt="Token logo" className="rounded-full" />Add to Wallet</button>}
+                                {activeWallet instanceof GobyWallet ||  activeWallet instanceof WalletConnect && <button onClick={() => addAssetToWallet(e[0].asset_id, e[0].short_name, e[0].image_url, e[0].name)} className="hover:opacity-80 bg-brandDark/10 py-1 px-4 whitespace-nowrap rounded-lg flex items-center gap-2"><Image src={activeWallet instanceof GobyWallet ? "/assets/goby.webp" : "/assets/xch.webp"} width={15} height={15} alt="Token logo" className="rounded-full" />Add to Wallet</button>}
                             </div>
                         </div>)
                         }

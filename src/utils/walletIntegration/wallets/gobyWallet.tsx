@@ -63,7 +63,7 @@ class gobyWallet implements WalletIntegrationInterface {
     // Goby wallet balance retrieval logic
   }
 
-  async addAsset(assetId: string, symbol: string, logo: string): Promise<void> {
+  async addAsset(assetId: string, symbol: string, logo: string, fullName: string): Promise<void> {
     let symbolM = symbol
     let logoM = logo
 
