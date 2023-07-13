@@ -103,7 +103,7 @@ function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet,isW
 
                         {/* Chia Wallet */}
                         <div>
-                            <div onClick={() => handleConnect('WalletConnect')} className={`${activeWallet instanceof WalletConnect ? 'bg-green-700/20 focus:ring-green-700/20 rounded-t-xl' : 'bg-brandDark/10 rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
+                            <div onClick={() => handleConnect('WalletConnect')} className={`${activeWallet instanceof WalletConnect ? `bg-green-700/20 focus:ring-green-700/20 ${fingerprints.length > 1 ? 'rounded-t-xl' : 'rounded-xl'}` : 'bg-brandDark/10 rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
                                 <div className="flex items-center gap-4">
                                     <Image src="/assets/xch.webp" height={40} width={40} alt={'Chia Wallet Logo'} className="rounded-full" />
                                     <p className="font-medium text-lg">Chia Wallet</p>
@@ -114,7 +114,7 @@ function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet,isW
                                 ${activeWallet instanceof WalletConnect ? "before:content-['Connected']" : "before:content-['Connect']"}`}
                                 ></button>
                             </div>
-                            {activeWallet instanceof WalletConnect && <div className="animate-fadeIn text-sm bg-brandDark/10 font-medium px-4 py-4 rounded-b-xl flex flex-col gap-2 border-2 border-transparent hover:border-brandDark/10">
+                            {activeWallet instanceof WalletConnect && fingerprints.length > 1 && <div className="animate-fadeIn text-sm bg-brandDark/10 font-medium px-4 py-4 rounded-b-xl flex flex-col gap-2 border-2 border-transparent hover:border-brandDark/10">
                                 <p className="text-base">Your Wallets</p>
                                 <ul className="flex">
                                 {
