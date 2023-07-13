@@ -260,6 +260,9 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
   }
 
   async addAsset(assetId: string, symbol: string, logo: string, fullName: string): Promise<void> {
+
+    const displayName = `${symbol.includes('TIBET-') ? `TibetSwap Liquidity (${symbol})` : `${fullName} (${symbol})`}`
+
     // Sign client
     const signClient = await this.signClient();
     
@@ -278,7 +281,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
             method: "chia_addCATToken",
             params: {
               fingerprint: this.selectedFingerprint,
-              name: fullName,
+              name: displayName,
               assetId: assetId
             },
           },
