@@ -30,9 +30,10 @@ function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet,isW
     },[])
 
     const handleSwitchChiaWallet = (fingerprint: number) => {
+        if (fingerprint === selectedFingerprint) return
         setSelectedFingerprint(fingerprint);
         localStorage.setItem("wc_selectedFingerprint", JSON.stringify(fingerprint))
-        toast.success(<p className="break-words max-w-[18rem]">Switched to wallet fingerprint <span className="font-mono bg-brandDark/10 text-brandDark/90 px-1 rounded-sm">{fingerprint}</span></p>)
+        toast.success(<p className="break-words max-w-[18rem]">Switched to wallet fingerprint <span className="font-mono bg-brandDark/10 text-brandDark/90 px-1 rounded-sm">{fingerprint}</span></p>, {id: fingerprint.toString()})
     }
 
     // Handle connecting to a wallet when clicking on an option
