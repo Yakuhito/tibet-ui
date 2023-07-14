@@ -82,6 +82,8 @@ export const showWalletConnectModal = (pairingString: string) => {
     document.body.removeChild(modalDiv)
   }
 
+  closeModalFunction = onClose;
+
   root.render(
     <WalletConnectModal
       pairingString={pairingString}
