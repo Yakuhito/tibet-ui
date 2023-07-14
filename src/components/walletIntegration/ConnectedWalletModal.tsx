@@ -44,18 +44,17 @@ function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet,isW
         if (walletIdentifier === activeWallet?.name) return // If already connected to that wallet, do nothing (or handle disconnect?)
 
         // Try connecting to wallet option selected by user
+        const walletClasses: Record<string, any> = {
+            Goby: GobyWallet,
+            Hoogii: HoogiiWallet,
+            WalletConnect: WalletConnect
+          };
+
         try {
-            if (walletIdentifier === 'Goby') {
-                walletIntegration = new GobyWallet();
-                const response = await walletIntegration.connect(); // Connect to Goby wallet
-                connectionSuccessful = Boolean(response);
-            } else if (walletIdentifier === 'Hoogii') {
-                walletIntegration = new HoogiiWallet();
-                const response = await walletIntegration.connect(); // Connect to Hoogii wallet
-                connectionSuccessful = Boolean(response);
-            } else if (walletIdentifier === 'WalletConnect') {
-                walletIntegration = new WalletConnect();
-                const response = await walletIntegration.connect(); // Connect to WalletConnect (Chia Wallet)
+            if (walletIdentifier in walletClasses) {
+                const WalletClass = walletClasses[walletIdentifier];
+                walletIntegration = new WalletClass();
+                const response = await walletIntegration?.connect();
                 connectionSuccessful = Boolean(response);
             }
         } catch (error) {
