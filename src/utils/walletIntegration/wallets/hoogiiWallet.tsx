@@ -90,7 +90,7 @@ class hoogiiWallet implements WalletIntegrationInterface {
     // Hoogii wallet disconnection logic
   }
 
-  async generateOffer(requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[], fee: number | undefined): Promise<void> {
+  async generateOffer(requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[], fee: number | undefined): Promise<string | void> {
     // Hoogii wallet transaction signing logic
     fee = Math.floor((fee ?? 0) * 10 ** 12)
     try {
@@ -100,7 +100,10 @@ class hoogiiWallet implements WalletIntegrationInterface {
         fee
       }
       const response = await (window as any).chia.hoogii.request({ method: 'createOffer', params })
-      return response
+      if (response.offer) {
+        return response.offer
+      }
+      return
     } catch (error: any) {
         console.log(error)
         toast.error(`Wallet - ${error?.message || String(error.message)}`);

@@ -43,7 +43,7 @@ class gobyWallet implements WalletIntegrationInterface {
     // Goby wallet disconnection logic
   }
 
-  async generateOffer(requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[], fee: number | undefined): Promise<void> {
+  async generateOffer(requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[], fee: number | undefined): Promise<string | void> {
     // Goby wallet transaction signing logic
     try {
       const params = {
@@ -52,7 +52,10 @@ class gobyWallet implements WalletIntegrationInterface {
         fee
       }
       const response = await (window as any).chia.request({ method: 'createOffer', params })
-      return response
+      if (response.offer) {
+        return response.offer;
+      }
+      return
     } catch (error: any) {
         console.log(error)
         toast.error(`Wallet - ${error?.message || String(error.message)}`);

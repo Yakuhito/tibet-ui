@@ -122,7 +122,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
   }
 
   // seems strange that this is returning Promise<void>
-  async generateOffer(requestAssets: {assetId: string; amount: number; walletId?: number;}[], offerAssets: {assetId: string; amount: number; walletId?: number;}[], fee: number | undefined): Promise<void> {
+  async generateOffer(requestAssets: {assetId: string; amount: number; walletId?: number;}[], offerAssets: {assetId: string; amount: number; walletId?: number;}[], fee: number | undefined): Promise<string | void> {
     await this.updateFingerprint()
     // Send request to fetch users wallets
     const wallets = await this.getWallets();
@@ -193,8 +193,21 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           return;
         }
 
+        interface resultOffer {
+          error?: {
+            data: {
+              error: string
+              success: boolean
+            }
+          }
+          data?: {
+            offer: string
+            success: boolean
+          }
+        }
+
         // Send request to generate offer via WalletConnect
-        const resultOffer = await signClient.request({
+        const resultOffer: resultOffer = await signClient.request({
           topic: this.topic,
           chainId: "chia:mainnet",
           request: {
@@ -208,6 +221,12 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
             },
           },
         });
+
+        if (resultOffer.error) {
+          toast.error(resultOffer.error?.data.error)
+        } else if (resultOffer.data) {
+          return resultOffer.data.offer;
+        }
 
     } catch (error) {
       toast.error(`Wallet - Failed to generate offer`)
