@@ -16,7 +16,7 @@ interface ConnectWalletModalProps {
     isWalletOnWrongChain: boolean;
 }
 
-function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet,isWalletOnWrongChain }: ConnectWalletModalProps) {
+function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet, isWalletOnWrongChain }: ConnectWalletModalProps) {
     const [fingerprints, setFingerprints] = useState([])
     const [selectedFingerprint, setSelectedFingerprint] = useState<null | number>()
 
