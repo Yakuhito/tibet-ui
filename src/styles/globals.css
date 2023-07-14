@@ -3,7 +3,6 @@
 @tailwind utilities;
 
 html, body {
-  overflow-y: scroll;
   scrollbar-gutter: stable;
 }
 
