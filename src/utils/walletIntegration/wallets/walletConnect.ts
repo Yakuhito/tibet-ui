@@ -87,6 +87,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           this.topic = session.topic;
           closeWalletConnectModal()
           toast.success('Successfully Connected')
+          this.detectEvents()
 
           return true
         }
@@ -104,6 +105,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
 
       if (signClient?.pairing.getAll({ active: true }).length) {
         console.log(signClient.session.keys)
+        this.detectEvents()
         return true;
       }
     } catch (error) {
@@ -353,6 +355,18 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
       toast.error(`Wallet - ${e}`)
     }
   }
+
+  async detectEvents(): Promise<void> {
+
+    // Sign client
+    const signClient = await this.signClient();
+    if (!signClient) return
+
+    // If user disconnects from UI or wallet, refresh the page
+    signClient.on("session_delete", () => window.location.reload())
+
+  }
+
 }
 
 export default WalletConnectIntegration;
