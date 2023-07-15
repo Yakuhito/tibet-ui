@@ -1,6 +1,5 @@
-import WalletIntegrationInterface from '../walletIntegrationInterface';
+import WalletIntegrationInterface, { generateOffer } from '../walletIntegrationInterface';
 import { toast } from 'react-hot-toast';
-import { bech32m } from 'bech32';
 
 class hoogiiWallet implements WalletIntegrationInterface {
   name = "Hoogii";
@@ -90,13 +89,19 @@ class hoogiiWallet implements WalletIntegrationInterface {
     // Hoogii wallet disconnection logic
   }
 
-  async generateOffer(requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[], fee: number | undefined): Promise<string | void> {
+  async generateOffer(requestAssets: generateOffer["requestAssets"], offerAssets: generateOffer["offerAssets"], fee: number | undefined): Promise<string | void> {
     // Hoogii wallet transaction signing logic
     fee = Math.floor((fee ?? 0) * 10 ** 12)
     try {
       const params = {
-        requestAssets,
-        offerAssets,
+        requestAssets: requestAssets.map(asset => ({
+          assetId: asset.assetId,
+          amount: asset.amount
+        })),
+        offerAssets: offerAssets.map(asset => ({
+          assetId: asset.assetId,
+          amount: asset.amount
+        })),
         fee
       }
       const response = await (window as any).chia.hoogii.request({ method: 'createOffer', params })
