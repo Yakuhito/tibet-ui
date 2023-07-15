@@ -1,8 +1,9 @@
-import WalletIntegrationInterface from '../walletIntegrationInterface';
+import WalletIntegrationInterface, { generateOffer } from '../walletIntegrationInterface';
 import SignClient from "@walletconnect/sign-client";
 import Client from '@walletconnect/sign-client';
 import { toast } from 'react-hot-toast';
 import { closeWalletConnectModal, showWalletConnectModal } from '../WalletConnectModal';
+import { closeCompleteWithWallet, showCompleteWithWallet } from '../CompleteWithWallet';
 
 interface wallet {
   data: string
@@ -123,14 +124,23 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     // WalletConnect disconnection logic
   }
 
-  // seems strange that this is returning Promise<void>
-  async generateOffer(requestAssets: {assetId: string; amount: number; walletId?: number;}[], offerAssets: {assetId: string; amount: number; walletId?: number;}[], fee: number | undefined): Promise<string | void> {
+  async generateOffer(requestAssets: generateOffer["requestAssets"], offerAssets: generateOffer["offerAssets"], fee: number | undefined): Promise<string | void> {
     await this.updateFingerprint()
+
+    // Show modal to user taking them through each step of the process
+    showCompleteWithWallet(this)
+
     // Send request to fetch users wallets
     const wallets = await this.getWallets();
-    if (!wallets) return;
+    if (!wallets) {
+      closeCompleteWithWallet()
+      return;
+    }
+    if (this.onGetWalletsAccept) {
+      this.onGetWalletsAccept();
+    }
 
-    const userMustAddTheseAssetsToWallet: string[] = []
+    const userMustAddTheseAssetsToWallet: generateOffer["offerAssets"] = []
 
     // Match assetIds to users wallet to find the wallet ID (required to send a create offer)
 
@@ -144,7 +154,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
         offerItem.walletId = matchingChiaWallet.id;
       } else {
         toast.error(`Token with asset ID ${offerItem.assetId} not found in your wallet. Please add it.`);
-        userMustAddTheseAssetsToWallet.push(offerItem.assetId)
+        userMustAddTheseAssetsToWallet.push(offerItem)
       }
     })
 
@@ -158,11 +168,14 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
         requestItem.walletId = matchingChiaWallet.id;
       } else {
         toast.error(`Token with asset ID ${requestItem.assetId} not found in your wallet. Please add it.`);
-        userMustAddTheseAssetsToWallet.push(requestItem.assetId)
+        userMustAddTheseAssetsToWallet.push(requestItem)
       }
     })
 
     if (userMustAddTheseAssetsToWallet.length) {
+      if (this.onAddAssets) {
+        this.onAddAssets(userMustAddTheseAssetsToWallet);
+      }
       toast.error(`Please add all assets to your wallet before continuing`)
       return
     }
@@ -281,7 +294,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
   }
 
   async addAsset(assetId: string, symbol: string, logo: string, fullName: string): Promise<void> {
-
+    await this.updateFingerprint()
     const displayName = `${symbol.includes('TIBET-') ? `TibetSwap Liquidity (${symbol})` : `${fullName} (${symbol})`}`
 
     // Sign client
@@ -366,6 +379,20 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     signClient.on("session_delete", () => window.location.reload())
 
   }
+
+
+  // Callback methods to control UI modal (guide user through requests)
+  protected onGetWalletsAccept?: () => void;
+  protected onAddAssets?: (userMustAddTheseAssetsToWallet: generateOffer["offerAssets"]) => void;
+  
+  setOnGetWalletsAccept(callback: () => void) {
+    this.onGetWalletsAccept = callback;
+  }
+
+  setOnAddAssets(callback: (userMustAddTheseAssetsToWallet: generateOffer["offerAssets"]) => void) {
+    this.onAddAssets = callback;
+  }
+
 
 }
 
