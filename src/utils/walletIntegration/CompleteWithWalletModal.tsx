@@ -9,12 +9,12 @@ import { generateOffer } from './walletIntegrationInterface';
 
 let closeModalFunction: () => void = () => {};
 
-type CompleteWithWalletProps = {
+type CompleteWithWalletModalProps = {
   walletConnectInstance: WalletConnect
   onClose: () => void
 }
 
-const CompleteWithWallet = ({ walletConnectInstance, onClose }: CompleteWithWalletProps) => {
+const CompleteWithWalletModal = ({ walletConnectInstance, onClose }: CompleteWithWalletModalProps) => {
 
   const [isOpen, setIsOpen] = React.useState(true);
   const [step, setStep] = React.useState<number>(0);
@@ -146,7 +146,7 @@ const CompleteWithWallet = ({ walletConnectInstance, onClose }: CompleteWithWall
   )
 }
 
-export const showCompleteWithWallet = (walletConnectInstance: WalletConnect) => {
+export const showCompleteWithWalletModal = (walletConnectInstance: WalletConnect) => {
   const modalDiv = document.createElement('div')
   document.body.appendChild(modalDiv)
 
@@ -159,7 +159,7 @@ export const showCompleteWithWallet = (walletConnectInstance: WalletConnect) => 
   closeModalFunction = onClose;
 
   root.render(
-    <CompleteWithWallet
+    <CompleteWithWalletModal
       walletConnectInstance={walletConnectInstance}
       onClose={onClose}
     />,
@@ -168,7 +168,7 @@ export const showCompleteWithWallet = (walletConnectInstance: WalletConnect) => 
   return onClose
 };
 
-export const closeCompleteWithWallet = () => {
+export const closeCompleteWithWalletModal = () => {
   if (closeModalFunction) {
     closeModalFunction()
   }

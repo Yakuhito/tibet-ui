@@ -3,7 +3,7 @@ import SignClient from "@walletconnect/sign-client";
 import Client from '@walletconnect/sign-client';
 import { toast } from 'react-hot-toast';
 import { closeWalletConnectModal, showWalletConnectModal } from '../WalletConnectModal';
-import { closeCompleteWithWallet, showCompleteWithWallet } from '../CompleteWithWallet';
+import { closeCompleteWithWalletModal, showCompleteWithWalletModal } from '../CompleteWithWalletModal';
 
 interface wallet {
   data: string
@@ -128,12 +128,12 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     await this.updateFingerprint()
 
     // Show modal to user taking them through each step of the process
-    showCompleteWithWallet(this)
+    showCompleteWithWalletModal(this)
 
     // Send request to fetch users wallets
     const wallets = await this.getWallets();
     if (!wallets) {
-      closeCompleteWithWallet()
+      closeCompleteWithWalletModal()
       return;
     }
     if (this.onGetWalletsAccept) {
