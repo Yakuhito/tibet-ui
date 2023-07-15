@@ -2,8 +2,8 @@ import WalletIntegrationInterface, { generateOffer } from '../walletIntegrationI
 import SignClient from "@walletconnect/sign-client";
 import Client from '@walletconnect/sign-client';
 import { toast } from 'react-hot-toast';
-import { closeWalletConnectModal, showWalletConnectModal } from '../WalletConnectModal';
-import { closeCompleteWithWalletModal, showCompleteWithWalletModal } from '../CompleteWithWalletModal';
+import { closeWalletConnectModal, showWalletConnectModal } from '../WalletConnectItems/WalletConnectModal';
+import { closeCompleteWithWalletModal, showCompleteWithWalletModal } from '../WalletConnectItems/CompleteWithWalletModal';
 
 interface wallet {
   data: string
