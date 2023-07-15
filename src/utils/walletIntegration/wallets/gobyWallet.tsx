@@ -72,7 +72,7 @@ class gobyWallet implements WalletIntegrationInterface {
     // Goby wallet balance retrieval logic
   }
 
-  async addAsset(assetId: string, symbol: string, logo: string, fullName: string): Promise<void> {
+  async addAsset(assetId: string, symbol: string, logo: string, fullName: string): Promise<boolean> {
     let symbolM = symbol
     let logoM = logo
 
@@ -93,11 +93,12 @@ class gobyWallet implements WalletIntegrationInterface {
       }
       const response = await (window as any).chia.request({ method: 'walletWatchAsset', params })
       toast.success(`Adding ${symbol} to Goby`)
-      return response
+      return true;
     } catch (error: any) {
         console.log(error)
         toast.error(`Wallet - ${error?.message || String(error.message)}`);
-    }    
+    }
+    return false;  
   }
 
   async getAddress() {

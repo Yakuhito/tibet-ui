@@ -293,7 +293,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     }
   }
 
-  async addAsset(assetId: string, symbol: string, logo: string, fullName: string): Promise<void> {
+  async addAsset(assetId: string, symbol: string, logo: string, fullName: string): Promise<boolean> {
     await this.updateFingerprint()
     const displayName = `${symbol.includes('TIBET-') ? `TibetSwap Liquidity (${symbol})` : `${fullName} (${symbol})`}`
 
@@ -304,7 +304,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     try {
         if (!this.topic || !signClient) {
           toast.error('Not connected via WalletConnect or could not sign client')
-          return;
+          return false;
         }
 
         // Send request to get Wallets via WalletConnect
@@ -327,10 +327,13 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           error: 'Failed to add asset to wallet'
         })
         const response = await request;
+        console.log(response)
+        return true;
 
     } catch (error: any) {
       console.log(`Wallet - ${error.message}`)
     }
+    return false
   }
 
   // Must be called before any action
