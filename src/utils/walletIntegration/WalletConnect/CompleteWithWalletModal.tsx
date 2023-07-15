@@ -1,3 +1,4 @@
+import AddAssetButton from '@/components/walletIntegration/AddAssetButton';
 import { generateOffer } from '../walletIntegrationInterface';
 import type WalletConnect from '../wallets/walletConnect';
 import { Dialog, Transition } from '@headlessui/react';
@@ -41,11 +42,6 @@ const CompleteWithWalletModal = ({ walletConnectInstance, onClose }: CompleteWit
     setTitle("Add Assets")
   };
 
-  const addAssetToWallet = async (assetId: string, symbol: string, logo: string, fullName: string) => {
-    if (!walletConnectInstance) return console.log('Connect to a wallet before trying to add an asset')
-    await walletConnectInstance.addAsset(assetId, symbol, logo, fullName)
-  }
-
   const fetchStep = (step: number) => {
     if (step === 0) {
         return (
@@ -66,15 +62,17 @@ const CompleteWithWalletModal = ({ walletConnectInstance, onClose }: CompleteWit
           return (
             <div>
                 <p>Add the below assets to your Chia Wallet before continuing</p>
-                <ul className="list-none mt-4 font-medium">
+                <ul className="list-none mt-4 flex flex-col gap-2 font-medium">
                   {userMustAddTheseAssetsToWallet?.map((asset) => {
                     return (
-                      <li key={asset.assetId} className="flex gap-2 justify-between pb-2 last:pb-0">
-                        <div className="flex gap-2 items-center">
+                      <li key={asset.assetId} className="flex items-center gap-2 justify-between pb-2 last:pb-0">
+                        <div className="flex gap-4 items-center">
                             <Image src={asset.image_url} width={30} height={30} alt="Token logo" className="rounded-full outline-brandDark/20 p-0.5" priority />
-                            <p>{asset.name} ({asset.short_name})</p>
+                            {!asset.short_name.includes("TIBET-") && <p>{asset.name} ({asset.short_name})</p>}
+                            {asset.short_name.includes("TIBET-") && <p>{asset.short_name}</p>}
                         </div>
-                        <button className="hover:opacity-80 bg-brandDark/10 py-1 px-4 whitespace-nowrap rounded-lg flex items-center gap-2" onClick={() => addAssetToWallet(asset.assetId, asset.short_name, asset.image_url, asset.name)}>Add to Wallet</button>
+                        <AddAssetButton asset_id={asset.assetId} short_name={asset.short_name} image_url={asset.image_url} name={asset.name} activeWallet={walletConnectInstance} />
+                        {/* <button className="hover:opacity-80 bg-brandDark/10 py-1 px-4 whitespace-nowrap rounded-lg flex items-center gap-2" onClick={() => addAssetToWallet(asset.assetId, asset.short_name, asset.image_url, asset.name)}>Add to Wallet</button> */}
                       </li>
                     )
                   })}
