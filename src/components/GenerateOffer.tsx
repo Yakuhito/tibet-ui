@@ -332,14 +332,20 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         const requestAssets = data.request.map(asset => (
                 {
                     assetId: asset[0].asset_id,
-                    amount: data.action === "SWAP" && !data.offer[0][1] ? Math.ceil(asset[2] * (1-devFee)) : asset[2]
+                    amount: data.action === "SWAP" && !data.offer[0][1] ? Math.ceil(asset[2] * (1-devFee)) : asset[2],
+                    image_url: asset[0].image_url,
+                    short_name: asset[0].short_name,
+                    name: asset[0].name
                 }
             ))
 
         const offerAssets = data.offer.map(asset => (
                 {
                     assetId:  asset[0].asset_id,
-                    amount: data.action === "SWAP" && data.offer[0][1] ? Math.floor(asset[2] * (1+devFee)) : asset[2]
+                    amount: data.action === "SWAP" && data.offer[0][1] ? Math.floor(asset[2] * (1+devFee)) : asset[2],
+                    image_url: asset[0].image_url,
+                    short_name: asset[0].short_name,
+                    name: asset[0].name
                 }
             ))
 
