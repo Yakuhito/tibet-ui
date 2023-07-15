@@ -1,10 +1,10 @@
+import { generateOffer } from '../walletIntegrationInterface';
 import type WalletConnect from '../wallets/walletConnect';
 import { Dialog, Transition } from '@headlessui/react';
 import { createRoot } from 'react-dom/client';
 import React, { Fragment } from 'react';
 import ReactDOM from 'react-dom';
 import Image from 'next/image';
-import { generateOffer } from '../walletIntegrationInterface';
 
 
 let closeModalFunction: () => void = () => {};
