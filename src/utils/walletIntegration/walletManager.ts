@@ -1,4 +1,4 @@
-import WalletIntegrationInterface from './walletIntegrationInterface';
+import WalletIntegrationInterface, { generateOffer } from './walletIntegrationInterface';
 import WalletConnect from './wallets/walletConnect';
 import HoogiiWallet from './wallets/hoogiiWallet';
 import GobyWallet from './wallets/gobyWallet';
@@ -81,7 +81,7 @@ class WalletManager {
     this.notifyActiveWalletChange();
   }
 
-  public async generateOffer(requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[], fee: number | undefined): Promise<string | void> {
+  public async generateOffer(requestAssets: generateOffer["requestAssets"], offerAssets: generateOffer["offerAssets"], fee: number | undefined): Promise<string | void> {
     if (this.activeWallet) {
       this.activeWallet.generateOffer(requestAssets, offerAssets, fee);
     }
