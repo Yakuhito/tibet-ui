@@ -142,6 +142,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
 
     const userMustAddTheseAssetsToWallet: generateOffer["offerAssets"] = []
 
+
     // Match assetIds to users wallet to find the wallet ID (required to send a create offer)
 
     // For offering assets
@@ -153,7 +154,6 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
       if (matchingChiaWallet) {
         offerItem.walletId = matchingChiaWallet.id;
       } else {
-        toast.error(`Token with asset ID ${offerItem.assetId} not found in your wallet. Please add it.`);
         userMustAddTheseAssetsToWallet.push(offerItem)
       }
     })
@@ -167,16 +167,15 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
       if (matchingChiaWallet) {
         requestItem.walletId = matchingChiaWallet.id;
       } else {
-        toast.error(`Token with asset ID ${requestItem.assetId} not found in your wallet. Please add it.`);
         userMustAddTheseAssetsToWallet.push(requestItem)
       }
     })
 
+    if (this.onAddAssets) {
+      this.onAddAssets(userMustAddTheseAssetsToWallet);
+    }
+
     if (userMustAddTheseAssetsToWallet.length) {
-      if (this.onAddAssets) {
-        this.onAddAssets(userMustAddTheseAssetsToWallet);
-      }
-      toast.error(`Please add all assets to your wallet before continuing`)
       return
     }
 
@@ -239,12 +238,21 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
 
         if (resultOffer.error) {
           toast.error(resultOffer.error?.data.error)
+          if (this.onGenerateOfferReject) {
+            this.onGenerateOfferReject();
+          }
         } else if (resultOffer.data) {
+          if (this.onGenerateOfferSuccess) {
+            this.onGenerateOfferSuccess();
+          }
           return resultOffer.data.offer;
         }
 
     } catch (error) {
       toast.error(`Wallet - Failed to generate offer`)
+      if (this.onGenerateOfferReject) {
+        this.onGenerateOfferReject();
+      }
     }
     
   }
@@ -387,13 +395,23 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
   // Callback methods to control UI modal (guide user through requests)
   protected onGetWalletsAccept?: () => void;
   protected onAddAssets?: (userMustAddTheseAssetsToWallet: generateOffer["offerAssets"]) => void;
-  
+  protected onGenerateOfferSuccess?: () => void;
+  protected onGenerateOfferReject?: () => void;
+
   setOnGetWalletsAccept(callback: () => void) {
     this.onGetWalletsAccept = callback;
   }
 
   setOnAddAssets(callback: (userMustAddTheseAssetsToWallet: generateOffer["offerAssets"]) => void) {
     this.onAddAssets = callback;
+  }
+
+  setOnGenerateOfferSuccess(callback: () => void) {
+    this.onGenerateOfferSuccess = callback;
+  }
+
+  setOnGenerateOfferReject(callback: () => void) {
+    this.onGenerateOfferReject = callback;
   }
 
 
