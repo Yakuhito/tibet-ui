@@ -1,4 +1,5 @@
 import WalletIntegrationInterface from "@/utils/walletIntegration/walletIntegrationInterface";
+import WalletConnect from "@/utils/walletIntegration/wallets/walletConnect";
 import GobyWallet from "@/utils/walletIntegration/wallets/gobyWallet";
 import { toast } from "react-hot-toast";
 import { useState } from "react";
@@ -29,13 +30,17 @@ function AddAssetButton({ asset_id, short_name, image_url, name, activeWallet, o
         setIsLoading(false);
     }
 
-    return ( 
-        <button onClick={() => addAssetToWallet(asset_id, short_name, image_url, name)} className={`${isLoading ? 'animate-pulse' : ''} ${isAdded ? 'bg-green-700/20 text-green-700' : 'bg-brandDark/10 text-brandDark dark:text-brandLight'} h-fit max-w-[160px] w-full hover:opacity-80 py-1 px-4 whitespace-nowrap rounded-lg flex justify-center items-center gap-3`}>
-            {!isLoading && !isAdded && <Image src={activeWallet instanceof GobyWallet ? "/assets/goby.webp" : "/assets/xch.webp"} width={16} height={16} alt="Token logo" className="rounded-full" />}
-            {isLoading && <div className="w-4 aspect-square border border-black/10 rounded-full border-r-brandDark dark:border-r-brandLight animate-spin"></div>}
-            {isAdded ? 'Added' : 'Add to Wallet'}
-        </button>
-     );
+    // Only display button if it's supported by the active wallet
+    if (activeWallet instanceof GobyWallet ||  activeWallet instanceof WalletConnect) {
+        return ( 
+            <button onClick={() => addAssetToWallet(asset_id, short_name, image_url, name)} className={`${isLoading ? 'animate-pulse' : ''} ${isAdded ? 'bg-green-700/20 text-green-700' : 'bg-brandDark/10 text-brandDark dark:text-brandLight'} h-fit max-w-[160px] w-full hover:opacity-80 py-1 px-4 whitespace-nowrap rounded-lg flex justify-center items-center gap-3`}>
+                {!isLoading && !isAdded && <Image src={activeWallet instanceof GobyWallet ? "/assets/goby.webp" : "/assets/xch.webp"} width={16} height={16} alt="Token logo" className="rounded-full" />}
+                {isLoading && <div className="w-4 aspect-square border border-black/10 rounded-full border-r-brandDark dark:border-r-brandLight animate-spin"></div>}
+                {isAdded ? 'Added' : 'Add to Wallet'}
+            </button>
+        );
+    }
+    return (<></>)
 }
 
 export default AddAssetButton;
