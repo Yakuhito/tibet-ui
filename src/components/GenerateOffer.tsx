@@ -295,8 +295,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                         
                         {e[1] ? null :
                         (<div className="rounded-lg mt-2 mb-4 flex gap-2 ml-4">
-                            <p className="text-brandDark dark:text-brandLight">⤷</p>
-                            <div className="flex gap-2 text-sm font-normal">
+                            <div className="flex gap-2 text-sm font-normal pl-[calc(0.5rem+12px)]">
                                 <CopyButton copyText={e[0].asset_id}>Asset ID</CopyButton>
                                 <AddAssetButton asset_id={e[0].asset_id} short_name={e[0].short_name} image_url={e[0].image_url} name={e[0].name} activeWallet={activeWallet} />
                             </div>
