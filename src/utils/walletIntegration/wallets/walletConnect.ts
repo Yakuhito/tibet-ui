@@ -109,8 +109,9 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
       const signClient = await this.signClient();
 
       if (signClient?.pairing.getAll({ active: true }).length) {
-        console.log(signClient.session.keys)
-        this.detectEvents()
+        console.log(signClient.session.keys);
+        this.detectEvents();
+        this.updateFingerprint();
         return true;
       }
     } catch (error) {
