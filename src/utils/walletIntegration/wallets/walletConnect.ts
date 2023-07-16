@@ -130,53 +130,54 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     // Show modal to user taking them through each step of the process
     showCompleteWithWalletModal(this)
 
-    // Send request to fetch users wallets
-    const wallets = await this.getWallets();
-    if (!wallets) {
-      closeCompleteWithWalletModal()
-      return;
-    }
-    if (this.onGetWalletsAccept) {
-      this.onGetWalletsAccept();
-    }
+    var firstRun = true
+    var userMustAddTheseAssetsToWallet: generateOffer["offerAssets"] = []
 
-    const userMustAddTheseAssetsToWallet: generateOffer["offerAssets"] = []
+    while (firstRun || userMustAddTheseAssetsToWallet.length > 0) {
+      firstRun = false
+      userMustAddTheseAssetsToWallet = []
 
-
-    // Match assetIds to users wallet to find the wallet ID (required to send a create offer)
-
-    // For offering assets
-    offerAssets.forEach(offerItem => {
-      // If item is Chia, set walletId to 1 as this is the default
-      if (offerItem.assetId === "") return offerItem.walletId = 1;
-
-      const matchingChiaWallet = wallets.data.find(item => item.meta.assetId === offerItem.assetId);
-      if (matchingChiaWallet) {
-        offerItem.walletId = matchingChiaWallet.id;
-      } else {
-        userMustAddTheseAssetsToWallet.push(offerItem)
+      // Send request to fetch users wallets
+      const wallets = await this.getWallets();
+      if (!wallets) {
+        closeCompleteWithWalletModal()
+        return;
       }
-    })
-
-    // For requesting assets
-    requestAssets.forEach(requestItem => {
-      // If item is Chia, set walletId to 1 as this is the default
-      if (requestItem.assetId === "") return requestItem.walletId = 1;
-
-      const matchingChiaWallet = wallets.data.find(item => item.meta.assetId == requestItem.assetId);
-      if (matchingChiaWallet) {
-        requestItem.walletId = matchingChiaWallet.id;
-      } else {
-        userMustAddTheseAssetsToWallet.push(requestItem)
+      if (this.onGetWalletsAccept) {
+        this.onGetWalletsAccept();
       }
-    })
 
-    if (this.onAddAssets) {
-      this.onAddAssets(userMustAddTheseAssetsToWallet);
-    }
+      // Match assetIds to users wallet to find the wallet ID (required to send a create offer)
 
-    if (userMustAddTheseAssetsToWallet.length) {
-      return
+      // For offering assets
+      offerAssets.forEach(offerItem => {
+        // If item is Chia, set walletId to 1 as this is the default
+        if (offerItem.assetId === "") return offerItem.walletId = 1;
+
+        const matchingChiaWallet = wallets.data.find(item => item.meta.assetId === offerItem.assetId);
+        if (matchingChiaWallet) {
+          offerItem.walletId = matchingChiaWallet.id;
+        } else {
+          userMustAddTheseAssetsToWallet.push(offerItem)
+        }
+      })
+
+      // For requesting assets
+      requestAssets.forEach(requestItem => {
+        // If item is Chia, set walletId to 1 as this is the default
+        if (requestItem.assetId === "") return requestItem.walletId = 1;
+
+        const matchingChiaWallet = wallets.data.find(item => item.meta.assetId == requestItem.assetId);
+        if (matchingChiaWallet) {
+          requestItem.walletId = matchingChiaWallet.id;
+        } else {
+          userMustAddTheseAssetsToWallet.push(requestItem)
+        }
+      })
+
+      if (this.onAddAssets) {
+        await this.onAddAssets(userMustAddTheseAssetsToWallet)
+      }
     }
 
     // Generate offer object
@@ -394,7 +395,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
 
   // Callback methods to control UI modal (guide user through requests)
   protected onGetWalletsAccept?: () => void;
-  protected onAddAssets?: (userMustAddTheseAssetsToWallet: generateOffer["offerAssets"]) => void;
+  protected onAddAssets?: (userMustAddTheseAssetsToWallet: generateOffer["offerAssets"]) => Promise<void>;
   protected onGenerateOfferSuccess?: () => void;
   protected onGenerateOfferReject?: () => void;
 
@@ -402,7 +403,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     this.onGetWalletsAccept = callback;
   }
 
-  setOnAddAssets(callback: (userMustAddTheseAssetsToWallet: generateOffer["offerAssets"]) => void) {
+  setOnAddAssets(callback: (userMustAddTheseAssetsToWallet: generateOffer["offerAssets"]) => Promise<void>) {
     this.onAddAssets = callback;
   }
 

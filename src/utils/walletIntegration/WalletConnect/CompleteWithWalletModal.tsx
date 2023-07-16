@@ -3,7 +3,7 @@ import { generateOffer } from '../walletIntegrationInterface';
 import type WalletConnect from '../wallets/walletConnect';
 import { Dialog, Transition } from '@headlessui/react';
 import { createRoot } from 'react-dom/client';
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import ReactDOM from 'react-dom';
 import Image from 'next/image';
 
@@ -17,49 +17,57 @@ type CompleteWithWalletModalProps = {
 
 const CompleteWithWalletModal = ({ walletConnectInstance, onClose }: CompleteWithWalletModalProps) => {
 
-  const [isOpen, setIsOpen] = React.useState(true);
-  const [step, setStep] = React.useState<number>(0);
-  const [addedAssetsCount, setAddedAssetsCount] = React.useState<number>(0);
-  const [userMustAddTheseAssetsToWallet, setUserMustAddTheseAssetsToWallet] = React.useState<generateOffer["offerAssets"]>([]);
-  const [title, setTitle] = React.useState("Fetch Wallets");
-  const [offerRejected, setOfferRejected] = React.useState(false);
+  const [isOpen, setIsOpen] = React.useState(true)
+  const [step, setStep] = React.useState<number>(0)
+  const [addedAssetsCount, setAddedAssetsCount] = React.useState<number>(0)
+  const [userMustAddTheseAssetsToWallet, setUserMustAddTheseAssetsToWallet] = React.useState<generateOffer["offerAssets"]>([])
+  const [title, setTitle] = React.useState("Fetch Wallets")
+  const [offerRejected, setOfferRejected] = React.useState(false)
+  const [allAssetsAddedPromiseResolve, setAllAssetsAddedPromiseResolve] = React.useState<any>(null)
 
   React.useEffect(() => {
+    if(!walletConnectInstance) return;
+
+    // Callback from class that is run if user needs to add assets to their wallet before continuing
+    const handleOnAddAssets = async (userMustAddTheseAssetsToWallet: generateOffer["offerAssets"]) => {
+      if (userMustAddTheseAssetsToWallet.length) {
+        setUserMustAddTheseAssetsToWallet(userMustAddTheseAssetsToWallet)
+        setTitle("Add Assets")
+        setStep(1);
+
+        return new Promise<void>((resolve) => {
+          console.log('hello from promise, ser')
+
+          // important: can't only use 'resolve' since react will
+          // run all functions given to setters
+          setAllAssetsAddedPromiseResolve(() => resolve)
+        })
+      } else {
+        setTitle("Generate Offer")
+        setStep(2);
+      }
+    };
+
+    // Callback when everything is good :) The modal kills itself though :'(
+    const handleOnGenerateOfferSuccess = () => {
+      setIsOpen(false);
+      onClose();
+    };
+
+    // When offer is rejected in Chia wallet, update state to display red cross to user
+    const handleOnGenerateOfferReject = () => {
+      setOfferRejected(true);
+    }
+
     // Assign callback functions from class to component functions
-    if (walletConnectInstance) {
-      walletConnectInstance.setOnAddAssets(handleOnAddAssets);
-      walletConnectInstance.setOnGenerateOfferSuccess(handleOnGenerateOfferSuccess)
-      walletConnectInstance.setOnGenerateOfferReject(handleOnGenerateOfferReject)
-    }
-  }, [walletConnectInstance]);
-
-  // Callback when everything is good :) The modal kills itself though :'(
-  const handleOnGenerateOfferSuccess = () => {
-    setIsOpen(false);
-    onClose();
-  };
-
-  // Callback from class that is run if user needs to add assets to their wallet before continuing
-  const handleOnAddAssets = (userMustAddTheseAssetsToWallet: generateOffer["offerAssets"]) => {
-    if (userMustAddTheseAssetsToWallet.length) {
-      setUserMustAddTheseAssetsToWallet(userMustAddTheseAssetsToWallet)
-      setTitle("Add Assets")
-      setStep(1);
-    } else {
-      setTitle("Generate Offer")
-      setStep(2);
-    }
-  };
+    walletConnectInstance.setOnAddAssets(handleOnAddAssets);
+    walletConnectInstance.setOnGenerateOfferSuccess(handleOnGenerateOfferSuccess)
+    walletConnectInstance.setOnGenerateOfferReject(handleOnGenerateOfferReject)
+  }, [walletConnectInstance, onClose, setIsOpen, setStep, setTitle, setUserMustAddTheseAssetsToWallet]);
 
   // When user adds an asset in their wallet successfully, add count to added list
-  const handleAssetAdded = () => {
-    setAddedAssetsCount(prevCount => prevCount + 1);
-  }
-
-  // When offer is rejected in Chia wallet, update state to display red cross to user
-  const handleOnGenerateOfferReject = () => {
-    setOfferRejected(true);
-  }
+  const handleAssetAdded = () =>
+    setAddedAssetsCount(addedAssetsCount => addedAssetsCount += 1);
 
   // If all assets have been added, move to next step (& run generateOffer from the top again)
   React.useEffect(() => {
@@ -67,9 +75,14 @@ const CompleteWithWalletModal = ({ walletConnectInstance, onClose }: CompleteWit
       if (addedAssetsCount === userMustAddTheseAssetsToWallet.length) {
         setTitle("Fetch Wallets")
         setStep(1.5);
+
+        if(allAssetsAddedPromiseResolve !== null) {
+          allAssetsAddedPromiseResolve()
+          setAllAssetsAddedPromiseResolve(null)
+        }
       }
     }
-  }, [addedAssetsCount, userMustAddTheseAssetsToWallet.length, step]);
+  }, [addedAssetsCount, userMustAddTheseAssetsToWallet.length, step, allAssetsAddedPromiseResolve, setAllAssetsAddedPromiseResolve]);
 
   const fetchStep = (step: number) => {
     if (step === 0 || step === 1.5) {
