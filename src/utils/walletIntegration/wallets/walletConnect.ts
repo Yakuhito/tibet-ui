@@ -30,8 +30,9 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
   selectedFingerprint
   topic
   client: SignClient | undefined
+  walletType: "chia" | "ozone"
   
-  constructor() {
+  constructor(wallet: "chia" | "ozone") {
     // Restore active session fingerprint & topic (if any) to object property for later use
     const fingerprints = localStorage.getItem('wc_fingerprints');
     if (fingerprints) {this.fingerprints = JSON.parse(fingerprints);}
@@ -41,6 +42,9 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
 
     const topic = localStorage.getItem('wc_topic');
     if (topic) {this.topic = JSON.parse(topic);}
+
+    this.walletType = wallet
+    localStorage.setItem('activeWalletType', wallet)
   }
 
   async connect(): Promise<boolean> {
@@ -292,6 +296,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           error: 'Unable to fetch your wallets'
         })
         const wallets = await request;
+        console.log({ wallets })
         
         if (wallets.isSuccess) {
           return wallets;

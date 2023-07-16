@@ -102,7 +102,7 @@ const CompleteWithWalletModal = ({ walletConnectInstance, onClose }: CompleteWit
     if (step === 1) {
       return (
         <div>
-            <p>Add the below assets to your Chia Wallet before continuing</p>
+            <p>Please add these assets to your Chia Wallet before continuing:</p>
             <ul className="list-none mt-4 flex flex-col gap-2 font-medium">
               {userMustAddTheseAssetsToWallet?.map((asset) => {
                 return (

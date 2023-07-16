@@ -37,7 +37,7 @@ function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet, is
     }
 
     // Handle connecting to a wallet when clicking on an option
-    const handleConnect = async (walletIdentifier: string) => {
+    const handleConnect = async (walletIdentifier: string, walletOpt: "chia" | "ozone" | null = null) => {
         // Get the wallet integration object based on the identifier
         let walletIntegration: WalletIntegrationInterface | null = null;
         let connectionSuccessful: boolean = false;
@@ -53,7 +53,11 @@ function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet, is
         try {
             if (walletIdentifier in walletClasses) {
                 const WalletClass = walletClasses[walletIdentifier];
-                walletIntegration = new WalletClass();
+                if(walletOpt === null) {
+                    walletIntegration = new WalletClass();
+                } else {
+                    walletIntegration = new WalletClass(walletOpt);
+                }
                 const response = await walletIntegration?.connect();
                 connectionSuccessful = Boolean(response);
             }
@@ -67,6 +71,10 @@ function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet, is
         }
     };
 
+    const chiaActive = activeWallet instanceof WalletConnect && activeWallet.walletType === "chia"
+    const gobyActive = activeWallet instanceof GobyWallet
+    const ozoneActive = activeWallet instanceof WalletConnect && activeWallet.walletType === "ozone"
+    const hoogiiActive = activeWallet instanceof HoogiiWallet
     return (    
         <Transition appear show={isOpen} as={Fragment}>
             <Dialog as="div" className="relative z-20" onClose={() => setIsOpen(false)}>
@@ -102,18 +110,18 @@ function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet, is
 
                         {/* Chia Wallet */}
                         <div>
-                            <div onClick={() => handleConnect('WalletConnect')} className={`${activeWallet instanceof WalletConnect ? `bg-green-700/20 focus:ring-green-700/20 ${fingerprints.length > 1 ? 'rounded-t-xl' : 'rounded-xl'}` : 'bg-brandDark/10 rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
+                            <div onClick={() => handleConnect('WalletConnect', 'chia')} className={`${chiaActive ? `bg-green-700/20 focus:ring-green-700/20 ${fingerprints.length > 1 ? 'rounded-t-xl' : 'rounded-xl'}` : 'bg-brandDark/10 rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
                                 <div className="flex items-center gap-4">
                                     <Image src="/assets/xch.webp" height={40} width={40} alt={'Chia Wallet Logo'} className="rounded-full" />
                                     <p className="font-medium text-lg">Chia Wallet</p>
                                 </div>
                                 <button className={`
-                                ${activeWallet instanceof WalletConnect ? 'outline-none text-green-700' : ''}
+                                ${chiaActive ? 'outline-none text-green-700' : ''}
                                 font-medium rounded-lg px-2 py-1
-                                ${activeWallet instanceof WalletConnect ? "before:content-['Connected']" : "before:content-['Connect']"}`}
+                                ${chiaActive ? "before:content-['Connected']" : "before:content-['Connect']"}`}
                                 ></button>
                             </div>
-                            {activeWallet instanceof WalletConnect && fingerprints.length > 1 && <div className="animate-fadeIn text-sm bg-brandDark/10 font-medium px-4 py-4 rounded-b-xl flex flex-col gap-2 border-2 border-transparent hover:border-brandDark/10">
+                            {chiaActive && fingerprints.length > 1 && <div className="animate-fadeIn text-sm bg-brandDark/10 font-medium px-4 py-4 rounded-b-xl flex flex-col gap-2 border-2 border-transparent hover:border-brandDark/10">
                                 <p className="text-base">Your Wallets</p>
                                 <ul className="flex">
                                 {
@@ -127,34 +135,59 @@ function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet, is
                         
                         {/* Goby Wallet */}
                         <div>
-                            <div onClick={() => handleConnect('Goby')} className={`${activeWallet instanceof GobyWallet ? 'bg-green-700/20 focus:ring-green-700/20' : 'bg-brandDark/10'} ${isWalletOnWrongChain && activeWallet instanceof GobyWallet ? 'rounded-t-xl' : 'rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
+                            <div onClick={() => handleConnect('Goby')} className={`${gobyActive ? 'bg-green-700/20 focus:ring-green-700/20' : 'bg-brandDark/10'} ${isWalletOnWrongChain && activeWallet instanceof GobyWallet ? 'rounded-t-xl' : 'rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
                             <div className="flex items-center gap-4">
                                     <Image src="/assets/goby.webp" height={40} width={40} alt={'Goby Wallet Logo'} className="rounded-full" />
                                     <p className="font-medium text-lg">Goby Wallet</p>
                                 </div>
                                 <button className={`
-                                ${activeWallet instanceof GobyWallet ? 'outline-none text-green-700' : ''}
+                                ${gobyActive ? 'outline-none text-green-700' : ''}
                                 font-medium rounded-lg px-2 py-1
-                                ${activeWallet instanceof GobyWallet ? "before:content-['Connected']" : "before:content-['Connect']"}`}
+                                ${gobyActive ? "before:content-['Connected']" : "before:content-['Connect']"}`}
                                 ></button>
                             </div>
-                            {isWalletOnWrongChain && activeWallet instanceof GobyWallet && <p className="animate-fadeIn text-sm bg-red-700/80 font-medium text-brandLight px-2 py-1 rounded-b-xl text-center">Incorrect chain selected ({process.env.NEXT_PUBLIC_XCH === "TXCH" ? 'Mainnet' : 'Testnet'})</p>}
+                            {gobyActive && isWalletOnWrongChain && <p className="animate-fadeIn text-sm bg-red-700/80 font-medium text-brandLight px-2 py-1 rounded-b-xl text-center">Incorrect chain selected ({process.env.NEXT_PUBLIC_XCH === "TXCH" ? 'Mainnet' : 'Testnet'})</p>}
+                        </div>
+
+                        {/* Ozone Wallet */}
+                        <div>
+                            <div onClick={() => handleConnect('WalletConnect', 'ozone')} className={`${ozoneActive ? `bg-green-700/20 focus:ring-green-700/20 ${fingerprints.length > 1 ? 'rounded-t-xl' : 'rounded-xl'}` : 'bg-brandDark/10 rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
+                                <div className="flex items-center gap-4">
+                                    <Image src="/assets/ozone.png" height={40} width={40} alt={'Ozone Wallet Logo'} className="rounded-full" />
+                                    <p className="font-medium text-lg">Ozone Wallet</p>
+                                </div>
+                                <button className={`
+                                ${ozoneActive ? 'outline-none text-green-700' : ''}
+                                font-medium rounded-lg px-2 py-1
+                                ${ozoneActive ? "before:content-['Connected']" : "before:content-['Connect']"}`}
+                                ></button>
+                            </div>
+                            {ozoneActive && fingerprints.length > 1 && <div className="animate-fadeIn text-sm bg-brandDark/10 font-medium px-4 py-4 rounded-b-xl flex flex-col gap-2 border-2 border-transparent hover:border-brandDark/10">
+                                <p className="text-base">Your Wallets</p>
+                                <ul className="flex">
+                                {
+                                    fingerprints.map(fingerprint => (
+                                        <li onClick={() => handleSwitchChiaWallet(fingerprint)} className={`select-none rounded-full px-4 py-1 ${fingerprint == selectedFingerprint ? 'bg-green-700/20 focus:ring-green-700/20 text-green-700' : 'cursor-pointer hover:opacity-80'}`} key={fingerprint}>{fingerprint}</li>
+                                    ))
+                                }
+                                </ul>
+                            </div>}
                         </div>
 
                         {/* Hoogii Wallet */}
                         <div>
-                            <div onClick={() => handleConnect('Hoogii')} className={`${activeWallet instanceof HoogiiWallet ? 'bg-green-700/20 focus:ring-green-700/20' : 'bg-brandDark/10'} ${isWalletOnWrongChain && activeWallet instanceof HoogiiWallet ? 'rounded-t-xl' : 'rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
+                            <div onClick={() => handleConnect('Hoogii')} className={`${hoogiiActive ? 'bg-green-700/20 focus:ring-green-700/20' : 'bg-brandDark/10'} ${isWalletOnWrongChain && activeWallet instanceof HoogiiWallet ? 'rounded-t-xl' : 'rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
                             <div className="flex items-center gap-4">
                                     <Image src="/assets/hoogii.png" height={40} width={40} alt={'Hoogii Wallet Logo'} className="rounded-full" />
                                     <p className="font-medium text-lg">Hoogii Wallet</p>
                                 </div>
                                 <button className={`
-                                ${activeWallet instanceof HoogiiWallet ? 'outline-none text-green-700' : ''}
+                                ${hoogiiActive ? 'outline-none text-green-700' : ''}
                                 font-medium rounded-lg px-2 py-1
-                                ${activeWallet instanceof HoogiiWallet ? "before:content-['Connected']" : "before:content-['Connect']"}`}
+                                ${hoogiiActive ? "before:content-['Connected']" : "before:content-['Connect']"}`}
                                 ></button>
                             </div>
-                            {isWalletOnWrongChain && activeWallet instanceof HoogiiWallet && <p className="animate-fadeIn text-sm bg-red-700/80 font-medium text-brandLight px-2 py-1 rounded-b-xl text-center">Incorrect chain selected ({process.env.NEXT_PUBLIC_XCH === "TXCH" ? 'Mainnet' : 'Testnet'})</p>}
+                            {hoogiiActive && isWalletOnWrongChain && <p className="animate-fadeIn text-sm bg-red-700/80 font-medium text-brandLight px-2 py-1 rounded-b-xl text-center">Incorrect chain selected ({process.env.NEXT_PUBLIC_XCH === "TXCH" ? 'Mainnet' : 'Testnet'})</p>}
                         </div>
                     </div>
                     </Dialog.Panel>

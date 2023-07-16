@@ -122,12 +122,18 @@ class WalletManager {
         }
         return new HoogiiWallet();
     } else if (parsedWallet === 'WalletConnect') {
-      const checkIfStillConnected = await new WalletConnect().eagerlyConnect()
-      if (!checkIfStillConnected) {
-          localStorage.removeItem('activeWallet');
-          return null
+      const type = localStorage.getItem('activeWalletType')
+
+      var stillConnected = false
+      if(type === "chia" || type === "ozone") {
+        stillConnected = await new WalletConnect(type).eagerlyConnect()
+        if(stillConnected) {
+          return new WalletConnect(type)
+        }
       }
-      return new WalletConnect();
+      localStorage.removeItem('activeWallet');
+      localStorage.removeItem('activeWalletType')
+      return null
     }
 
     return null;
