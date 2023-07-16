@@ -271,11 +271,6 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         })
     };
 
-    const addAssetToWallet = async (assetId: string, symbol: string, logo: string, fullName: string) => {
-        if (!activeWallet) return toast.error('Connect to a wallet before trying to add an asset')
-        await activeWallet.addAsset(assetId, symbol, logo, fullName)
-    }
-
     const listAssets = (a: [Token, boolean, number][], isOfferingAsset: boolean) => {
         const amountWithFee = (e: [Token, boolean, number]) => {
             // SWAP BUY (add fee to XCH amount)
