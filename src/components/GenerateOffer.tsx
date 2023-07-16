@@ -7,6 +7,7 @@ import type { GenerateOfferData } from './TabContainer';
 import { useEffect, useState, useContext } from 'react';
 import WalletContext from '@/context/WalletContext';
 import BarLoader from 'react-spinners/BarLoader';
+import CopyButton from './atomic/CopyButton';
 import SuccessScreen from './SuccessScreen';
 import { RingLoader } from 'react-spinners';
 import { toast } from 'react-hot-toast';
@@ -261,16 +262,6 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         }
     }, [data, step, pairAndQuote, offer, offerResponse, setOrderRefreshActive, setGenerateOfferData, devFee]);
 
-    const copyToClipboard = (text: string) => {
-        navigator.clipboard.writeText(text)
-        .then(() => {
-            toast.success(<p className="break-words max-w-[18rem]">Copied asset ID to clipboard: <span className="font-mono bg-brandDark/10 text-brandDark/90 px-1 rounded-sm">{text}</span></p>)
-        })
-        .catch(() => {
-            alert(`Failed to copy asset ID: ${text}`)
-        })
-    };
-
     const listAssets = (a: [Token, boolean, number][], isOfferingAsset: boolean) => {
         const amountWithFee = (e: [Token, boolean, number]) => {
             // SWAP BUY (add fee to XCH amount)
@@ -306,7 +297,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                         (<div className="rounded-lg mt-2 mb-4 flex gap-2 ml-4">
                             <p className="text-brandDark dark:text-brandLight">⤷</p>
                             <div className="flex gap-2 text-sm font-normal">
-                                <button className="hover:opacity-80 bg-brandDark/10 font-medium text-brandDark dark:text-brandLight py-1 px-4 whitespace-nowrap rounded-lg" onClick={() => copyToClipboard(e[0].asset_id)}>Copy Asset ID</button>
+                                <CopyButton copyText={e[0].asset_id}>Asset ID</CopyButton>
                                 <AddAssetButton asset_id={e[0].asset_id} short_name={e[0].short_name} image_url={e[0].image_url} name={e[0].name} activeWallet={activeWallet} />
                             </div>
                         </div>)
