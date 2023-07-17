@@ -1,4 +1,4 @@
-import WalletIntegrationInterface from './walletIntegrationInterface';
+import WalletIntegrationInterface, { generateOffer } from './walletIntegrationInterface';
 import WalletConnect from './wallets/walletConnect';
 import HoogiiWallet from './wallets/hoogiiWallet';
 import GobyWallet from './wallets/gobyWallet';
@@ -81,7 +81,7 @@ class WalletManager {
     this.notifyActiveWalletChange();
   }
 
-  public async generateOffer(requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[], fee: number | undefined): Promise<void> {
+  public async generateOffer(requestAssets: generateOffer["requestAssets"], offerAssets: generateOffer["offerAssets"], fee: number | undefined): Promise<string | void> {
     if (this.activeWallet) {
       this.activeWallet.generateOffer(requestAssets, offerAssets, fee);
     }
@@ -93,9 +93,9 @@ class WalletManager {
     }
   }
 
-  public async addAsset(assetId: string, symbol: string, logo: string): Promise<void> {
+  public async addAsset(assetId: string, symbol: string, logo: string, fullName: string): Promise<void> {
     if (this.activeWallet) {
-      this.activeWallet.addAsset(assetId, symbol, logo);
+      this.activeWallet.addAsset(assetId, symbol, logo, fullName);
     }
   }
   
@@ -122,12 +122,18 @@ class WalletManager {
         }
         return new HoogiiWallet();
     } else if (parsedWallet === 'WalletConnect') {
-      const checkIfStillConnected = await new WalletConnect().eagerlyConnect()
-      if (!checkIfStillConnected) {
-          localStorage.removeItem('activeWallet');
-          return null
+      const type = localStorage.getItem('activeWalletType')
+
+      var stillConnected = false
+      if(type === "chia" || type === "ozone") {
+        stillConnected = await new WalletConnect(type).eagerlyConnect()
+        if(stillConnected) {
+          return new WalletConnect(type)
+        }
       }
-      return new WalletConnect();
+      localStorage.removeItem('activeWallet');
+      localStorage.removeItem('activeWalletType')
+      return null
     }
 
     return null;

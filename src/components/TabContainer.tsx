@@ -78,7 +78,7 @@ const TabContainer: React.FC<TabContainerProps> = ({ tokens, selectedToken, setS
 
   return (
     <div className="rounded-2xl max-w-screen-sm w-full">
-    <h1 className="text-[2.75rem] leading-10 sm:text-5xl font-bold pb-4">{generateOfferData ? 'Order Summary' : 'Trade'}</h1>
+      <h1 className="text-[2.75rem] leading-10 sm:text-5xl font-bold pb-4">{generateOfferData ? 'Order Summary' : 'Trade'}</h1>
 
       {/* Display swap/liquidity toggle */}
       {generateOfferData == null ? (

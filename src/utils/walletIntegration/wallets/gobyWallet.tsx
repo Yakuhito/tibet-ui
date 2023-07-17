@@ -1,4 +1,4 @@
-import WalletIntegrationInterface from '../walletIntegrationInterface';
+import WalletIntegrationInterface, { generateOffer } from '../walletIntegrationInterface';
 import { toast } from 'react-hot-toast';
 import { bech32m } from 'bech32';
 
@@ -43,16 +43,25 @@ class gobyWallet implements WalletIntegrationInterface {
     // Goby wallet disconnection logic
   }
 
-  async generateOffer(requestAssets: {assetId: string; amount: number;}[], offerAssets: {assetId: string; amount: number;}[], fee: number | undefined): Promise<void> {
+  async generateOffer(requestAssets: generateOffer["requestAssets"], offerAssets: generateOffer["offerAssets"], fee: number | undefined): Promise<string | void> {
     // Goby wallet transaction signing logic
     try {
       const params = {
-        requestAssets,
-        offerAssets,
+        requestAssets: requestAssets.map(asset => ({
+          assetId: asset.assetId,
+          amount: asset.amount
+        })),
+        offerAssets: offerAssets.map(asset => ({
+          assetId: asset.assetId,
+          amount: asset.amount
+        })),
         fee
       }
       const response = await (window as any).chia.request({ method: 'createOffer', params })
-      return response
+      if (response.offer) {
+        return response.offer;
+      }
+      return
     } catch (error: any) {
         console.log(error)
         toast.error(`Wallet - ${error?.message || String(error.message)}`);
@@ -63,7 +72,7 @@ class gobyWallet implements WalletIntegrationInterface {
     // Goby wallet balance retrieval logic
   }
 
-  async addAsset(assetId: string, symbol: string, logo: string): Promise<void> {
+  async addAsset(assetId: string, symbol: string, logo: string, fullName: string): Promise<boolean> {
     let symbolM = symbol
     let logoM = logo
 
@@ -84,11 +93,12 @@ class gobyWallet implements WalletIntegrationInterface {
       }
       const response = await (window as any).chia.request({ method: 'walletWatchAsset', params })
       toast.success(`Adding ${symbol} to Goby`)
-      return response
+      return true;
     } catch (error: any) {
         console.log(error)
         toast.error(`Wallet - ${error?.message || String(error.message)}`);
-    }    
+    }
+    return false;  
   }
 
   async getAddress() {

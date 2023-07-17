@@ -1,10 +1,13 @@
 import { ActionType, createOfferForPair, getInputPrice, getLiquidityQuote, getOutputPrice, getPairByLauncherId, getQuoteForPair } from '@/api';
+import WalletConnect from '@/utils/walletIntegration/wallets/walletConnect';
 import GobyWallet from '@/utils/walletIntegration/wallets/gobyWallet';
+import AddAssetButton from './walletIntegration/AddAssetButton';
 import type { OfferResponse, Pair, Quote, Token } from '@/api';
 import type { GenerateOfferData } from './TabContainer';
 import { useEffect, useState, useContext } from 'react';
 import WalletContext from '@/context/WalletContext';
 import BarLoader from 'react-spinners/BarLoader';
+import CopyButton from './atomic/CopyButton';
 import SuccessScreen from './SuccessScreen';
 import { RingLoader } from 'react-spinners';
 import { toast } from 'react-hot-toast';
@@ -259,18 +262,6 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         }
     }, [data, step, pairAndQuote, offer, offerResponse, setOrderRefreshActive, setGenerateOfferData, devFee]);
 
-    const copyToClipboard = (text: string) => {
-        navigator.clipboard.writeText(text).then(() => {
-            alert(`Copied to clipboard: ${text}`);
-        });
-    };
-
-    const addAssetToWallet = async (assetId: string, symbol: string, logo: string) => {
-        if (!activeWallet) return toast.error('Connect to a wallet before trying to add an asset')
-        console.log('sending request to goby')
-        await activeWallet.addAsset(assetId, symbol, logo)
-    }
-
     const listAssets = (a: [Token, boolean, number][], isOfferingAsset: boolean) => {
         const amountWithFee = (e: [Token, boolean, number]) => {
             // SWAP BUY (add fee to XCH amount)
@@ -304,10 +295,9 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                         
                         {e[1] ? null :
                         (<div className="rounded-lg mt-2 mb-4 flex gap-2 ml-4">
-                            <p className="text-brandDark">⤷</p>
-                            <div className="flex gap-2 text-sm font-normal">
-                                <button className="hover:opacity-80 bg-brandDark/10 py-1 px-4 whitespace-nowrap rounded-lg" onClick={() => copyToClipboard(e[0].asset_id)}>Copy Asset ID</button>
-                                {activeWallet instanceof GobyWallet && <button onClick={() => addAssetToWallet(e[0].asset_id, e[0].short_name, e[0].image_url)} className="hover:opacity-80 bg-brandDark/10 py-1 px-4 whitespace-nowrap rounded-lg flex items-center gap-2"><Image src={"/assets/goby.webp"} width={15} height={15} alt="Token logo" className="rounded-full" />Add to Goby</button>}
+                            <div className="flex gap-2 text-sm font-normal pl-[calc(0.5rem+12px)]">
+                                <CopyButton copyText={e[0].asset_id}>Asset ID</CopyButton>
+                                <AddAssetButton asset_id={e[0].asset_id} short_name={e[0].short_name} image_url={e[0].image_url} name={e[0].name} activeWallet={activeWallet} />
                             </div>
                         </div>)
                         }
@@ -328,21 +318,28 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         const requestAssets = data.request.map(asset => (
                 {
                     assetId: asset[0].asset_id,
-                    amount: data.action === "SWAP" && !data.offer[0][1] ? Math.ceil(asset[2] * (1-devFee)) : asset[2]
+                    amount: data.action === "SWAP" && !data.offer[0][1] ? Math.ceil(asset[2] * (1-devFee)) : asset[2],
+                    image_url: asset[0].image_url,
+                    short_name: asset[0].short_name,
+                    name: asset[0].name
                 }
             ))
 
         const offerAssets = data.offer.map(asset => (
                 {
                     assetId:  asset[0].asset_id,
-                    amount: data.action === "SWAP" && data.offer[0][1] ? Math.floor(asset[2] * (1+devFee)) : asset[2]
+                    amount: data.action === "SWAP" && data.offer[0][1] ? Math.floor(asset[2] * (1+devFee)) : asset[2],
+                    image_url: asset[0].image_url,
+                    short_name: asset[0].short_name,
+                    name: asset[0].name
                 }
             ))
 
         const fee = Number((pairAndQuote![1].fee / Math.pow(10, 12)).toFixed(12))
 
         try {
-            const { offer }: any = await activeWallet.generateOffer(requestAssets, offerAssets, fee)
+            const offer = await activeWallet.generateOffer(requestAssets, offerAssets, fee)
+            if (!offer) return
             setOffer(offer);
             setStep(3);
         } catch (error: any) {
