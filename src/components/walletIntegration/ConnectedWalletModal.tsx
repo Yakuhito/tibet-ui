@@ -19,6 +19,7 @@ interface ConnectWalletModalProps {
 function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet, isWalletOnWrongChain }: ConnectWalletModalProps) {
     const [fingerprints, setFingerprints] = useState([])
     const [selectedFingerprint, setSelectedFingerprint] = useState<null | number>()
+    const [ozoneEnabled, setOzoneEnabled] = useState(false)
 
     // Restore Chia Wallet fingerprints from local storage
     useEffect(() => {
@@ -27,6 +28,7 @@ function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet, is
 
         if (fingerprints_ls) setFingerprints(JSON.parse(fingerprints_ls))
         if (selectedFingerprint_ls) setSelectedFingerprint(JSON.parse(selectedFingerprint_ls))
+        if (localStorage.getItem('ozoneExperimentalIntegration') === 'enabled') setOzoneEnabled(true)
     },[])
 
     const handleSwitchChiaWallet = (fingerprint: number) => {
@@ -150,29 +152,33 @@ function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet, is
                         </div>
 
                         {/* Ozone Wallet */}
-                        <div>
-                            <div onClick={() => handleConnect('WalletConnect', 'ozone')} className={`${ozoneActive ? `bg-green-700/20 focus:ring-green-700/20 ${fingerprints.length > 1 ? 'rounded-t-xl' : 'rounded-xl'}` : 'bg-brandDark/10 rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
-                                <div className="flex items-center gap-4">
-                                    <Image src="/assets/ozone.png" height={40} width={40} alt={'Ozone Wallet Logo'} className="rounded-full" />
-                                    <p className="font-medium text-lg">Ozone Wallet</p>
+                        {/* temp feature flag */}
+                        {
+                            ozoneEnabled &&
+                            <div>
+                                <div onClick={() => handleConnect('WalletConnect', 'ozone')} className={`${ozoneActive ? `bg-green-700/20 focus:ring-green-700/20 ${fingerprints.length > 1 ? 'rounded-t-xl' : 'rounded-xl'}` : 'bg-brandDark/10 rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
+                                    <div className="flex items-center gap-4">
+                                        <Image src="/assets/ozone.png" height={40} width={40} alt={'Ozone Wallet Logo'} className="rounded-full" />
+                                        <p className="font-medium text-lg">Ozone Wallet</p>
+                                    </div>
+                                    <button className={`
+                                    ${ozoneActive ? 'outline-none text-green-700' : ''}
+                                    font-medium rounded-lg px-2 py-1
+                                    ${ozoneActive ? "before:content-['Connected']" : "before:content-['Connect']"}`}
+                                    ></button>
                                 </div>
-                                <button className={`
-                                ${ozoneActive ? 'outline-none text-green-700' : ''}
-                                font-medium rounded-lg px-2 py-1
-                                ${ozoneActive ? "before:content-['Connected']" : "before:content-['Connect']"}`}
-                                ></button>
+                                {ozoneActive && fingerprints.length > 1 && <div className="animate-fadeIn text-sm bg-brandDark/10 font-medium px-4 py-4 rounded-b-xl flex flex-col gap-2 border-2 border-transparent hover:border-brandDark/10">
+                                    <p className="text-base">Your Wallets</p>
+                                    <ul className="flex">
+                                    {
+                                        fingerprints.map(fingerprint => (
+                                            <li onClick={() => handleSwitchChiaWallet(fingerprint)} className={`select-none rounded-full px-4 py-1 ${fingerprint == selectedFingerprint ? 'bg-green-700/20 focus:ring-green-700/20 text-green-700' : 'cursor-pointer hover:opacity-80'}`} key={fingerprint}>{fingerprint}</li>
+                                        ))
+                                    }
+                                    </ul>
+                                </div>}
                             </div>
-                            {ozoneActive && fingerprints.length > 1 && <div className="animate-fadeIn text-sm bg-brandDark/10 font-medium px-4 py-4 rounded-b-xl flex flex-col gap-2 border-2 border-transparent hover:border-brandDark/10">
-                                <p className="text-base">Your Wallets</p>
-                                <ul className="flex">
-                                {
-                                    fingerprints.map(fingerprint => (
-                                        <li onClick={() => handleSwitchChiaWallet(fingerprint)} className={`select-none rounded-full px-4 py-1 ${fingerprint == selectedFingerprint ? 'bg-green-700/20 focus:ring-green-700/20 text-green-700' : 'cursor-pointer hover:opacity-80'}`} key={fingerprint}>{fingerprint}</li>
-                                    ))
-                                }
-                                </ul>
-                            </div>}
-                        </div>
+                        }
 
                         {/* Hoogii Wallet */}
                         <div>
