@@ -1,5 +1,5 @@
 import WalletIntegrationInterface from '@/utils/walletIntegration/walletIntegrationInterface';
-import WalletConnect from '@/utils/walletIntegration/wallets/walletConnect';
+import WalletConnect, { getLocalStoragePrefix, integratedWalletType } from '@/utils/walletIntegration/wallets/walletConnect';
 import HoogiiWallet from '@/utils/walletIntegration/wallets/hoogiiWallet';
 import GobyWallet from '@/utils/walletIntegration/wallets/gobyWallet';
 import WalletManager from '@/utils/walletIntegration/walletManager';
@@ -10,20 +10,21 @@ import Image from 'next/image';
 
 interface ConnectWalletModalProps {
     isOpen: boolean;
+    walletType: integratedWalletType;
     setIsOpen: (value: boolean) => void;
     walletManager: WalletManager | null;
     activeWallet: WalletIntegrationInterface | null;
     isWalletOnWrongChain: boolean;
 }
 
-function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet, isWalletOnWrongChain }: ConnectWalletModalProps) {
+function ConnectWalletModal({ isOpen, walletType, setIsOpen, walletManager, activeWallet, isWalletOnWrongChain }: ConnectWalletModalProps) {
     const [fingerprints, setFingerprints] = useState([])
     const [selectedFingerprint, setSelectedFingerprint] = useState<null | number>()
 
     // Restore Chia Wallet fingerprints from local storage
     useEffect(() => {
-        const fingerprints_ls = localStorage.getItem("wc_fingerprints")
-        const selectedFingerprint_ls = localStorage.getItem("wc_selectedFingerprint")
+        const fingerprints_ls = localStorage.getItem(getLocalStoragePrefix(walletType) + "wc_fingerprints")
+        const selectedFingerprint_ls = localStorage.getItem(getLocalStoragePrefix(walletType) + "wc_selectedFingerprint")
 
         if (fingerprints_ls) setFingerprints(JSON.parse(fingerprints_ls))
         if (selectedFingerprint_ls) setSelectedFingerprint(JSON.parse(selectedFingerprint_ls))
@@ -32,12 +33,12 @@ function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet, is
     const handleSwitchChiaWallet = (fingerprint: number) => {
         if (fingerprint === selectedFingerprint) return
         setSelectedFingerprint(fingerprint);
-        localStorage.setItem("wc_selectedFingerprint", JSON.stringify(fingerprint))
+        localStorage.setItem(getLocalStoragePrefix(walletType) + "wc_selectedFingerprint", JSON.stringify(fingerprint))
         toast.success(<p className="break-words max-w-[18rem]">Switched to wallet fingerprint <span className="font-mono bg-brandDark/10 text-brandDark/90 px-1 rounded-sm">{fingerprint}</span></p>, {id: fingerprint.toString()})
     }
 
     // Handle connecting to a wallet when clicking on an option
-    const handleConnect = async (walletIdentifier: string, walletOpt: "chia" | "ozone" | null = null) => {
+    const handleConnect = async (walletIdentifier: string, walletOpt: integratedWalletType | null = null) => {
         // Get the wallet integration object based on the identifier
         let walletIntegration: WalletIntegrationInterface | null = null;
         let connectionSuccessful: boolean = false;

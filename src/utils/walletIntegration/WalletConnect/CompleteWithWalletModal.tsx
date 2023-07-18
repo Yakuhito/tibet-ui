@@ -135,7 +135,7 @@ const CompleteWithWalletModal = ({ walletConnectInstance, onClose }: CompleteWit
             )}
             {/* Pending Spinner */}
             {!offerRejected && <div className="max-w-[18px] w-8 aspect-square border-2 border-black/10 rounded-full border-r-black dark:border-r-brandLight animate-spin"></div>}
-            <p>{offerRejected ? 'Offer request rejected. Please cancel and try again.' : "We've sent a request to generate the offer. Please review and accept this in your wallet."}</p>
+            <p>{offerRejected ? 'Offer request rejected. Please cancel and try again.' : "We've sent a request to create the offer. Please review and accept it in your wallet."}</p>
           </div>
           <div className="flex gap-2 mt-8 font-medium">
             <button className="bg-red-700 text-brandLight px-4 py-2 rounded-lg focus:outline-none w-full transition duration-100" onClick={() => setIsOpen(false)}>Cancel</button>

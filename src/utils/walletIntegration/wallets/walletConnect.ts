@@ -22,6 +22,21 @@ interface wallets {
   isSuccess: boolean
 }
 
+export type integratedWalletType = "chia" | "ozone"
+
+export const getLocalStoragePrefix: (forWalletType: integratedWalletType) => string = (forWalletType) => {
+  switch(forWalletType) {
+    case "chia":
+      return ""
+    case "ozone":
+      return "ozone_"
+    default:
+      return ""
+  }
+
+  return ""
+}
+
 class WalletConnectIntegration implements WalletIntegrationInterface {
   name = "WalletConnect"
   image = "/assets/xch.webp"
@@ -30,17 +45,17 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
   selectedFingerprint
   topic
   client: SignClient | undefined
-  walletType: "chia" | "ozone"
+  walletType: integratedWalletType
   
-  constructor(wallet: "chia" | "ozone") {
+  constructor(wallet: integratedWalletType) {
     // Restore active session fingerprint & topic (if any) to object property for later use
-    const fingerprints = localStorage.getItem('wc_fingerprints');
+    const fingerprints = localStorage.getItem(getLocalStoragePrefix(wallet) + 'wc_fingerprints');
     if (fingerprints) {this.fingerprints = JSON.parse(fingerprints);}
     
-    const selectedFingerprint = localStorage.getItem('wc_selectedFingerprint');
+    const selectedFingerprint = localStorage.getItem(getLocalStoragePrefix(wallet) + 'wc_selectedFingerprint');
     if (selectedFingerprint) {this.selectedFingerprint = JSON.parse(selectedFingerprint);}
 
-    const topic = localStorage.getItem('wc_topic');
+    const topic = localStorage.getItem(getLocalStoragePrefix(wallet) + 'wc_topic');
     if (topic) {this.topic = JSON.parse(topic);}
 
     this.walletType = wallet
@@ -83,12 +98,12 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           const session = await approval();
           console.log('Connected Chia wallet via WalletConnect', session, signClient)
           // Save session fingerprint to localstorage for persistence
-          localStorage.setItem('wc_topic', JSON.stringify(session.topic))
+          localStorage.setItem(getLocalStoragePrefix(this.walletType) + 'wc_topic', JSON.stringify(session.topic))
           this.fingerprints = session.namespaces.chia.accounts.map(wallet => {
             return Number(wallet.split(":")[2]);
           });
-          localStorage.setItem('wc_fingerprints', JSON.stringify(this.fingerprints))
-          localStorage.setItem('wc_selectedFingerprint', JSON.stringify(this.fingerprints[0]))
+          localStorage.setItem(getLocalStoragePrefix(this.walletType) + 'wc_fingerprints', JSON.stringify(this.fingerprints))
+          localStorage.setItem(getLocalStoragePrefix(this.walletType) + 'wc_selectedFingerprint', JSON.stringify(this.fingerprints[0]))
           this.topic = session.topic;
           closeWalletConnectModal()
           toast.success('Successfully Connected')
@@ -120,8 +135,8 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
       return false;
     }
 
-    localStorage.removeItem('wc_fingerprint')
-    localStorage.removeItem('wc_topic')
+    localStorage.removeItem(getLocalStoragePrefix(this.walletType) + 'wc_fingerprint')
+    localStorage.removeItem(getLocalStoragePrefix(this.walletType) + 'wc_topic')
     return false;
   }
 
@@ -353,10 +368,10 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
 
   // Must be called before any action
   async updateFingerprint() {
-    const fingerprints = localStorage.getItem('wc_fingerprints');
+    const fingerprints = localStorage.getItem(getLocalStoragePrefix(this.walletType) + 'wc_fingerprints');
     if (fingerprints) {this.fingerprints = JSON.parse(fingerprints);}
     
-    const selectedFingerprint = localStorage.getItem('wc_selectedFingerprint');
+    const selectedFingerprint = localStorage.getItem(getLocalStoragePrefix(this.walletType) + 'wc_selectedFingerprint');
     if (selectedFingerprint) {this.selectedFingerprint = JSON.parse(selectedFingerprint);}
   }
 
