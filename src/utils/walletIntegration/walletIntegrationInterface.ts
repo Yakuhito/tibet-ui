@@ -1,3 +1,5 @@
+import { integratedWalletType } from "./wallets/walletConnect"
+
 export interface generateOffer {
     requestAssets: {
       assetId: string
@@ -20,6 +22,7 @@ export interface generateOffer {
 interface WalletIntegrationInterface {
     name: string;
     image: string;
+    walletType?: integratedWalletType;
     connect(): void;
     disconnect(): void;
     generateOffer(requestAssets: generateOffer["requestAssets"], offerAssets: generateOffer["offerAssets"], fee: number | undefined): Promise<string | void>;

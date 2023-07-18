@@ -24,7 +24,7 @@ interface wallets {
 
 export type integratedWalletType = "chia" | "ozone"
 
-export const getLocalStoragePrefix: (forWalletType: integratedWalletType) => string = (forWalletType) => {
+export const getLocalStoragePrefix: (forWalletType?: integratedWalletType) => string = (forWalletType) => {
   switch(forWalletType) {
     case "chia":
       return ""
@@ -60,6 +60,10 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
 
     this.walletType = wallet
     localStorage.setItem('activeWalletType', wallet)
+
+    if(wallet === "ozone") {
+      this.image = "/assets/ozone.png"
+    }
   }
 
   async connect(): Promise<boolean> {

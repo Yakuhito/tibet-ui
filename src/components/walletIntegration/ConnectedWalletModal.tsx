@@ -10,7 +10,7 @@ import Image from 'next/image';
 
 interface ConnectWalletModalProps {
     isOpen: boolean;
-    walletType: integratedWalletType;
+    walletType: integratedWalletType | undefined;
     setIsOpen: (value: boolean) => void;
     walletManager: WalletManager | null;
     activeWallet: WalletIntegrationInterface | null;
@@ -136,7 +136,7 @@ function ConnectWalletModal({ isOpen, walletType, setIsOpen, walletManager, acti
                         
                         {/* Goby Wallet */}
                         <div>
-                            <div onClick={() => handleConnect('Goby')} className={`${gobyActive ? 'bg-green-700/20 focus:ring-green-700/20' : 'bg-brandDark/10'} ${isWalletOnWrongChain && activeWallet instanceof GobyWallet ? 'rounded-t-xl' : 'rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
+                            <div onClick={() => handleConnect('Goby')} className={`${gobyActive ? 'bg-green-700/20 focus:ring-green-700/20' : 'bg-brandDark/10'} ${isWalletOnWrongChain && gobyActive ? 'rounded-t-xl' : 'rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
                             <div className="flex items-center gap-4">
                                     <Image src="/assets/goby.webp" height={40} width={40} alt={'Goby Wallet Logo'} className="rounded-full" />
                                     <p className="font-medium text-lg">Goby Wallet</p>

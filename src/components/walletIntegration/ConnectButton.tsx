@@ -48,7 +48,14 @@ function ConnectButton() {
                 {activeWallet?.image && <Image src={activeWallet.image} width={20} height={20} alt={`${activeWallet?.name} wallet logo`} className="rounded-full" />}
                 {!activeWallet ? 'Connect Wallet' : displayAddress()}
             </button>
-            <ConnectWalletModal isOpen={isWalletModalOpen} setIsOpen={setIsWalletModalOpen} walletManager={walletManager} activeWallet={activeWallet} isWalletOnWrongChain={isWalletOnWrongChain} />
+            <ConnectWalletModal
+              isOpen={isWalletModalOpen}
+              setIsOpen={setIsWalletModalOpen}
+              walletManager={walletManager}
+              activeWallet={activeWallet}
+              isWalletOnWrongChain={isWalletOnWrongChain}
+              walletType={activeWallet?.walletType}
+            />
         </>
      );
 }
