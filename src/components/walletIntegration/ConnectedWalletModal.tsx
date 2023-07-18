@@ -151,10 +151,7 @@ function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet, is
 
                         {/* Ozone Wallet */}
                         <div>
-                            
-
-                        {/* Hoogii Wallet */}
-                        <div><div onClick={() => handleConnect('WalletConnect', 'ozone')} className={`${ozoneActive ? `bg-green-700/20 focus:ring-green-700/20 ${fingerprints.length > 1 ? 'rounded-t-xl' : 'rounded-xl'}` : 'bg-brandDark/10 rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
+                            <div onClick={() => handleConnect('WalletConnect', 'ozone')} className={`${ozoneActive ? `bg-green-700/20 focus:ring-green-700/20 ${fingerprints.length > 1 ? 'rounded-t-xl' : 'rounded-xl'}` : 'bg-brandDark/10 rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
                                 <div className="flex items-center gap-4">
                                     <Image src="/assets/ozone.png" height={40} width={40} alt={'Ozone Wallet Logo'} className="rounded-full" />
                                     <p className="font-medium text-lg">Ozone Wallet</p>
@@ -176,6 +173,9 @@ function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet, is
                                 </ul>
                             </div>}
                         </div>
+
+                        {/* Hoogii Wallet */}
+                        <div>
                             <div onClick={() => handleConnect('Hoogii')} className={`${hoogiiActive ? 'bg-green-700/20 focus:ring-green-700/20' : 'bg-brandDark/10'} ${isWalletOnWrongChain && activeWallet instanceof HoogiiWallet ? 'rounded-t-xl' : 'rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
                             <div className="flex items-center gap-4">
                                     <Image src="/assets/hoogii.png" height={40} width={40} alt={'Hoogii Wallet Logo'} className="rounded-full" />
