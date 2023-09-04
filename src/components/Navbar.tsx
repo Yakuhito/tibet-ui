@@ -5,7 +5,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
-import Logo from './Logo';
+import Logo from './atomic/icons/Logo';
 
 interface NavbarProps {
   theme: "dark" | "light" | "auto";
