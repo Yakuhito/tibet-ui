@@ -1,8 +1,7 @@
-import { getInputPrice, getPairByLauncherId, ActionType, getLiquidityQuote } from '../api';
-import React, { useState, useEffect, useRef } from 'react';
-import GenerateOffer from './GenerateOffer';
+import React, { useState, useEffect } from 'react';
+import { type Token, ActionType } from '../api';
 import Liquidity from './Liquidity/Liquidity';
-import type { Token } from '../api';
+import GenerateOffer from './GenerateOffer';
 import Swap from './Swap/Swap';
 
 export interface GenerateOfferData {

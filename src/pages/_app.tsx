@@ -5,7 +5,6 @@ import { useState, useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import type { AppProps } from 'next/app';
 import Navbar from '@/components/Navbar';
-import * as React from 'react';
 import '@/styles/globals.css';
 
 export default function App({ Component, pageProps }: AppProps) {

@@ -1,6 +1,5 @@
-import type { ChangeEvent } from 'react';
+import { type ChangeEvent, useState } from 'react';
 import type { Token } from '../../api';
-import { useState } from 'react';
 import Image from 'next/image';
 
 type AssetAmountInputProps = {

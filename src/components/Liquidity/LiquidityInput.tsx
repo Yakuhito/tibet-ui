@@ -1,5 +1,5 @@
-import ChevronDownIcon from "@/components/icons/ChevronDownIcon";
 import AssetAmountInput from "@/components/atomic/AssetAmountInput";
+import ChevronDownIcon from "@/components/icons/ChevronDownIcon";
 import { Token } from "../../api";
 
 type LiquidityInputsProps = {

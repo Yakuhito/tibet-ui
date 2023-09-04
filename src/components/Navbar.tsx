@@ -1,10 +1,9 @@
 import ConnectButton from './walletIntegration/ConnectButton';
 import SettingsModal from './modals/SettingsModal';
-import CogIcon from './icons/CogIcon';
 import { useRouter } from 'next/router';
-import Logo from './icons/Logo';
+import CogIcon from './icons/CogIcon';
 import { useState } from 'react';
-import Image from 'next/image';
+import Logo from './icons/Logo';
 import Link from 'next/link';
 import React from 'react';
 

@@ -1,6 +1,6 @@
-import React, { createContext, useState, useEffect } from 'react';
-import WalletManager from '@/utils/walletIntegration/walletManager';
 import WalletIntegrationInterface from '@/utils/walletIntegration/walletIntegrationInterface';
+import WalletManager from '@/utils/walletIntegration/walletManager';
+import React, { createContext, useState, useEffect } from 'react';
 
 type WalletContextType = {
   walletManager: WalletManager | null;

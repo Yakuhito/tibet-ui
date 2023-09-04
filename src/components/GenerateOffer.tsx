@@ -1,17 +1,14 @@
 import { ActionType, createOfferForPair, getInputPrice, getLiquidityQuote, getOutputPrice, getPairByLauncherId, getQuoteForPair } from '@/api';
-import WalletConnect from '@/utils/walletIntegration/wallets/walletConnect';
-import GobyWallet from '@/utils/walletIntegration/wallets/gobyWallet';
 import AddAssetButton from './walletIntegration/AddAssetButton';
 import type { OfferResponse, Pair, Quote, Token } from '@/api';
 import type { GenerateOfferData } from './TabContainer';
 import { useEffect, useState, useContext } from 'react';
 import WalletContext from '@/context/WalletContext';
 import BarLoader from 'react-spinners/BarLoader';
-import CrossIcon from './icons/CrossIcon';
 import CopyButton from './atomic/CopyButton';
 import SuccessScreen from './SuccessScreen';
 import { RingLoader } from 'react-spinners';
-import { toast } from 'react-hot-toast';
+import CrossIcon from './icons/CrossIcon';
 import Image from 'next/image';
 
 type GenerateOfferProps = {
