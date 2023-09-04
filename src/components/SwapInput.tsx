@@ -1,5 +1,6 @@
-import { Token } from '../api';
-import AssetAmountInput from './AssetAmountInput';
+import ChevronDownIcon from "./atomic/icons/ChevronDownIcon";
+import AssetAmountInput from "./AssetAmountInput";
+import { Token } from "../api";
 
 type SwapInputsProps = {
   token0: Token;
@@ -20,7 +21,7 @@ const SwapInputs: React.FC<SwapInputsProps> = ({
   amount1,
   onAmountsChanged,
   onArrowClick,
-  disabled
+  disabled,
 }) => {
   return (
     <div className="w-fill mt-8">
@@ -31,23 +32,19 @@ const SwapInputs: React.FC<SwapInputsProps> = ({
         maxDecimals={12}
         disabled={disabled}
       />
-      <div className="p-1 items-center justify-center flex w-fill"
+      <div
+        className="p-1 items-center justify-center flex w-fill"
         onClick={disabled ? () => {} : onArrowClick}
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
+        <ChevronDownIcon
           className={`h-7 w-7 ${
-            disabled ? 'text-gray-300 cursor-not-allowed' :
-            (isBuySelected ? 'text-green-800 cursor-pointer' : 'text-red-700 cursor-pointer')
-          } ${
-            isBuySelected ? '' : 'transform rotate-180'
-          }`}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
+            disabled
+              ? "text-gray-300 cursor-not-allowed"
+              : isBuySelected
+              ? "text-green-700 cursor-pointer"
+              : "text-red-800 cursor-pointer"
+          } ${isBuySelected ? "" : "transform rotate-180"}`}
+        />
       </div>
       <AssetAmountInput
         token={token1}
