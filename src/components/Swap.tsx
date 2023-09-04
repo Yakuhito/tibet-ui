@@ -1,13 +1,13 @@
-import { Token, Pair, getPairByLauncherId, getInputPrice, getOutputPrice, ActionType } from '../../api';
-import GenerateOfferButton from '../atomic/GenerateOfferButton';
-import { GenerateOfferData } from '../TabContainer';
-import TokenSelector from '../atomic/TokenSelector';
-import BooleanSwitch from '../atomic/BooleanSwitch';
-import DevFeeModal from '../modals/DevFeeModal';
+import { Token, Pair, getPairByLauncherId, getInputPrice, getOutputPrice, ActionType } from '../api';
+import GenerateOfferButton from './atomic/GenerateOfferButton';
+import { GenerateOfferData } from './TabContainer';
+import TokenSelector from './atomic/TokenSelector';
+import BooleanSwitch from './atomic/BooleanSwitch';
+import DevFeeModal from './modals/DevFeeModal';
 import { UNKNWN, XCH } from '@/shared_tokens';
 import { useState, useEffect } from 'react';
-import TickIcon from '../icons/TickIcon';
-import CogIcon from '../icons/CogIcon';
+import TickIcon from './icons/TickIcon';
+import CogIcon from './icons/CogIcon';
 import SwapInput from './SwapInput';
 
 type SwapProps = {

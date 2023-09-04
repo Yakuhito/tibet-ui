@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { type Token, ActionType } from '../api';
-import Liquidity from './Liquidity/Liquidity';
+import Liquidity from './Liquidity';
 import GenerateOffer from './GenerateOffer';
-import Swap from './Swap/Swap';
+import Swap from './Swap';
 
 export interface GenerateOfferData {
   pairId: string;
