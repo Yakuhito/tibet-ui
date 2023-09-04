@@ -1,3 +1,5 @@
+import CrossIcon from './atomic/icons/CrossIcon';
+import Tick from './atomic/icons/TickIcon';
 import Select from 'react-select';
 import { Token } from '../api';
 import Image from 'next/image';
@@ -105,8 +107,8 @@ const TokenSelector: React.FC<TokenSelectorProps> = ({
           <div className="flex items-center gap-2 pl-4">
             <Image className="rounded-full animate-fadeIn w-6 h-6" src={imgSrc} alt={`${token.short_name} logo`} width={24} height={24} priority />
             <p>{`${token.name} (${token.short_name})`}</p>
-            {token.verified && <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 48 48" width="14px" height="14px"><title>Verified</title><path fill="#166534" d="M40.6 12.1L17 35.7 7.4 26.1 4.6 29 17 41.3 43.4 14.9z"/></svg>}
-            {!token.verified && <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 48 48" width="14px" height="14px"><title>Unverified</title><path fill="#b91c1c" d="M21.5 4.5H26.501V43.5H21.5z" transform="rotate(45.001 24 24)"/><path fill="#b91c1c" d="M21.5 4.5H26.5V43.501H21.5z" transform="rotate(135.008 24 24)"/></svg>}
+            {token.verified && <Tick title="Verified" />}
+            {!token.verified && <CrossIcon title="Unverified" />}
           </div>
         ),
         imageSrc: imgSrc,
