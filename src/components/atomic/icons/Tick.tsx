@@ -1,5 +1,5 @@
 type TickProps = {
-  className: string;
+  className?: string;
 }
 
 function Tick({ className }: TickProps) {
