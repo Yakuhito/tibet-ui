@@ -7,6 +7,7 @@ import TokenSelector from './TokenSelector';
 import BooleanSwitch from './BooleanSwitch';
 import DevFeeModal from './modals/DevFeeModal';
 import SwapInput from './SwapInput';
+import TickIcon from './atomic/icons/TickIcon';
 
 type SwapProps = {
   disabled: boolean;
@@ -183,13 +184,7 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
             />
             <div className="bg-slate-100 dark:bg-zinc-900 rounded-md w-6 h-6 border peer-checked:bg-red-700 border-red-700 dark:border-red-600 flex items-center justify-center">
               {highPriceImpactConfirmed && (
-                <svg
-                  className="fill-brandLight w-4 h-4"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M0 11l2-2 5 5L18 3l2 2L7 18z" />
-                </svg>
+                <TickIcon className="fill-brandLight w-4 h-4 stroke-[3px] stroke-brandLight" />
               )}
             </div>
           </div>
