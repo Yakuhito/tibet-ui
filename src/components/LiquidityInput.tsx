@@ -1,5 +1,6 @@
-import { Token } from '../api';
-import AssetAmountInput from './AssetAmountInput';
+import ChevronDownIcon from "./atomic/icons/ChevronDownIcon";
+import AssetAmountInput from "./AssetAmountInput";
+import { Token } from "../api";
 
 type LiquidityInputsProps = {
   token0: Token;
@@ -24,7 +25,7 @@ const LiquidityInput: React.FC<LiquidityInputsProps> = ({
   amount2,
   onAmountsChanged,
   onArrowClick,
-  disabled
+  disabled,
 }) => {
   return (
     <div className="w-fill mt-8">
@@ -35,7 +36,7 @@ const LiquidityInput: React.FC<LiquidityInputsProps> = ({
         maxDecimals={12}
         disabled={true}
       />
-      <div className='mt-2'>
+      <div className="mt-2">
         <AssetAmountInput
           token={token1}
           value={amount1}
@@ -44,23 +45,19 @@ const LiquidityInput: React.FC<LiquidityInputsProps> = ({
           disabled={disabled || !isAddSelected}
         />
       </div>
-      <div className="p-1 items-center justify-center flex w-fill"
+      <div
+        className="p-1 items-center justify-center flex w-fill"
         onClick={disabled ? () => {} : onArrowClick}
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
+        <ChevronDownIcon
           className={`h-7 w-7 ${
-            disabled ? 'text-gray-300 cursor-not-allowed' :
-            (isAddSelected ? 'text-green-700 cursor-pointer' : 'text-red-800 cursor-pointer')
-          } ${
-            isAddSelected ? '' : 'transform rotate-180'
-          }`}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
+            disabled
+              ? "text-gray-300 cursor-not-allowed"
+              : isAddSelected
+              ? "text-green-700 cursor-pointer"
+              : "text-red-800 cursor-pointer"
+          } ${isAddSelected ? "" : "transform rotate-180"}`}
+        />
       </div>
       <AssetAmountInput
         token={token2}

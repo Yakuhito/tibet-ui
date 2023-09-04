@@ -7,6 +7,7 @@ import type { GenerateOfferData } from './TabContainer';
 import { useEffect, useState, useContext } from 'react';
 import WalletContext from '@/context/WalletContext';
 import BarLoader from 'react-spinners/BarLoader';
+import CrossIcon from './atomic/icons/CrossIcon';
 import CopyButton from './atomic/CopyButton';
 import SuccessScreen from './SuccessScreen';
 import { RingLoader } from 'react-spinners';
@@ -497,7 +498,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                         {!offerResponse!.success && (<>
                             <div className="bg-red-400/50 dark:bg-red-400/20 rounded-xl text-red-700 dark:text-red-600 p-4 sm:p-8 mt-8 flex flex-col">
                                 <div className="flex gap-2 items-center mb-8">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px" className="fill-red-700 dark:fill-red-600"><title>Swap issue</title><path d="M21.5 4.5H26.501V43.5H21.5z" transform="rotate(45.001 24 24)"/><path d="M21.5 4.5H26.5V43.501H21.5z" transform="rotate(135.008 24 24)"/></svg>
+                                    <CrossIcon className="w-6 h-6 fill-red-700 dark:fill-red-600" />
                                     <span className="font-medium text-2xl">Failed to complete {activeTab === 'swap' ? 'swap' : 'transaction'}</span>
                                 </div>
                                 {displayErrorMessage()}
