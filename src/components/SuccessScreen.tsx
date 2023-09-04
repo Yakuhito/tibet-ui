@@ -1,4 +1,4 @@
-import DexieDuckIcon from './atomic/icons/DexieDuckIcon';
+import DexieDuckIcon from './icons/DexieDuckIcon';
 import type { GenerateOfferData } from './TabContainer';
 import { Fragment, useEffect, useState } from 'react';
 import { Transition } from '@headlessui/react';

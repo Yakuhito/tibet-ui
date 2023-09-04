@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Token, Pair, getPairByLauncherId, getInputPrice, getOutputPrice, getLiquidityQuote, ActionType } from '../api';
-import BooleanSwitch from './BooleanSwitch';
-import TokenSelector from './TokenSelector';
+import { Token, Pair, getPairByLauncherId, getInputPrice, getOutputPrice, getLiquidityQuote, ActionType } from '../../api';
+import BooleanSwitch from '../atomic/BooleanSwitch';
+import TokenSelector from '../atomic/TokenSelector';
 import LiquidityInput from './LiquidityInput';
-import GenerateOfferButton from './GenerateOfferButton';
+import GenerateOfferButton from '../atomic/GenerateOfferButton';
 import { UNKNWN, XCH, getLiquidityToken } from '@/shared_tokens';
-import { GenerateOfferData } from './TabContainer';
+import { GenerateOfferData } from '../TabContainer';
 
 type LiquidityProps = {
   disabled: boolean;

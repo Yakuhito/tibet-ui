@@ -1,5 +1,5 @@
 import { WalletContextProvider } from '@/context/WalletContext';
-import TwitterIcon from '@/components/atomic/icons/TwitterIcon';
+import TwitterIcon from '@/components/icons/TwitterIcon';
 import { Analytics } from '@vercel/analytics/react';
 import { useState, useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';

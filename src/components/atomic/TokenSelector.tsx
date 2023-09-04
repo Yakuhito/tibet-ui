@@ -1,7 +1,7 @@
-import CrossIcon from './atomic/icons/CrossIcon';
-import Tick from './atomic/icons/TickIcon';
+import CrossIcon from '../icons/CrossIcon';
+import Tick from '../icons/TickIcon';
 import Select from 'react-select';
-import { Token } from '../api';
+import { Token } from '../../api';
 import Image from 'next/image';
 
 type TokenSelectorProps = {

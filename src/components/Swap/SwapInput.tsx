@@ -1,6 +1,6 @@
-import ChevronDownIcon from "./atomic/icons/ChevronDownIcon";
-import AssetAmountInput from "./AssetAmountInput";
-import { Token } from "../api";
+import ChevronDownIcon from "@/components/icons/ChevronDownIcon";
+import AssetAmountInput from "@/components/atomic/AssetAmountInput";
+import { Token } from "../../api";
 
 type SwapInputsProps = {
   token0: Token;

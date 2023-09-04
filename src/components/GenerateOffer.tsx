@@ -7,7 +7,7 @@ import type { GenerateOfferData } from './TabContainer';
 import { useEffect, useState, useContext } from 'react';
 import WalletContext from '@/context/WalletContext';
 import BarLoader from 'react-spinners/BarLoader';
-import CrossIcon from './atomic/icons/CrossIcon';
+import CrossIcon from './icons/CrossIcon';
 import CopyButton from './atomic/CopyButton';
 import SuccessScreen from './SuccessScreen';
 import { RingLoader } from 'react-spinners';

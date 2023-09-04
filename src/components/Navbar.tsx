@@ -1,8 +1,8 @@
 import ConnectButton from './walletIntegration/ConnectButton';
 import SettingsModal from './modals/SettingsModal';
-import CogIcon from './atomic/icons/CogIcon';
+import CogIcon from './icons/CogIcon';
 import { useRouter } from 'next/router';
-import Logo from './atomic/icons/Logo';
+import Logo from './icons/Logo';
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';

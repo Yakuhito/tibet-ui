@@ -1,9 +1,9 @@
 import { getInputPrice, getPairByLauncherId, ActionType, getLiquidityQuote } from '../api';
 import React, { useState, useEffect, useRef } from 'react';
 import GenerateOffer from './GenerateOffer';
-import Liquidity from './Liquidity';
+import Liquidity from './Liquidity/Liquidity';
 import type { Token } from '../api';
-import Swap from './Swap';
+import Swap from './Swap/Swap';
 
 export interface GenerateOfferData {
   pairId: string;
