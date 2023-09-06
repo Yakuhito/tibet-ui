@@ -1,10 +1,11 @@
-import { WalletContextProvider } from '@/context/WalletContext';
 import TwitterIcon from '@/components/icons/TwitterIcon';
 import { Analytics } from '@vercel/analytics/react';
 import { useState, useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import type { AppProps } from 'next/app';
 import Navbar from '@/components/Navbar';
+import { Provider } from 'react-redux';
+import store from '@/redux/store';
 import '@/styles/globals.css';
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -41,7 +42,7 @@ export default function App({ Component, pageProps }: AppProps) {
   }, [theme]);
 
   return (
-    <WalletContextProvider>
+    <Provider store={store}>
       <div>
         <Navbar theme={theme} setTheme={setTheme} />
         <Toaster position="bottom-right"
@@ -74,6 +75,6 @@ export default function App({ Component, pageProps }: AppProps) {
           </footer>
         </div>
       </div>
-    </WalletContextProvider>
+    </Provider>
   );
 }
