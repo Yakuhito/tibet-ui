@@ -3,13 +3,17 @@ import AddAssetButton from './walletIntegration/AddAssetButton';
 import type { OfferResponse, Pair, Quote, Token } from '@/api';
 import type { GenerateOfferData } from './TabContainer';
 import { useEffect, useState, useContext } from 'react';
-import WalletContext from '@/context/WalletContext';
 import BarLoader from 'react-spinners/BarLoader';
 import CopyButton from './atomic/CopyButton';
 import SuccessScreen from './SuccessScreen';
 import { RingLoader } from 'react-spinners';
 import CrossIcon from './icons/CrossIcon';
 import Image from 'next/image';
+
+import { generateOffer } from '@/redux/walletSlice';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
+import { useAppDispatch } from '@/hooks';
 
 type GenerateOfferProps = {
   data: GenerateOfferData;
@@ -295,7 +299,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                         (<div className="rounded-lg mt-2 mb-4 flex gap-2 ml-4">
                             <div className="flex gap-2 text-sm font-normal pl-[calc(0.5rem+12px)]">
                                 <CopyButton copyText={e[0].asset_id}>Asset ID</CopyButton>
-                                <AddAssetButton asset_id={e[0].asset_id} short_name={e[0].short_name} image_url={e[0].image_url} name={e[0].name} activeWallet={activeWallet} />
+                                <AddAssetButton asset_id={e[0].asset_id} short_name={e[0].short_name} image_url={e[0].image_url} name={e[0].name} activeWallet={connectedWallet} />
                             </div>
                         </div>)
                         }
@@ -307,10 +311,11 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
     
 
     
-    const { walletManager, activeWallet } = useContext(WalletContext);
+    const dispatch = useAppDispatch();
+    const connectedWallet = useSelector((state: RootState) => state.wallet.connectedWallet);
     
     const completeWithWallet = async () => {
-        if (!activeWallet) return;
+        if (!connectedWallet) return;
 
         console.log('Completing with wallet')
         const requestAssets = data.request.map(asset => (
@@ -336,7 +341,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         const fee = Number((pairAndQuote![1].fee / Math.pow(10, 12)).toFixed(12))
 
         try {
-            const offer = await activeWallet.generateOffer(requestAssets, offerAssets, fee)
+            dispatch(generateOffer({requestAssets, offerAssets, fee}))
             if (!offer) return
             setOffer(offer);
             setStep(3);
@@ -394,8 +399,8 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                     }
 
                     {/* Complete with Wallet Integration Button */}
-                    {activeWallet && <button className="bg-brandDark hover:opacity-90 text-brandLight w-full py-4 rounded-xl font-medium" onClick={completeWithWallet}>Use Wallet to Complete Order</button>}
-                    {activeWallet && <p className="flex w-full justify-center font-medium my-4">— OR —</p>}
+                    {connectedWallet && <button className="bg-brandDark hover:opacity-90 text-brandLight w-full py-4 rounded-xl font-medium" onClick={completeWithWallet}>Use Wallet to Complete Order</button>}
+                    {connectedWallet && <p className="flex w-full justify-center font-medium my-4">— OR —</p>}
 
                     {/* Input for user to paste manually generated offer in */}
                     <input type="text"
