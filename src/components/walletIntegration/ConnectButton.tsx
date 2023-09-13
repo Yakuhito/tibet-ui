@@ -13,6 +13,15 @@ function ConnectButton() {
     const address = useSelector((state: RootState) => state.wallet.address);
     const walletImage = useSelector((state: RootState) => state.wallet.image);
     const walletName = useSelector((state: RootState) => state.wallet.name);
+    const walletConnectSelectedSession = useSelector((state: RootState) => state.walletConnect.selectedSession);
+    const displayWalletImage = (() => {
+      if (walletName === "WalletConnect" && walletConnectSelectedSession) {
+        return walletConnectSelectedSession.peer.metadata.icons[0];
+      } else {
+        return walletImage;
+      }
+    })();
+
 
     useEffect(() => {
       //  If users wallet address shows that they are on the wrong chain, display a warning in ConnectedWalletModal
@@ -37,7 +46,7 @@ function ConnectButton() {
     return ( 
         <>
             <button onClick={() => setIsWalletModalOpen(true)} className="flex items-center gap-2 bg-brandDark/10  text-brandDark dark:text-brandLight px-6 py-1.5 font-medium rounded-xl animate-fadeIn hover:opacity-80">
-                {walletImage && <Image src={walletImage} width={20} height={20} alt={`${walletName} wallet logo`} className="rounded-full" />}
+                {displayWalletImage && <Image src={displayWalletImage} width={20} height={20} alt={`${walletName} wallet logo`} className="rounded-full" />}
                 {!walletName ? 'Connect Wallet' : displayAddress()}
             </button>
             <ConnectWalletModal isOpen={isWalletModalOpen} setIsOpen={setIsWalletModalOpen} isWalletOnWrongChain={isWalletOnWrongChain} />
