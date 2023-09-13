@@ -1,24 +1,34 @@
-import { type generateOffer as generateOfferType } from '@/utils/walletIntegration/walletIntegrationInterface';
-import WalletIntegrationInterface from '@/utils/walletIntegration/walletIntegrationInterface';
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { type generateOffer as generateOfferType, walletClasses } from '@/utils/walletIntegration/walletIntegrationInterface';
 import WalletManager from '@/utils/walletIntegration/walletManager';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-hot-toast';
 import { RootState } from './store';
 
 export interface WalletState {
-  connectedWallet: WalletIntegrationInterface | null;
+  connectedWallet: keyof typeof walletClasses | null;
   isPending: boolean;
+  address: string | null;
+  image: string | null;
+  name: string | null;
 }
 
 
 
 // ASYNC
 /////////////////////////////////
-export const connectWallet = createAsyncThunk('wallet/connectWallet', async (wallet: WalletIntegrationInterface) => {
+export const connectWallet = createAsyncThunk('wallet/connectWallet', async (wallet: keyof typeof walletClasses, { getState }) => {
   try {
     const walletManager = new WalletManager();
     await walletManager.connect(wallet);
-    return wallet;
+    const address = await walletManager.getAddress(wallet);
+    const image = walletManager.getImage(wallet);
+    const name = walletManager.getName(wallet);
+    return {
+      wallet,
+      address,
+      image,
+      name
+    }
   } catch (error: any) {
     if (error.message) {
       toast.error(`Wallet - ${error.message}`);
@@ -28,7 +38,7 @@ export const connectWallet = createAsyncThunk('wallet/connectWallet', async (wal
   }
 });
 
-export const disconnectWallet = createAsyncThunk('wallet/disconnectWallet', async (wallet: WalletIntegrationInterface) => {
+export const disconnectWallet = createAsyncThunk('wallet/disconnectWallet', async (wallet: keyof typeof walletClasses) => {
   try {
     const walletManager = new WalletManager();
     await walletManager.disconnect(wallet);
@@ -87,6 +97,21 @@ export const addAsset = createAsyncThunk('wallet/addAsset', async (data: {
   }
 });
 
+export const detectWalletEvents = createAsyncThunk('wallet/detectWalletEvents', async (_, { getState }) => {
+
+  const state = getState() as RootState;
+  if (!state.wallet.connectedWallet) return
+  try {
+    const walletManager = new WalletManager();
+    await walletManager.detectEvents(state.wallet.connectedWallet);
+  } catch (error: any) {
+    if (error.message) {
+      toast.error(`Wallet - ${error.message}`);
+    }
+    throw error;
+  }
+});
+
 
 
 // SLICES
@@ -94,6 +119,9 @@ export const addAsset = createAsyncThunk('wallet/addAsset', async (data: {
 const initialState: WalletState = {
   connectedWallet: null,
   isPending: false,
+  address: null,
+  image: null,
+  name: null,
 };
 
 const walletSlice = createSlice({
@@ -108,7 +136,10 @@ const walletSlice = createSlice({
         state.isPending = true;
       })
       .addCase(connectWallet.fulfilled, (state, action) => {
-        state.connectedWallet = action.payload;
+        state.connectedWallet = action.payload.wallet;
+        state.address = action.payload.address;
+        state.image = action.payload.image;
+        state.name = action.payload.name;
         state.isPending = false;
       })
       .addCase(connectWallet.rejected, (state, action) => {
