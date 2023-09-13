@@ -31,33 +31,21 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
   name = "WalletConnect"
   image = "/assets/xch.webp"
   chainId = process.env.NEXT_PUBLIC_XCH === "TXCH" ? "chia:testnet" : "chia:mainnet"
-  fingerprints
   topic
   client: SignClient | undefined
   selectedFingerprint
   session: SessionTypes.Struct | undefined
   
   constructor() {
+    // Give methods access to current Redux state
     const state = store.getState();
-    if (state.walletConnect.selectedSession) {
-      this.topic = state.walletConnect.selectedSession.topic;
-      const session = state.walletConnect.selectedSession;
-      this.session = session;
-      this.fingerprints = this.session.namespaces.chia.accounts.map(wallet => {
-        return Number(wallet.split(":")[2]);
-      });
-      this.selectedFingerprint = this.fingerprints[0];
+    const selectedSession = state.walletConnect.selectedSession;
+    if (selectedSession) {
+      this.topic = selectedSession.topic;
+      this.session = selectedSession;
+      const fingerprint = state.walletConnect.selectedFingerprint[selectedSession.topic];
+      this.selectedFingerprint = fingerprint;
     }
-    // if (!session) throw Error('Session could not be found');
-    // Restore active session fingerprint & topic (if any) to object property for later use
-    // const fingerprints = localStorage.getItem('wc_fingerprints');
-    // if (fingerprints) {this.fingerprints = JSON.parse(fingerprints);}
-    
-    // const selectedFingerprint = localStorage.getItem('wc_selectedFingerprint');
-    // if (selectedFingerprint) {this.selectedFingerprint = JSON.parse(selectedFingerprint);}
-
-    // this.walletType = wallet
-    // localStorage.setItem('activeWalletType', wallet)
   }
 
   async updateSessions() {
@@ -76,12 +64,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     return true;
   }
 
-  async connectSession(): Promise<void | SessionTypes.Struct> {
-    // If existing connection still exists, return true, else display QR code to initiate new connection
-    // if (await this.eagerlyConnect()) {
-    //   return true;
-    // }
-    
+  async connectSession(): Promise<void | SessionTypes.Struct> {  
     // Initiate connection and pass pairing uri to the modal (QR code)
     try {
       const signClient = await this.signClient();
@@ -111,13 +94,6 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           // If new connection established successfully
           const session = await approval();
           console.log('Connected Chia wallet via WalletConnect', session, signClient)
-          // Save session fingerprint to localstorage for persistence
-          localStorage.setItem('wc_topic', JSON.stringify(session.topic))
-          this.fingerprints = session.namespaces.chia.accounts.map(wallet => {
-            return Number(wallet.split(":")[2]);
-          });
-          localStorage.setItem('wc_fingerprints', JSON.stringify(this.fingerprints))
-          localStorage.setItem('wc_selectedFingerprint', JSON.stringify(this.fingerprints[0]))
           closeWalletConnectModal()
           toast.success('Successfully Connected')
           this.detectEvents()
@@ -133,28 +109,23 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     }
   }
 
-  async eagerlyConnect(): Promise<boolean> {
-    // Sign client, fetch pairing data. If active pairing, previous connection must exist.
-    try {
-      const signClient = await this.signClient();
+  // async eagerlyConnect(): Promise<boolean> {
+  //   // Sign client, fetch pairing data. If active pairing, previous connection must exist.
+  //   try {
+  //     const signClient = await this.signClient();
 
-      console.log('HIHIHIHI', '❌❌')
-      if (signClient?.pairing.getAll({ active: true }).length) {
-        console.log(signClient.session.keys);
-        this.detectEvents();
-        await this.updateFingerprint();
-        return true;
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error(`Wallet - ${error}`)
-      return false;
-    }
-
-    localStorage.removeItem('wc_fingerprint')
-    localStorage.removeItem('wc_topic')
-    return false;
-  }
+  //     if (signClient?.pairing.getAll({ active: true }).length) {
+  //       console.log(signClient.session.keys);
+  //       this.detectEvents();
+  //       return true;
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     toast.error(`Wallet - ${error}`)
+  //     return false;
+  //   }
+  //   return false;
+  // }
 
   disconnect() {
     return true;
@@ -172,7 +143,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
         }
         
         // Send request to get Wallets via WalletConnect
-        const request = signClient.disconnect({
+        signClient.disconnect({
           topic,
           reason: {
             code: 6000,
@@ -180,22 +151,16 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           },
         });
         
-        const wallets = await request;
         await this.updateSessions();
         await this.updateConnectedWalletOnDisconnect();
-        // if (wallets.isSuccess) {
-        //   return wallets;
-        // } else throw Error('Fetching wallet request unsuccessful')
-        
       } catch (error: any) {
         localStorage.removeItem('wc@2:client:0.3//session');
-        location.reload();
-      console.log(error.message)
+        this.updateSessions();
+        console.log(error.message);
     }
   }
 
   async generateOffer(requestAssets: generateOffer["requestAssets"], offerAssets: generateOffer["offerAssets"], fee: number | undefined): Promise<string | void> {
-    await this.updateFingerprint()
 
     // Show modal to user taking them through each step of the process
     showCompleteWithWalletModal(this)
@@ -350,7 +315,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           request: {
             method: "chia_getWallets",
             params: {
-              fingerprint: this.selectedFingerprint,//Number(this.session.namespaces.chia.accounts[0].split(":")[2]),
+              fingerprint: this.selectedFingerprint,
               includeData: true
             },
           },
@@ -376,7 +341,6 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
   }
 
   async addAsset(assetId: string, symbol: string, logo: string, fullName: string): Promise<void> {
-    await this.updateFingerprint()
     const displayName = `${symbol.includes('TIBET-') ? `TibetSwap Liquidity (${symbol})` : `${fullName} (${symbol})`}`
 
     // Sign client
@@ -416,15 +380,6 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
       console.log(`Wallet - ${error.message}`)
       throw Error(error);
     }
-  }
-
-  // Must be called before any action
-  async updateFingerprint() {
-    const fingerprints = localStorage.getItem('wc_fingerprints');
-    if (fingerprints) {this.fingerprints = JSON.parse(fingerprints);}
-    
-    const selectedFingerprint = localStorage.getItem('wc_selectedFingerprint');
-    if (selectedFingerprint) {this.selectedFingerprint = JSON.parse(selectedFingerprint);}
   }
 
   async getAddress(): Promise<string | null> {
