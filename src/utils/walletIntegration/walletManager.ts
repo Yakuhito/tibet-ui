@@ -1,143 +1,56 @@
-import WalletIntegrationInterface, { generateOffer } from './walletIntegrationInterface';
-import WalletConnect from './wallets/walletConnect';
-import HoogiiWallet from './wallets/hoogiiWallet';
-import GobyWallet from './wallets/gobyWallet';
+import { generateOffer, walletClasses } from './walletIntegrationInterface';
 
 class WalletManager {
-  private static instance: WalletManager;
-  private activeWallet: WalletIntegrationInterface | null;
 
-  private constructor() {
-    this.activeWallet = null;
-    this.getStoredWallet()
-      .then((storedWallet) => {
-        if (storedWallet) {
-          this.activeWallet = storedWallet;
-          this.notifyActiveWalletChange();
-        }
-      })
-      .catch((error) => {
-        this.notifyActiveWalletChange();
-        console.error('Error retrieving stored wallet:', error);
-      });
-  }
-
-  public static getInstance(): WalletManager {
-    if (!WalletManager.instance) {
-      WalletManager.instance = new WalletManager();
+  private getWalletClassFromString(wallet: string) {
+    const WalletClass = new walletClasses[wallet]();
+    if (!WalletClass) {
+      throw new Error(`${wallet} is not currently integrated with TibetSwap`);
     }
-    return WalletManager.instance;
+    return WalletClass;
   }
 
-  private async getStoredWallet(): Promise<WalletIntegrationInterface | null> {
-      const storedWallet = await this.deserializeWallet();
-      return storedWallet ? storedWallet : null;
+  public async connect(wallet: string): Promise<void> {
+    const walletClass = this.getWalletClassFromString(wallet);
+    await walletClass.connect();
   }
 
-  public setActiveWallet(wallet: WalletIntegrationInterface): void {
-    this.activeWallet = wallet;
-    localStorage.setItem('activeWallet', this.activeWallet.name);
-    this.notifyActiveWalletChange();
-  }
-  
-  private notifyActiveWalletChange(): void {
-    if (this.activeWalletChangeHandler) {
-      if (this.activeWallet !== null) {
-        this.activeWalletChangeHandler(this.activeWallet);
-      } else {
-        this.activeWalletChangeHandler(null);
-      }
-    }
-  }
-  
-  private activeWalletChangeHandler: ((wallet: WalletIntegrationInterface | null) => void) | null = null;
-  
-  public registerActiveWalletChangeHandler(handler: (wallet: WalletIntegrationInterface | null) => void): void {
-    this.activeWalletChangeHandler = handler;
-  }
-  
-  public unregisterActiveWalletChangeHandler(handler: (wallet: WalletIntegrationInterface) => void): void {
-    if (this.activeWalletChangeHandler === handler) {
-      this.activeWalletChangeHandler = null;
-    }
+  public async disconnect(wallet: string): Promise<void> {
+    const walletClass = this.getWalletClassFromString(wallet);
+    await walletClass.disconnect();
+    // console.log('Disconnected Wallet', walletClass.name)
   }
 
-  public getActiveWallet(): WalletIntegrationInterface | null {
-    return this.activeWallet;
+  public async generateOffer(wallet: string, requestAssets: generateOffer["requestAssets"], offerAssets: generateOffer["offerAssets"], fee: number | undefined): Promise<string | void> {
+    const walletClass = this.getWalletClassFromString(wallet);
+    await walletClass.generateOffer(requestAssets, offerAssets, fee);
   }
 
-  public connect(): void {
-    if (this.activeWallet) {
-      this.activeWallet.connect();
-    }
+  public async addAsset(wallet: string, assetId: string, symbol: string, logo: string, fullName: string): Promise<void> {
+    const walletClass = this.getWalletClassFromString(wallet);
+    await walletClass.addAsset(assetId, symbol, logo, fullName);
   }
 
-  public disconnect(): void {
-    if (this.activeWallet) {
-      this.activeWallet.disconnect();
-    }
-    localStorage.removeItem('activeWallet');
-    this.activeWallet = null;
-    this.notifyActiveWalletChange();
+  public async getAddress(wallet: string): Promise<string | null> {
+    const walletClass = this.getWalletClassFromString(wallet);
+    return await walletClass.getAddress();
   }
 
-  public async generateOffer(requestAssets: generateOffer["requestAssets"], offerAssets: generateOffer["offerAssets"], fee: number | undefined): Promise<string | void> {
-    if (this.activeWallet) {
-      this.activeWallet.generateOffer(requestAssets, offerAssets, fee);
-    }
+  public getImage(wallet: string): string | null {
+    const walletClass = this.getWalletClassFromString(wallet);
+    return walletClass.image;
   }
 
-  public getBalance(): void {
-    if (this.activeWallet) {
-      this.activeWallet.getBalance();
-    }
+  public getName(wallet: string): string | null {
+    const walletClass = this.getWalletClassFromString(wallet);
+    return walletClass.name;
   }
 
-  public async addAsset(assetId: string, symbol: string, logo: string, fullName: string): Promise<void> {
-    if (this.activeWallet) {
-      this.activeWallet.addAsset(assetId, symbol, logo, fullName);
-    }
-  }
-  
-  public async getAddress(): Promise<string | void> {
-    if (this.activeWallet) {
-      this.activeWallet.getAddress();
-    }
+  public async detectEvents(wallet: string): Promise<void> {
+    const walletClass = this.getWalletClassFromString(wallet);
+    return await walletClass.detectEvents();
   }
 
-  private async deserializeWallet(): Promise<WalletIntegrationInterface | null> {
-    const parsedWallet = localStorage.getItem('activeWallet')
-    if (parsedWallet === 'Goby') {
-        const checkIfStillConnected = await new GobyWallet().eagerlyConnect()
-        if (!checkIfStillConnected) {
-            localStorage.removeItem('activeWallet');
-            return null
-        }
-        return new GobyWallet();
-    } else if (parsedWallet === 'Hoogii') {
-        const checkIfStillConnected = await new HoogiiWallet().eagerlyConnect()
-        if (!checkIfStillConnected) {
-            localStorage.removeItem('activeWallet');
-            return null
-        }
-        return new HoogiiWallet();
-    } else if (parsedWallet === 'WalletConnect') {
-      const type = localStorage.getItem('activeWalletType')
-
-      var stillConnected = false
-      if(type === "chia" || type === "ozone") {
-        stillConnected = await new WalletConnect(type).eagerlyConnect()
-        if(stillConnected) {
-          return new WalletConnect(type)
-        }
-      }
-      localStorage.removeItem('activeWallet');
-      localStorage.removeItem('activeWalletType')
-      return null
-    }
-
-    return null;
-  }
 }
 
 export default WalletManager;
