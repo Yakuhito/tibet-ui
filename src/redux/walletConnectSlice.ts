@@ -6,7 +6,9 @@ import { toast } from 'react-hot-toast';
 export interface WalletConnectState {
   sessions: SessionTypes.Struct[] | [];
   selectedSession: SessionTypes.Struct | null | void;
-  selectedFingerprint: number | null;
+  selectedFingerprint: {
+    [topic: string]: number
+  }
 }
 
 // ASYNC
@@ -57,7 +59,7 @@ export const disconnectSession = createAsyncThunk('wallet/disconnectSession', as
 const initialState: WalletConnectState = {
   sessions: [],
   selectedSession: null,
-  selectedFingerprint: null,
+  selectedFingerprint: {},
 };
 
 const walletConnectSlice = createSlice({
@@ -65,18 +67,22 @@ const walletConnectSlice = createSlice({
   initialState,
   reducers: {
     selectSession(state, action: PayloadAction<string>) {
-      const topicToSelect = action.payload;
+      const topic = action.payload;
 
       // Check if the provided session topic is in the sessions array
-      const selectedSession = state.sessions.find(session => session.topic === topicToSelect);
+      const selectedSession = state.sessions.find(session => session.topic === topic);
 
       if (selectedSession) {
         state.selectedSession = selectedSession;
-        state.selectedFingerprint = Number(state.selectedSession.namespaces.chia.accounts[0].split(":")[2]);
       } else {
         // Provided session topic is not valid
-        console.error(`Invalid session topic: ${topicToSelect}`);
+        console.error(`Invalid session topic: ${topic}`);
       }
+    },
+
+    setSelectedFingerprint(state, action: PayloadAction<{topic: string, selectedFingerprint: number}>) {
+      const { topic, selectedFingerprint } = action.payload;
+      state.selectedFingerprint[topic] = selectedFingerprint;
     }
   },
   extraReducers: (builder) => {
@@ -93,7 +99,7 @@ const walletConnectSlice = createSlice({
         // Set the active session as the newly connected one
         if (newSession) {
           state.selectedSession = newSession;
-          state.selectedFingerprint = Number(newSession.namespaces.chia.accounts[0].split(":")[2]);
+          state.selectedFingerprint[newSession.topic] = Number(newSession.namespaces.chia.accounts[0].split(":")[2]);
         }
       })
       // DISCONNECT SESSION
@@ -101,23 +107,27 @@ const walletConnectSlice = createSlice({
       .addCase(disconnectSession.fulfilled, (state, action) => {
         const disconnectedTopic = action.payload;
 
+        // Remove any saved fingerprint preference if any
+        if (disconnectedTopic in state.selectedFingerprint) {
+          delete state.selectedFingerprint[disconnectedTopic];
+        }
+
         // If no more sessions exist, set selectedSession to null
         if (!state.sessions.length) {
           state.selectedSession = null;
-          state.selectedFingerprint = null;
+          state.selectedFingerprint = {};
           return
         }
 
         // If user disconnects the currently selected session, select the next available one
         if (state.sessions.length && state.selectedSession && disconnectedTopic === state.selectedSession.topic) {
           state.selectedSession = state.sessions[state.sessions.length-1];
-          state.selectedFingerprint = Number(state.selectedSession.namespaces.chia.accounts[0].split(":")[2]);
         }
 
       })
   },
 });
 
-export const { selectSession } = walletConnectSlice.actions;
+export const { selectSession, setSelectedFingerprint } = walletConnectSlice.actions;
 
 export default walletConnectSlice.reducer;
