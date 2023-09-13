@@ -1,12 +1,16 @@
+import { PersistGate } from 'redux-persist/integration/react';
 import TwitterIcon from '@/components/icons/TwitterIcon';
 import { Analytics } from '@vercel/analytics/react';
+import store, { persistor } from '@/redux/store';
 import { useState, useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import type { AppProps } from 'next/app';
 import Navbar from '@/components/Navbar';
 import { Provider } from 'react-redux';
-import store from '@/redux/store';
 import '@/styles/globals.css';
+
+import { useAppDispatch } from '@/hooks';
+import { detectWalletEvents } from '@/redux/walletSlice';
 
 export default function App({ Component, pageProps }: AppProps) {
 
@@ -41,40 +45,45 @@ export default function App({ Component, pageProps }: AppProps) {
 
   }, [theme]);
 
+  // On page reload, wallet event listeners need to be re-established (i.e. if user disconnects from their wallet, the UI will update)
+  store.dispatch(detectWalletEvents());
+
   return (
     <Provider store={store}>
-      <div>
-        <Navbar theme={theme} setTheme={setTheme} />
-        <Toaster position="bottom-right"
-          toastOptions={{
-            loading: {
-              duration: 45000,
-            },
-            success: {
-              iconTheme: {
-                primary: '#166534',
-                secondary: '#EFF4F7'
+      <PersistGate loading={null} persistor={persistor}>
+        <div>
+          <Navbar theme={theme} setTheme={setTheme} />
+          <Toaster position="bottom-right"
+            toastOptions={{
+              loading: {
+                duration: 45000,
+              },
+              success: {
+                iconTheme: {
+                  primary: '#166534',
+                  secondary: '#EFF4F7'
+                }
+              },
+              error: {
+                iconTheme: {
+                  primary: '#B91C1C',
+                  secondary: '#EFF4F7'
+                }
               }
-            },
-            error: {
-              iconTheme: {
-                primary: '#B91C1C',
-                secondary: '#EFF4F7'
-              }
-            }
-          }} />
-        <div className="min-h-[calc(100svh-96px)] flex flex-col px-4">
-          <div className="pt-12">
-            <Component {...pageProps}  />
-            <Analytics />
+            }} />
+          <div className="min-h-[calc(100svh-96px)] flex flex-col px-4">
+            <div className="pt-12">
+              <Component {...pageProps}  />
+              <Analytics />
+            </div>
+            <footer className="pb-6 pt-12 mb-[76px] md:mb-0 text-center text-brandDark mt-auto mx-auto flex flex-col items-center">
+              <a href="https://twitter.com/TibetSwap" target="_blank" rel="noopener noreferrer" className="underline ml-1">
+                <TwitterIcon />
+              </a>
+            </footer>
           </div>
-          <footer className="pb-6 pt-12 mb-[76px] md:mb-0 text-center text-brandDark mt-auto mx-auto flex flex-col items-center">
-            <a href="https://twitter.com/TibetSwap" target="_blank" rel="noopener noreferrer" className="underline ml-1">
-              <TwitterIcon />
-            </a>
-          </footer>
         </div>
-      </div>
+      </PersistGate>
     </Provider>
   );
 }
