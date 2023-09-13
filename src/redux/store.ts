@@ -1,12 +1,44 @@
 import { useDispatch, useSelector, TypedUseSelectorHook } from 'react-redux';
 import walletReducer, { WalletState } from './walletSlice';
-import { configureStore } from '@reduxjs/toolkit';
+import walletConnectReducer from './walletConnectSlice';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
+import storage from 'redux-persist/lib/storage'
+
+const rootReducer = combineReducers({
+  wallet: walletReducer,
+  walletConnect: walletConnectReducer,
+});
+
+const persistConfig = {
+  key: 'root',
+  version: 1,
+  storage,
+  blacklist: ['walletConnectSlice'],
+};
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 const store = configureStore({
-  reducer: {
-    wallet: walletReducer,
-  },
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
 });
+
+export const persistor = persistStore(store);
 
 export default store;
 
