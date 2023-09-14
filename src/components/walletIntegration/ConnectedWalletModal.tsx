@@ -30,23 +30,6 @@ function ConnectWalletModal({ isOpen, setIsOpen, isWalletOnWrongChain }: Connect
         dispatch(getAllSessions());
     }, [dispatch])
 
-    // Restore Chia Wallet fingerprints from local storage
-    // useEffect(() => {
-    //     const fingerprints_ls = localStorage.getItem("wc_fingerprints")
-    //     const selectedFingerprint_ls = localStorage.getItem("wc_selectedFingerprint")
-
-    //     if (fingerprints_ls) setFingerprints(JSON.parse(fingerprints_ls))
-    //     if (selectedFingerprint_ls) setSelectedFingerprint(JSON.parse(selectedFingerprint_ls))
-    //     if (localStorage.getItem('ozoneExperimentalIntegration') === 'enabled') setOzoneEnabled(true)
-    // },[])
-
-    // const handleSwitchChiaWallet = (fingerprint: number) => {
-    //     if (fingerprint === selectedFingerprint) return
-    //     setSelectedFingerprint(fingerprint);
-    //     localStorage.setItem("wc_selectedFingerprint", JSON.stringify(fingerprint))
-    //     toast.success(<p className="break-words max-w-[18rem]">Switched to wallet fingerprint <span className="font-mono bg-brandDark/10 text-brandDark/90 px-1 rounded-sm">{fingerprint}</span></p>, {id: fingerprint.toString()})
-    // }
-
     const chiaActive = connectedWallet === "WalletConnect";
     const gobyActive = connectedWallet === "Goby";
     const hoogiiActive = connectedWallet === "Hoogii";
