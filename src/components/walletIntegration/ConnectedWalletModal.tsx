@@ -74,7 +74,6 @@ function ConnectWalletModal({ isOpen, setIsOpen, isWalletOnWrongChain }: Connect
                             <div onClick={() => walletConnectSessions.length ? dispatch(connectWallet("WalletConnect")) : dispatch(connectSession())} className={`${chiaActive ? `bg-green-700/20 focus:ring-green-700/20` : 'bg-brandDark/10'} ${isWalletConnectOpen || chiaActive ? 'rounded-t-xl' : 'rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
                                 <div className="flex items-center gap-4">
                                     <WalletConnectIcon className="w-10 h-10" />
-                                    {/* <Image src="/assets/xch.webp" height={40} width={40} alt={'Chia Wallet Logo'} className="rounded-full" /> */}
                                     <p className="font-medium text-lg">Wallet Connect</p>
                                 </div>
                                 <button className={`
