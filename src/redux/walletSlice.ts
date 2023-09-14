@@ -34,7 +34,6 @@ export const connectWallet = createAsyncThunk('wallet/connectWallet', async (wal
       toast.error(`Wallet - ${error.message}`);
     }
     throw error;
-    // Clear localstorage?
   }
 });
 
@@ -48,7 +47,6 @@ export const disconnectWallet = createAsyncThunk('wallet/disconnectWallet', asyn
       toast.error(`Wallet - ${error.message}`);
     }
     throw error;
-    // Clear localstorage?
   }
 });
 
@@ -70,7 +68,6 @@ export const generateOffer = createAsyncThunk('wallet/generateOffer', async (dat
       toast.error(`Wallet - ${error.message}`);
     }
     throw error;
-    // Clear localstorage?
   }
 });
 
@@ -93,7 +90,6 @@ export const addAsset = createAsyncThunk('wallet/addAsset', async (data: {
       toast.error(`Wallet - ${error.message}`);
     }
     throw error;
-    // Clear localstorage?
   }
 });
 
@@ -161,15 +157,12 @@ const walletSlice = createSlice({
       //////////////////////////////////
       .addCase(generateOffer.pending, (state) => {
         state.isPending = true;
-        console.log('Generate offer pending')
       })
       .addCase(generateOffer.fulfilled, (state, action) => {
         state.isPending = false;
-        console.log('Generate offer success')
       })
       .addCase(generateOffer.rejected, (state, action) => {
         state.isPending = false;
-        console.log('Generate offer error')
       });
   },
 });
