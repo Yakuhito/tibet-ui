@@ -10,6 +10,7 @@ function ConnectButton() {
     const [isWalletModalOpen, setIsWalletModalOpen] = useState(false)
     const [isWalletOnWrongChain, setIsWalletOnWrongChain] = useState(false)
 
+    const connectedWallet = useSelector((state: RootState) => state.wallet.connectedWallet);
     const address = useSelector((state: RootState) => state.wallet.address);
     const walletImage = useSelector((state: RootState) => state.wallet.image);
     const walletName = useSelector((state: RootState) => state.wallet.name);
@@ -46,8 +47,8 @@ function ConnectButton() {
     return ( 
         <>
             <button onClick={() => setIsWalletModalOpen(true)} className="flex items-center gap-2 bg-brandDark/10  text-brandDark dark:text-brandLight px-6 py-1.5 font-medium rounded-xl animate-fadeIn hover:opacity-80">
-                {displayWalletImage && <Image src={displayWalletImage} width={20} height={20} alt={`${walletName} wallet logo`} className="rounded-full" />}
-                {!walletName ? 'Connect Wallet' : displayAddress()}
+                {connectedWallet && displayWalletImage && <Image src={displayWalletImage} width={20} height={20} alt={`${walletName} wallet logo`} className="rounded-full" />}
+                {!connectedWallet ? 'Connect Wallet' : displayAddress()}
             </button>
             <ConnectWalletModal isOpen={isWalletModalOpen} setIsOpen={setIsWalletModalOpen} isWalletOnWrongChain={isWalletOnWrongChain} />
         </>
