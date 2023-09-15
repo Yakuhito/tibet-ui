@@ -1,5 +1,4 @@
 import { closeCompleteWithWalletModal, showCompleteWithWalletModal } from '../WalletConnect/CompleteWithWalletModal';
-import { closeWalletConnectModal, showWalletConnectModal } from '../WalletConnect/WalletConnectModal';
 import WalletIntegrationInterface, { generateOffer } from '../walletIntegrationInterface';
 import { connectWallet, disconnectWallet } from '@/redux/walletSlice';
 import { getAllSessions, setPairingUri, selectSession } from '@/redux/walletConnectSlice';
@@ -108,15 +107,12 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           // Display QR code to user
           if (uri) {
             store.dispatch(setPairingUri(uri))
-            // showWalletConnectModal(uri)
           }
 
           // If new connection established successfully
           const session = await approval();
           console.log('Connected Chia wallet via WalletConnect', session, signClient)
           store.dispatch(setPairingUri(null))
-          closeWalletConnectModal()
-          toast.success('Successfully Connected')
           this.detectEvents()
 
           await this.updateSessions();
