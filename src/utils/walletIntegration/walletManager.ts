@@ -18,7 +18,6 @@ class WalletManager {
   public async disconnect(wallet: string): Promise<void> {
     const walletClass = this.getWalletClassFromString(wallet);
     await walletClass.disconnect();
-    // console.log('Disconnected Wallet', walletClass.name)
   }
 
   public async generateOffer(wallet: string, requestAssets: generateOffer["requestAssets"], offerAssets: generateOffer["offerAssets"], fee: number | undefined): Promise<string | void> {
