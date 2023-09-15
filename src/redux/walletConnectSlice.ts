@@ -7,8 +7,9 @@ export interface WalletConnectState {
   sessions: SessionTypes.Struct[] | [];
   selectedSession: SessionTypes.Struct | null | void;
   selectedFingerprint: {
-    [topic: string]: number
+    [topic: string]: number;
   }
+  pairingUri: string | null;
 }
 
 // ASYNC
@@ -17,7 +18,11 @@ export const getAllSessions = createAsyncThunk('wallet/getAllSessions', async ()
   try {
     const walletConnect = new WalletConnect();
     const sessions = await walletConnect.getAllSessions();
-    return sessions
+    if (sessions) {
+      return sessions
+    } else {
+      throw Error('No WC sessions found');
+    }
   } catch (error: any) {
     if (error.message) {
       toast.error(`WalletConnect - ${error.message}`);
@@ -43,7 +48,7 @@ export const connectSession = createAsyncThunk('wallet/connectSession', async ()
 export const disconnectSession = createAsyncThunk('wallet/disconnectSession', async (topic: string) => {
   try {
     const walletConnect = new WalletConnect();
-    const response = await walletConnect.disconnectSession(topic);
+    await walletConnect.disconnectSession(topic);
     return topic;
   } catch (error: any) {
     if (error.message) {
@@ -60,6 +65,7 @@ const initialState: WalletConnectState = {
   sessions: [],
   selectedSession: null,
   selectedFingerprint: {},
+  pairingUri: null
 };
 
 const walletConnectSlice = createSlice({
@@ -83,14 +89,20 @@ const walletConnectSlice = createSlice({
     setSelectedFingerprint(state, action: PayloadAction<{topic: string, selectedFingerprint: number}>) {
       const { topic, selectedFingerprint } = action.payload;
       state.selectedFingerprint[topic] = selectedFingerprint;
+    },
+
+    setPairingUri(state, action: PayloadAction<string | null>) {
+      const uri = action.payload;
+      state.pairingUri = uri;
     }
+
   },
   extraReducers: (builder) => {
     builder
       // GET ALL SESSIONS
       //////////////////////////////////
       .addCase(getAllSessions.fulfilled, (state, action) => {
-        state.sessions = action.payload || [];
+        state.sessions = action.payload;
       })
       // CONNECT SESSION
       //////////////////////////////////
@@ -128,6 +140,6 @@ const walletConnectSlice = createSlice({
   },
 });
 
-export const { selectSession, setSelectedFingerprint } = walletConnectSlice.actions;
+export const { selectSession, setSelectedFingerprint, setPairingUri } = walletConnectSlice.actions;
 
 export default walletConnectSlice.reducer;
