@@ -1,6 +1,6 @@
-import { useDispatch, useSelector, TypedUseSelectorHook } from 'react-redux';
-import walletReducer, { WalletState } from './walletSlice';
+import walletReducer from './walletSlice';
 import walletConnectReducer from './walletConnectSlice';
+import { useDispatch, useSelector, TypedUseSelectorHook } from 'react-redux';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import {
   persistStore,
@@ -40,11 +40,11 @@ const store = configureStore({
 
 export const persistor = persistStore(store);
 
-export default store;
-
 export const useAppDispatch = () => useDispatch();
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+
+export default store;
