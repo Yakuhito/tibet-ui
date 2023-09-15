@@ -1,6 +1,7 @@
 import { getAllSessions, connectSession } from '@/redux/walletConnectSlice';
 import WalletConnectIcon from '../icons/WalletConnectIcon';
 import WalletConnectSession from './WalletConnectSession';
+import type { SessionTypes } from "@walletconnect/types";
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useState, useEffect } from 'react';
 import { connectWallet } from '@/redux/walletSlice';
@@ -10,6 +11,7 @@ import { useAppDispatch } from '@/hooks';
 import PlusIcon from '../icons/PlusIcon';
 import Image from 'next/image';
 
+import WalletConnectQR from './WalletConnectQR';
 
 
 
@@ -35,6 +37,7 @@ function ConnectWalletModal({ isOpen, setIsOpen, isWalletOnWrongChain }: Connect
     const hoogiiActive = connectedWallet === "Hoogii";
 
     const [isWalletConnectOpen, setIsWalletConnectOpen] = useState(true);
+    const pairingUri = useSelector((state: RootState) => state.walletConnect.pairingUri);
 
     return (    
         <Transition appear show={isOpen} as={Fragment}>
@@ -83,21 +86,30 @@ function ConnectWalletModal({ isOpen, setIsOpen, isWalletOnWrongChain }: Connect
                                 ></button>
                             </div>
                             {(isWalletConnectOpen || chiaActive) && 
+
+
+
+
                             <div className="animate-fadeIn text-sm bg-brandDark/10 font-medium px-4 py-4 rounded-b-xl flex flex-col gap-2 border-2 border-transparent hover:border-brandDark/10">
                                 <p className="text-base">Sessions</p>
-                                <ul className="flex flex-col gap-2">
-                                {
-                                    walletConnectSessions.map(session => (
-                                        <WalletConnectSession key={session.topic} img={session.peer.metadata.icons[0]} name={session.peer.metadata.name} topic={session.topic} />
-                                    ))
-                                }
+                                <WalletConnectQR />
+                                {!pairingUri && (
+                                    <ul className="flex flex-col gap-2">
+                                    {
+                                        walletConnectSessions.map((session: SessionTypes.Struct) => (
+                                            <WalletConnectSession key={session.topic} img={session.peer.metadata.icons[0]} name={session.peer.metadata.name} topic={session.topic} />
+                                        ))
+                                    }
 
-                                    <li onClick={() => dispatch(connectSession())} className={`select-none rounded-xl px-8 py-4 cursor-pointer hover:opacity-80 flex justify-center items-center w-full bg-brandDark/10 h-10 animate-fadeIn`}>
-                                        <PlusIcon className='w-6 h-auto' />
-                                    </li>
+                                        <li onClick={() => dispatch(connectSession())} className={`select-none rounded-xl px-8 py-4 cursor-pointer hover:opacity-80 flex justify-center items-center w-full bg-brandDark/10 h-10 animate-fadeIn`}>
+                                            <PlusIcon className='w-6 h-auto' />
+                                        </li>
 
-                                </ul>
-                            </div>}
+                                    </ul>
+                                )}
+                            </div>
+                            
+                            }
                         </div>
 
 
@@ -133,6 +145,7 @@ function ConnectWalletModal({ isOpen, setIsOpen, isWalletOnWrongChain }: Connect
                             </div>
                             {hoogiiActive && isWalletOnWrongChain && <p className="animate-fadeIn text-sm bg-red-700/80 font-medium text-brandLight px-2 py-1 rounded-b-xl text-center">Incorrect chain selected ({process.env.NEXT_PUBLIC_XCH === "TXCH" ? 'Mainnet' : 'Testnet'})</p>}
                         </div>
+
                     </div>
                     </Dialog.Panel>
                 </Transition.Child>
