@@ -2,7 +2,7 @@ import { closeCompleteWithWalletModal, showCompleteWithWalletModal } from '../Wa
 import { closeWalletConnectModal, showWalletConnectModal } from '../WalletConnect/WalletConnectModal';
 import WalletIntegrationInterface, { generateOffer } from '../walletIntegrationInterface';
 import { connectWallet, disconnectWallet } from '@/redux/walletSlice';
-import { getAllSessions } from '@/redux/walletConnectSlice';
+import { getAllSessions, setPairingUri, selectSession } from '@/redux/walletConnectSlice';
 import type { SessionTypes } from "@walletconnect/types";
 import SignClient from "@walletconnect/sign-client";
 import Client from '@walletconnect/sign-client';
@@ -52,11 +52,30 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     await store.dispatch(getAllSessions())
   }
 
+  async deleteTopicFromLocalStorage(topic: string) {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key?.startsWith('wc') && key.endsWith('//session')) {
+          const responseList = await JSON.parse(localStorage.getItem(key)!);
+          localStorage.setItem(key!, JSON.stringify(responseList.filter((item: { topic: string }) => item.topic !== topic)));
+      }
+    }   
+  }
+
   // If the session being disconnected is the only session connected, then disconnect the wallet in the wallet slice
-  async updateConnectedWalletOnDisconnect() {
+  async updateConnectedWalletOnDisconnect(topic?: string) {
     const state = store.getState();
     if (!state.walletConnect.sessions.length) {
       await store.dispatch(disconnectWallet("WalletConnect"));
+    }
+
+    if (!topic) return
+    // If user disconnects the currently selected session, select the next available one
+    const sessions = state.walletConnect.sessions
+    const selectedSession = state.walletConnect.selectedSession
+    if (sessions.length && selectedSession && topic === selectedSession.topic) {
+      const newSessionTopic = sessions[sessions.length-1].topic;
+      store.dispatch(selectSession(newSessionTopic))
     }
   }
 
@@ -88,12 +107,14 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
 
           // Display QR code to user
           if (uri) {
-            showWalletConnectModal(uri)
+            store.dispatch(setPairingUri(uri))
+            // showWalletConnectModal(uri)
           }
 
           // If new connection established successfully
           const session = await approval();
           console.log('Connected Chia wallet via WalletConnect', session, signClient)
+          store.dispatch(setPairingUri(null))
           closeWalletConnectModal()
           toast.success('Successfully Connected')
           this.detectEvents()
@@ -151,10 +172,12 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           },
         });
         
+        await this.deleteTopicFromLocalStorage(topic);
+
         await this.updateSessions();
         await this.updateConnectedWalletOnDisconnect();
       } catch (error: any) {
-        localStorage.removeItem('wc@2:client:0.3//session');
+        // localStorage.removeItem('wc@2:client:0.3//session');
         this.updateSessions();
         console.log(error.message);
     }
@@ -327,7 +350,6 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           error: 'Unable to fetch your wallets'
         })
         const wallets = await request;
-        console.log({ wallets })
         
         if (wallets.isSuccess) {
           return wallets;
@@ -410,7 +432,6 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
       this.client = client;
       return client;
     } catch (e) {
-      console.log(e);
       toast.error(`Wallet - ${e}`)
     }
   }
@@ -421,14 +442,18 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     const signClient = await this.signClient();
     if (!signClient) return
 
+
     // If user disconnects from UI or wallet, refresh the page
-    signClient.on("session_delete", async () => {
+    signClient.on("session_delete", async ({ id, topic }) => {
+
+      // Check localstorage and ensure it is removed from there
+      await this.deleteTopicFromLocalStorage(topic);
+
       await this.updateSessions();
-      await this.updateConnectedWalletOnDisconnect();
+      await this.updateConnectedWalletOnDisconnect(topic);
     })
 
   }
-
 
   // Callback methods to control UI modal (guide user through requests)
   protected onGetWalletsAccept?: () => void;
