@@ -11,7 +11,7 @@ interface AddAssetButtonProps {
     short_name: string
     image_url: string
     name: string
-    onCompletion?: () => void
+    onCompletion?: (assetId?: string) => void
 }
 
 function AddAssetButton({ asset_id, short_name, image_url, name, onCompletion = () => {} }: AddAssetButtonProps) {
@@ -24,9 +24,9 @@ function AddAssetButton({ asset_id, short_name, image_url, name, onCompletion = 
     const addAssetToWallet = async (assetId: string, symbol: string, logo: string, fullName: string) => {
         setIsLoading(true);
         const response = await dispatch(addAsset({assetId, symbol, logo, fullName}));
-        if (response) {
+        if (response.payload) {
             setIsAdded(true);
-            onCompletion();
+            onCompletion(assetId);
         }
         setIsLoading(false);
     }
