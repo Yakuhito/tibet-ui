@@ -1,7 +1,7 @@
-import { closeCompleteWithWalletModal, showCompleteWithWalletModal } from '../WalletConnect/CompleteWithWalletModal';
+import { setUserMustAddTheseAssetsToWallet, setOfferRejected, setRequestStep } from '@/redux/completeWithWalletSlice';
 import WalletIntegrationInterface, { generateOffer } from '../walletIntegrationInterface';
-import { connectWallet, disconnectWallet } from '@/redux/walletSlice';
 import { getAllSessions, setPairingUri, selectSession } from '@/redux/walletConnectSlice';
+import { connectWallet, disconnectWallet } from '@/redux/walletSlice';
 import type { SessionTypes } from "@walletconnect/types";
 import SignClient from "@walletconnect/sign-client";
 import Client from '@walletconnect/sign-client';
@@ -126,24 +126,6 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     }
   }
 
-  // async eagerlyConnect(): Promise<boolean> {
-  //   // Sign client, fetch pairing data. If active pairing, previous connection must exist.
-  //   try {
-  //     const signClient = await this.signClient();
-
-  //     if (signClient?.pairing.getAll({ active: true }).length) {
-  //       console.log(signClient.session.keys);
-  //       this.detectEvents();
-  //       return true;
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     toast.error(`Wallet - ${error}`)
-  //     return false;
-  //   }
-  //   return false;
-  // }
-
   disconnect() {
     return true;
   }
@@ -182,23 +164,23 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
   async generateOffer(requestAssets: generateOffer["requestAssets"], offerAssets: generateOffer["offerAssets"], fee: number | undefined): Promise<string | void> {
 
     // Show modal to user taking them through each step of the process
-    showCompleteWithWalletModal(this)
+    const state = store.getState().walletConnect;
+    store.dispatch(setRequestStep("getWallets"));
+    store.dispatch(setOfferRejected(false));
+    // showCompleteWithWalletModal(this)
 
     var firstRun = true
-    var userMustAddTheseAssetsToWallet: generateOffer["offerAssets"] = []
+    var tempAssetsToAddArray: generateOffer["offerAssets"] = [];
 
-    while (firstRun || userMustAddTheseAssetsToWallet.length > 0) {
+    while (firstRun || tempAssetsToAddArray.length > 0) {
       firstRun = false
-      userMustAddTheseAssetsToWallet = []
+      tempAssetsToAddArray = []
 
       // Send request to fetch users wallets
       const wallets = await this.getWallets();
       if (!wallets) {
-        closeCompleteWithWalletModal()
+        store.dispatch(setRequestStep(null))
         return;
-      }
-      if (this.onGetWalletsAccept) {
-        this.onGetWalletsAccept();
       }
 
       // Match assetIds to users wallet to find the wallet ID (required to send a create offer)
@@ -212,7 +194,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
         if (matchingChiaWallet) {
           offerItem.walletId = matchingChiaWallet.id;
         } else {
-          userMustAddTheseAssetsToWallet.push(offerItem)
+          tempAssetsToAddArray.push({...offerItem})
         }
       })
 
@@ -225,15 +207,41 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
         if (matchingChiaWallet) {
           requestItem.walletId = matchingChiaWallet.id;
         } else {
-          userMustAddTheseAssetsToWallet.push(requestItem)
+          tempAssetsToAddArray.push({...requestItem})
         }
       })
 
-      if (this.onAddAssets) {
-        await this.onAddAssets(userMustAddTheseAssetsToWallet)
-      }
-    }
+      if (tempAssetsToAddArray.length) {
+        store.dispatch(setUserMustAddTheseAssetsToWallet(tempAssetsToAddArray));
+        store.dispatch(setRequestStep("addAssets"));
 
+
+        // We now have a list of assets which need adding. We keep track of the list length. When it's 0, we can continue as all assets are added.
+        const checkIfAssetsHaveBeenAdded = () => {
+          return new Promise<void>((resolve, reject) => {
+            const unsubscribe = store.subscribe(() => {
+              const state = store.getState();
+              const userMustAddTheseAssetsToWallet = state.completeWithWallet.userMustAddTheseAssetsToWallet;
+              if (userMustAddTheseAssetsToWallet.length === 0 && !state.completeWithWallet.offerRejected) {
+                unsubscribe();
+                store.dispatch(setRequestStep("getWalletsAgain"));
+                resolve();
+              } else if (state.completeWithWallet.offerRejected) {
+                unsubscribe();
+                reject();
+              }
+              // Still more assets to add, wait for next update & check again
+            });
+          });
+        }
+
+        await checkIfAssetsHaveBeenAdded();
+      }      
+      
+    } // End of while loop (will run twice if user has had to add assets to continue)
+    
+    store.dispatch(setRequestStep("generateOffer"));
+    
     // Generate offer object
     let offer: {[key: number]: number} = {};
     offerAssets.forEach((asset) => {
@@ -293,21 +301,16 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
 
         if (resultOffer.error) {
           toast.error(resultOffer.error?.data.error)
-          if (this.onGenerateOfferReject) {
-            this.onGenerateOfferReject();
-          }
+          // Set offer rejected: true
+          store.dispatch(setOfferRejected(true));
         } else if (resultOffer.data) {
-          if (this.onGenerateOfferSuccess) {
-            this.onGenerateOfferSuccess();
-          }
+          store.dispatch(setRequestStep(null))
           return resultOffer.data.offer;
         }
 
     } catch (error) {
       toast.error(`Wallet - Failed to generate offer`)
-      if (this.onGenerateOfferReject) {
-        this.onGenerateOfferReject();
-      }
+      store.dispatch(setOfferRejected(true));
     }
     
   }
@@ -450,29 +453,6 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     })
 
   }
-
-  // Callback methods to control UI modal (guide user through requests)
-  protected onGetWalletsAccept?: () => void;
-  protected onAddAssets?: (userMustAddTheseAssetsToWallet: generateOffer["offerAssets"]) => Promise<void>;
-  protected onGenerateOfferSuccess?: () => void;
-  protected onGenerateOfferReject?: () => void;
-
-  setOnGetWalletsAccept(callback: () => void) {
-    this.onGetWalletsAccept = callback;
-  }
-
-  setOnAddAssets(callback: (userMustAddTheseAssetsToWallet: generateOffer["offerAssets"]) => Promise<void>) {
-    this.onAddAssets = callback;
-  }
-
-  setOnGenerateOfferSuccess(callback: () => void) {
-    this.onGenerateOfferSuccess = callback;
-  }
-
-  setOnGenerateOfferReject(callback: () => void) {
-    this.onGenerateOfferReject = callback;
-  }
-
 
 }
 
