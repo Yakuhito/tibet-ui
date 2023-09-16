@@ -61,11 +61,13 @@ export const generateOffer = createAsyncThunk('wallet/generateOffer', async (dat
     if (!connectedWallet) throw Error('You must connect a wallet to generate an offer');
     const walletManager = new WalletManager();
     const { requestAssets, offerAssets, fee } = data;
-    await walletManager.generateOffer(connectedWallet, requestAssets, offerAssets, fee);
-    return connectedWallet;
+    const offer = await walletManager.generateOffer(connectedWallet, requestAssets, offerAssets, fee);
+    if (!offer) return;
+    return offer;
   } catch (error: any) {
     if (error.message) {
       toast.error(`Wallet - ${error.message}`);
+      console.log(error)
     }
     throw error;
   }
@@ -84,12 +86,9 @@ export const addAsset = createAsyncThunk('wallet/addAsset', async (data: {
     const walletManager = new WalletManager();
     const { assetId, symbol, logo, fullName } = data;
     await walletManager.addAsset(connectedWallet, assetId, symbol, logo, fullName);
-    return connectedWallet;
+    return true;
   } catch (error: any) {
-    if (error.message) {
-      toast.error(`Wallet - ${error.message}`);
-    }
-    throw error;
+    console.log(error)
   }
 });
 
