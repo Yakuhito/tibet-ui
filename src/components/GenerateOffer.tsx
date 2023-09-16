@@ -341,10 +341,11 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         const fee = Number((pairAndQuote![1].fee / Math.pow(10, 12)).toFixed(12))
 
         try {
-            dispatch(generateOffer({requestAssets, offerAssets, fee}))
-            if (!offer) return
-            setOffer(offer);
-            setStep(3);
+            const response = await dispatch(generateOffer({requestAssets, offerAssets, fee}))
+            if (response.payload && typeof response.payload === 'string') {
+                setOffer(response.payload);
+                setStep(3);
+            }
         } catch (error: any) {
             console.log(error)
         }
