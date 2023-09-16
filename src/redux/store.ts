@@ -1,5 +1,6 @@
 import walletReducer from './walletSlice';
 import walletConnectReducer from './walletConnectSlice';
+import completeWithWalletReducer from './completeWithWalletSlice';
 import { useDispatch, useSelector, TypedUseSelectorHook } from 'react-redux';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import {
@@ -17,13 +18,14 @@ import storage from 'redux-persist/lib/storage'
 const rootReducer = combineReducers({
   wallet: walletReducer,
   walletConnect: walletConnectReducer,
+  completeWithWallet: completeWithWalletReducer,
 });
 
 const persistConfig = {
   key: 'root',
   version: 1,
   storage,
-  blacklist: ['walletConnectSlice'],
+  blacklist: ['completeWithWallet'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
