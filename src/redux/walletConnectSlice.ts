@@ -3,6 +3,7 @@ import WalletConnect from '../utils/walletIntegration/wallets/walletConnect';
 import type { SessionTypes } from "@walletconnect/types";
 import { toast } from 'react-hot-toast';
 
+
 export interface WalletConnectState {
   sessions: SessionTypes.Struct[] | [];
   selectedSession: SessionTypes.Struct | null | void;
@@ -69,7 +70,7 @@ const initialState: WalletConnectState = {
 };
 
 const walletConnectSlice = createSlice({
-  name: 'wallet',
+  name: 'walletConnect',
   initialState,
   reducers: {
     selectSession(state, action: PayloadAction<string>) {
@@ -94,8 +95,7 @@ const walletConnectSlice = createSlice({
     setPairingUri(state, action: PayloadAction<string | null>) {
       const uri = action.payload;
       state.pairingUri = uri;
-    }
-
+    },
   },
   extraReducers: (builder) => {
     builder
