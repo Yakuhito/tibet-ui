@@ -22,7 +22,8 @@ class WalletManager {
 
   public async generateOffer(wallet: string, requestAssets: generateOffer["requestAssets"], offerAssets: generateOffer["offerAssets"], fee: number | undefined): Promise<string | void> {
     const walletClass = this.getWalletClassFromString(wallet);
-    await walletClass.generateOffer(requestAssets, offerAssets, fee);
+    const offer = await walletClass.generateOffer(requestAssets, offerAssets, fee);
+    return offer;
   }
 
   public async addAsset(wallet: string, assetId: string, symbol: string, logo: string, fullName: string): Promise<void> {
