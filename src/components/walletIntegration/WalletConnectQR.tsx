@@ -19,7 +19,7 @@ function WalletConnectQR() {
         includeMargin
         width={"100%"}
         height={200}
-        bgColor="transparent"
+        bgColor="#EDF0F1"
       />
       <button className="text-red-700" onClick={() => dispatch(setPairingUri(null))}>Cancel</button>
       <CopyButton copyText={pairingUri} height="36px">Copy pairing string</CopyButton>
