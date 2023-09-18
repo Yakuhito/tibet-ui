@@ -1,5 +1,5 @@
-import { ChangeEvent, KeyboardEvent, Fragment, useState } from 'react'
-import { Dialog, Transition, RadioGroup } from '@headlessui/react'
+import { ChangeEvent, KeyboardEvent, Fragment, useState } from 'react';
+import { Dialog, Transition, RadioGroup } from '@headlessui/react';
 
 interface DevFeeModalProps {
     isOpen: boolean;

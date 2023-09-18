@@ -5,24 +5,20 @@ class hoogiiWallet implements WalletIntegrationInterface {
   name = "Hoogii";
   image = "/assets/hoogii.png";
 
-  async connect(): Promise<boolean> {
-    // Hoogii wallet connection logic
+  async connect(): Promise<void> {
+
     // Check if Hoogii extension is installed
     const { chia } = (window as any);
     if (!Boolean(chia && chia.hoogii.isHoogii)) {
       toast.error(<p>You don&apos;t have Hoogii Wallet installed. You can install it <a href="https://hoogii.app/" className="underline hover:opacity-80" target="_blank">here</a></p>);
-      return false
+      throw new Error()
     }
 
     try {
       await (window as any).chia.hoogii.request({ method: "connect" });
-      toast.success('Successfully Connected')
       this.detectEvents()
-      return true
     } catch (error: any) {
-        console.log(error)
-        toast.error(`Wallet - ${error?.message || String(error.message)}`);
-        return false
+      throw error;
     }
   }
 
@@ -110,13 +106,16 @@ class hoogiiWallet implements WalletIntegrationInterface {
       }
       return
     } catch (error: any) {
-        console.log(error)
-        toast.error(`Wallet - ${error?.message || String(error.message)}`);
+      throw error;
     }
   }
 
   getBalance(): void {
     // Hoogii wallet balance retrieval logic
+  }
+
+  async addAsset(assetId: string, symbol: string, logo: string, fullName: string): Promise<void> {
+    throw new Error("Hoogii doesn't have support for adding an assets programatically");
   }
 
   async getAddress() {
@@ -129,15 +128,9 @@ class hoogiiWallet implements WalletIntegrationInterface {
           return puzzle_hash[0];
         }
       } catch (error: any) {
-        console.log(error)
-        toast.error(`Wallet - ${error?.message || String(error.message)}`);
+        throw error;
       }
     }
-  }
-
-  async addAsset(assetId: string, symbol: string, logo: string, fullName: string): Promise<boolean> {
-    toast.error('Currently only Goby has support for adding an asset programatically')
-    return false;
   }
 
   detectEvents(): void {

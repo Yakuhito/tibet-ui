@@ -1,82 +1,44 @@
-import WalletIntegrationInterface from '@/utils/walletIntegration/walletIntegrationInterface';
-import WalletConnect from '@/utils/walletIntegration/wallets/walletConnect';
-import HoogiiWallet from '@/utils/walletIntegration/wallets/hoogiiWallet';
-import GobyWallet from '@/utils/walletIntegration/wallets/gobyWallet';
-import WalletManager from '@/utils/walletIntegration/walletManager';
+import { getAllSessions, connectSession } from '@/redux/walletConnectSlice';
+import WalletConnectIcon from '../icons/WalletConnectIcon';
+import WalletConnectSession from './WalletConnectSession';
+import type { SessionTypes } from "@walletconnect/types";
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useState, useEffect } from 'react';
-import { toast } from 'react-hot-toast';
+import { connectWallet } from '@/redux/walletSlice';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
+import { useAppDispatch } from '@/hooks';
+import PlusIcon from '../icons/PlusIcon';
 import Image from 'next/image';
+
+import WalletConnectQR from './WalletConnectQR';
+
+
 
 interface ConnectWalletModalProps {
     isOpen: boolean;
     setIsOpen: (value: boolean) => void;
-    walletManager: WalletManager | null;
-    activeWallet: WalletIntegrationInterface | null;
     isWalletOnWrongChain: boolean;
 }
 
-function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet, isWalletOnWrongChain }: ConnectWalletModalProps) {
-    const [fingerprints, setFingerprints] = useState([])
-    const [selectedFingerprint, setSelectedFingerprint] = useState<null | number>()
-    const [ozoneEnabled, setOzoneEnabled] = useState(false)
+function ConnectWalletModal({ isOpen, setIsOpen, isWalletOnWrongChain }: ConnectWalletModalProps) {
 
-    // Restore Chia Wallet fingerprints from local storage
+    const dispatch = useAppDispatch();
+    const connectedWallet = useSelector((state: RootState) => state.wallet.connectedWallet);
+    const walletConnectSessions = useSelector((state: RootState) => state.walletConnect.sessions);
+    const walletConnectSelectedSession = useSelector((state: RootState) => state.walletConnect.selectedSession);
+    
     useEffect(() => {
-        const fingerprints_ls = localStorage.getItem("wc_fingerprints")
-        const selectedFingerprint_ls = localStorage.getItem("wc_selectedFingerprint")
+        dispatch(getAllSessions());
+    }, [dispatch])
 
-        if (fingerprints_ls) setFingerprints(JSON.parse(fingerprints_ls))
-        if (selectedFingerprint_ls) setSelectedFingerprint(JSON.parse(selectedFingerprint_ls))
-        if (localStorage.getItem('ozoneExperimentalIntegration') === 'enabled') setOzoneEnabled(true)
-    },[])
+    const walletConnectActive = connectedWallet === "WalletConnect" && walletConnectSelectedSession;
+    const gobyActive = connectedWallet === "Goby";
+    const hoogiiActive = connectedWallet === "Hoogii";
 
-    const handleSwitchChiaWallet = (fingerprint: number) => {
-        if (fingerprint === selectedFingerprint) return
-        setSelectedFingerprint(fingerprint);
-        localStorage.setItem("wc_selectedFingerprint", JSON.stringify(fingerprint))
-        toast.success(<p className="break-words max-w-[18rem]">Switched to wallet fingerprint <span className="font-mono bg-brandDark/10 text-brandDark/90 px-1 rounded-sm">{fingerprint}</span></p>, {id: fingerprint.toString()})
-    }
+    const [isWalletConnectOpen, setIsWalletConnectOpen] = useState(false);
+    const pairingUri = useSelector((state: RootState) => state.walletConnect.pairingUri);
 
-    // Handle connecting to a wallet when clicking on an option
-    const handleConnect = async (walletIdentifier: string, walletOpt: "chia" | "ozone" | null = null) => {
-        // Get the wallet integration object based on the identifier
-        let walletIntegration: WalletIntegrationInterface | null = null;
-        let connectionSuccessful: boolean = false;
-        if (walletIdentifier === activeWallet?.name) return // If already connected to that wallet, do nothing (or handle disconnect?)
-
-        // Try connecting to wallet option selected by user
-        const walletClasses: Record<string, any> = {
-            Goby: GobyWallet,
-            Hoogii: HoogiiWallet,
-            WalletConnect: WalletConnect
-          };
-
-        try {
-            if (walletIdentifier in walletClasses) {
-                const WalletClass = walletClasses[walletIdentifier];
-                if(walletOpt === null) {
-                    walletIntegration = new WalletClass();
-                } else {
-                    walletIntegration = new WalletClass(walletOpt);
-                }
-                const response = await walletIntegration?.connect();
-                connectionSuccessful = Boolean(response);
-            }
-        } catch (error) {
-            console.error('Error connecting to wallet:', error);
-            connectionSuccessful = false;
-        }
-        // Update activeWallet state
-        if (connectionSuccessful && walletIntegration) {
-            walletManager ? walletManager.setActiveWallet(walletIntegration) : null;
-        }
-    };
-
-    const chiaActive = activeWallet instanceof WalletConnect && activeWallet.walletType === "chia"
-    const gobyActive = activeWallet instanceof GobyWallet
-    const ozoneActive = activeWallet instanceof WalletConnect && activeWallet.walletType === "ozone"
-    const hoogiiActive = activeWallet instanceof HoogiiWallet
     return (    
         <Transition appear show={isOpen} as={Fragment}>
             <Dialog as="div" className="relative z-20" onClose={() => setIsOpen(false)}>
@@ -110,34 +72,56 @@ function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet, is
                     {/* Wallet Options */}
                     <div className="mt-10 flex flex-col gap-4">
 
-                        {/* Chia Wallet */}
+                        {/* Wallet Connect */}
                         <div>
-                            <div onClick={() => handleConnect('WalletConnect', 'chia')} className={`${chiaActive ? `bg-green-700/20 focus:ring-green-700/20 ${fingerprints.length > 1 ? 'rounded-t-xl' : 'rounded-xl'}` : 'bg-brandDark/10 rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
+                            <div onClick={() => walletConnectSessions.length ? dispatch(connectWallet("WalletConnect")) : dispatch(connectSession())} className={`${walletConnectActive ? `bg-green-700/20 focus:ring-green-700/20` : 'bg-brandDark/10'} ${isWalletConnectOpen || walletConnectActive || pairingUri ? 'rounded-t-xl' : 'rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
                                 <div className="flex items-center gap-4">
-                                    <Image src="/assets/xch.webp" height={40} width={40} alt={'Chia Wallet Logo'} className="rounded-full" />
-                                    <p className="font-medium text-lg">Chia Wallet</p>
+                                    <WalletConnectIcon className="w-10 h-10" />
+                                    <p className="font-medium text-lg">Wallet Connect</p>
                                 </div>
                                 <button className={`
-                                ${chiaActive ? 'outline-none text-green-700' : ''}
+                                ${walletConnectActive ? 'outline-none text-green-700' : ''}
                                 font-medium rounded-lg px-2 py-1
-                                ${chiaActive ? "before:content-['Connected']" : "before:content-['Connect']"}`}
+                                ${walletConnectActive ? "before:content-['Connected']" : "before:content-['Connect']"}`}
                                 ></button>
                             </div>
-                            {chiaActive && fingerprints.length > 1 && <div className="animate-fadeIn text-sm bg-brandDark/10 font-medium px-4 py-4 rounded-b-xl flex flex-col gap-2 border-2 border-transparent hover:border-brandDark/10">
-                                <p className="text-base">Your Wallets</p>
-                                <ul className="flex">
-                                {
-                                    fingerprints.map(fingerprint => (
-                                        <li onClick={() => handleSwitchChiaWallet(fingerprint)} className={`select-none rounded-full px-4 py-1 ${fingerprint == selectedFingerprint ? 'bg-green-700/20 focus:ring-green-700/20 text-green-700' : 'cursor-pointer hover:opacity-80'}`} key={fingerprint}>{fingerprint}</li>
-                                    ))
-                                }
-                                </ul>
-                            </div>}
+
+                            <Transition
+                              show={isWalletConnectOpen || Boolean(walletConnectActive) || Boolean(pairingUri)}
+                              enter="transition-all duration-300"
+                              enterFrom="max-h-[0] opacity-0"
+                              enterTo="max-h-[1000px] opacity-100"
+                              leave="transition-all duration-300"
+                              leaveFrom="max-h-[1000px] opacity-100"
+                              leaveTo="max-h-[0] opacity-0"
+                            >
+                                {(ref) => (
+                                    <div ref={ref} className="animate-fadeIn text-sm bg-brandDark/10 font-medium px-4 py-4 rounded-b-xl flex flex-col gap-2 border-2 border-transparent hover:border-brandDark/10">
+                                        <p className="text-base">Sessions</p>
+                                        <WalletConnectQR />
+                                        {!pairingUri && (
+                                            <ul className="flex flex-col gap-2">
+                                            {
+                                                walletConnectSessions.map((session: SessionTypes.Struct) => (
+                                                    <WalletConnectSession key={session.topic} img={session.peer.metadata.icons[0]} name={session.peer.metadata.name} topic={session.topic} />
+                                                ))
+                                            }
+        
+                                                <li onClick={() => dispatch(connectSession())} className={`select-none rounded-xl px-8 py-4 cursor-pointer hover:opacity-80 flex justify-center items-center w-full bg-brandDark/10 h-10 animate-fadeIn`}>
+                                                    <PlusIcon className='w-6 h-auto' />
+                                                </li>
+                                        
+                                            </ul>
+                                        )}
+                                    </div>
+                                )}
+                            </Transition>
                         </div>
-                        
+
+
                         {/* Goby Wallet */}
                         <div>
-                            <div onClick={() => handleConnect('Goby')} className={`${gobyActive ? 'bg-green-700/20 focus:ring-green-700/20' : 'bg-brandDark/10'} ${isWalletOnWrongChain && activeWallet instanceof GobyWallet ? 'rounded-t-xl' : 'rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
+                            <div onClick={() => dispatch(connectWallet("Goby"))} className={`${gobyActive ? 'bg-green-700/20 focus:ring-green-700/20' : 'bg-brandDark/10'} ${isWalletOnWrongChain && gobyActive ? 'rounded-t-xl' : 'rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
                             <div className="flex items-center gap-4">
                                     <Image src="/assets/goby.webp" height={40} width={40} alt={'Goby Wallet Logo'} className="rounded-full" />
                                     <p className="font-medium text-lg">Goby Wallet</p>
@@ -151,38 +135,10 @@ function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet, is
                             {gobyActive && isWalletOnWrongChain && <p className="animate-fadeIn text-sm bg-red-700/80 font-medium text-brandLight px-2 py-1 rounded-b-xl text-center">Incorrect chain selected ({process.env.NEXT_PUBLIC_XCH === "TXCH" ? 'Mainnet' : 'Testnet'})</p>}
                         </div>
 
-                        {/* Ozone Wallet */}
-                        {/* temp feature flag */}
-                        {
-                            ozoneEnabled &&
-                            <div>
-                                <div onClick={() => handleConnect('WalletConnect', 'ozone')} className={`${ozoneActive ? `bg-green-700/20 focus:ring-green-700/20 ${fingerprints.length > 1 ? 'rounded-t-xl' : 'rounded-xl'}` : 'bg-brandDark/10 rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
-                                    <div className="flex items-center gap-4">
-                                        <Image src="/assets/ozone.png" height={40} width={40} alt={'Ozone Wallet Logo'} className="rounded-full" />
-                                        <p className="font-medium text-lg">Ozone Wallet</p>
-                                    </div>
-                                    <button className={`
-                                    ${ozoneActive ? 'outline-none text-green-700' : ''}
-                                    font-medium rounded-lg px-2 py-1
-                                    ${ozoneActive ? "before:content-['Connected']" : "before:content-['Connect']"}`}
-                                    ></button>
-                                </div>
-                                {ozoneActive && fingerprints.length > 1 && <div className="animate-fadeIn text-sm bg-brandDark/10 font-medium px-4 py-4 rounded-b-xl flex flex-col gap-2 border-2 border-transparent hover:border-brandDark/10">
-                                    <p className="text-base">Your Wallets</p>
-                                    <ul className="flex">
-                                    {
-                                        fingerprints.map(fingerprint => (
-                                            <li onClick={() => handleSwitchChiaWallet(fingerprint)} className={`select-none rounded-full px-4 py-1 ${fingerprint == selectedFingerprint ? 'bg-green-700/20 focus:ring-green-700/20 text-green-700' : 'cursor-pointer hover:opacity-80'}`} key={fingerprint}>{fingerprint}</li>
-                                        ))
-                                    }
-                                    </ul>
-                                </div>}
-                            </div>
-                        }
 
                         {/* Hoogii Wallet */}
                         <div>
-                            <div onClick={() => handleConnect('Hoogii')} className={`${hoogiiActive ? 'bg-green-700/20 focus:ring-green-700/20' : 'bg-brandDark/10'} ${isWalletOnWrongChain && activeWallet instanceof HoogiiWallet ? 'rounded-t-xl' : 'rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
+                            <div onClick={() => dispatch(connectWallet("Hoogii"))} className={`${hoogiiActive ? 'bg-green-700/20 focus:ring-green-700/20' : 'bg-brandDark/10'} ${isWalletOnWrongChain && hoogiiActive ? 'rounded-t-xl' : 'rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
                             <div className="flex items-center gap-4">
                                     <Image src="/assets/hoogii.png" height={40} width={40} alt={'Hoogii Wallet Logo'} className="rounded-full" />
                                     <p className="font-medium text-lg">Hoogii Wallet</p>
@@ -195,6 +151,7 @@ function ConnectWalletModal({ isOpen, setIsOpen, walletManager, activeWallet, is
                             </div>
                             {hoogiiActive && isWalletOnWrongChain && <p className="animate-fadeIn text-sm bg-red-700/80 font-medium text-brandLight px-2 py-1 rounded-b-xl text-center">Incorrect chain selected ({process.env.NEXT_PUBLIC_XCH === "TXCH" ? 'Mainnet' : 'Testnet'})</p>}
                         </div>
+
                     </div>
                     </Dialog.Panel>
                 </Transition.Child>

@@ -1,17 +1,19 @@
 import { ActionType, createOfferForPair, getInputPrice, getLiquidityQuote, getOutputPrice, getPairByLauncherId, getQuoteForPair } from '@/api';
-import WalletConnect from '@/utils/walletIntegration/wallets/walletConnect';
-import GobyWallet from '@/utils/walletIntegration/wallets/gobyWallet';
 import AddAssetButton from './walletIntegration/AddAssetButton';
 import type { OfferResponse, Pair, Quote, Token } from '@/api';
 import type { GenerateOfferData } from './TabContainer';
 import { useEffect, useState, useContext } from 'react';
-import WalletContext from '@/context/WalletContext';
 import BarLoader from 'react-spinners/BarLoader';
 import CopyButton from './atomic/CopyButton';
 import SuccessScreen from './SuccessScreen';
 import { RingLoader } from 'react-spinners';
-import { toast } from 'react-hot-toast';
+import CrossIcon from './icons/CrossIcon';
 import Image from 'next/image';
+
+import { generateOffer } from '@/redux/walletSlice';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
+import { useAppDispatch } from '@/hooks';
 
 type GenerateOfferProps = {
   data: GenerateOfferData;
@@ -297,7 +299,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                         (<div className="rounded-lg mt-2 mb-4 flex gap-2 ml-4">
                             <div className="flex gap-2 text-sm font-normal pl-[calc(0.5rem+12px)]">
                                 <CopyButton copyText={e[0].asset_id}>Asset ID</CopyButton>
-                                <AddAssetButton asset_id={e[0].asset_id} short_name={e[0].short_name} image_url={e[0].image_url} name={e[0].name} activeWallet={activeWallet} />
+                                <AddAssetButton asset_id={e[0].asset_id} short_name={e[0].short_name} image_url={e[0].image_url} name={e[0].name} />
                             </div>
                         </div>)
                         }
@@ -309,10 +311,11 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
     
 
     
-    const { walletManager, activeWallet } = useContext(WalletContext);
+    const dispatch = useAppDispatch();
+    const connectedWallet = useSelector((state: RootState) => state.wallet.connectedWallet);
     
     const completeWithWallet = async () => {
-        if (!activeWallet) return;
+        if (!connectedWallet) return;
 
         console.log('Completing with wallet')
         const requestAssets = data.request.map(asset => (
@@ -338,10 +341,11 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         const fee = Number((pairAndQuote![1].fee / Math.pow(10, 12)).toFixed(12))
 
         try {
-            const offer = await activeWallet.generateOffer(requestAssets, offerAssets, fee)
-            if (!offer) return
-            setOffer(offer);
-            setStep(3);
+            const response = await dispatch(generateOffer({requestAssets, offerAssets, fee}))
+            if (response.payload && typeof response.payload === 'string') {
+                setOffer(response.payload);
+                setStep(3);
+            }
         } catch (error: any) {
             console.log(error)
         }
@@ -396,8 +400,8 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                     }
 
                     {/* Complete with Wallet Integration Button */}
-                    {activeWallet && <button className="bg-brandDark hover:opacity-90 text-brandLight w-full py-4 rounded-xl font-medium" onClick={completeWithWallet}>Use Wallet to Complete Order</button>}
-                    {activeWallet && <p className="flex w-full justify-center font-medium my-4">— OR —</p>}
+                    {connectedWallet && <button className="bg-brandDark hover:opacity-90 text-brandLight w-full py-4 rounded-xl font-medium" onClick={completeWithWallet}>Use Wallet to Complete Order</button>}
+                    {connectedWallet && <p className="flex w-full justify-center font-medium my-4">— OR —</p>}
 
                     {/* Input for user to paste manually generated offer in */}
                     <input type="text"
@@ -497,7 +501,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                         {!offerResponse!.success && (<>
                             <div className="bg-red-400/50 dark:bg-red-400/20 rounded-xl text-red-700 dark:text-red-600 p-4 sm:p-8 mt-8 flex flex-col">
                                 <div className="flex gap-2 items-center mb-8">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px" className="fill-red-700 dark:fill-red-600"><title>Swap issue</title><path d="M21.5 4.5H26.501V43.5H21.5z" transform="rotate(45.001 24 24)"/><path d="M21.5 4.5H26.5V43.501H21.5z" transform="rotate(135.008 24 24)"/></svg>
+                                    <CrossIcon className="w-6 h-6 fill-red-700 dark:fill-red-600" />
                                     <span className="font-medium text-2xl">Failed to complete {activeTab === 'swap' ? 'swap' : 'transaction'}</span>
                                 </div>
                                 {displayErrorMessage()}

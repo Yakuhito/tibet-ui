@@ -1,5 +1,5 @@
-import { Token, getAllTokens } from '../api';
 import TabContainer from '@/components/TabContainer';
+import { Token, getAllTokens } from '../api';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 

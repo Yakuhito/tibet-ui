@@ -1,3 +1,13 @@
+import WalletConnect from './wallets/walletConnect';
+import HoogiiWallet from './wallets/hoogiiWallet';
+import GobyWallet from './wallets/gobyWallet';
+
+export const walletClasses: Record<string, any> = {
+  Goby: GobyWallet,
+  Hoogii: HoogiiWallet,
+  WalletConnect: WalletConnect,
+};
+
 export interface generateOffer {
     requestAssets: {
       assetId: string
@@ -24,8 +34,8 @@ interface WalletIntegrationInterface {
     disconnect(): void;
     generateOffer(requestAssets: generateOffer["requestAssets"], offerAssets: generateOffer["offerAssets"], fee: number | undefined): Promise<string | void>;
     getBalance(): void;
-    addAsset(assetId: string, symbol: string, logo: string, fullName: string): Promise<boolean>;
-    getAddress(): Promise<string | void>;
+    addAsset(assetId: string, symbol: string, logo: string, fullName: string): Promise<void>;
+    getAddress(): Promise<string | null>;
 }
   
 export default WalletIntegrationInterface;

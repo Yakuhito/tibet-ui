@@ -1,8 +1,8 @@
-import { getInputPrice, getPairByLauncherId, ActionType, getLiquidityQuote } from '../api';
-import React, { useState, useEffect, useRef } from 'react';
+import CompleteWithWalletModal from './walletIntegration/CompleteWithWalletModal';
+import React, { useState, useEffect } from 'react';
+import { type Token, ActionType } from '../api';
 import GenerateOffer from './GenerateOffer';
 import Liquidity from './Liquidity';
-import type { Token } from '../api';
 import Swap from './Swap';
 
 export interface GenerateOfferData {
@@ -78,6 +78,7 @@ const TabContainer: React.FC<TabContainerProps> = ({ tokens, selectedToken, setS
 
   return (
     <div className="rounded-2xl max-w-screen-sm w-full">
+      <CompleteWithWalletModal />
       <h1 className="text-[2.75rem] leading-10 sm:text-5xl font-bold pb-4">{generateOfferData ? 'Order Summary' : 'Trade'}</h1>
 
       {/* Display swap/liquidity toggle */}

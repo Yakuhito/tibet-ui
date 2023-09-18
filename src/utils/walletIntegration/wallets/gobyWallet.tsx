@@ -6,24 +6,20 @@ class gobyWallet implements WalletIntegrationInterface {
   name = "Goby";
   image = "/assets/goby.webp";
 
-  async connect(): Promise<boolean> {
-    // Goby wallet connection logic
+  async connect(): Promise<void> {
+
     // Check if Goby extension is installed
     const { chia } = (window as any);
     if (!Boolean(chia && chia.isGoby)) {
       toast.error(<p>You don&apos;t have Goby Wallet installed. You can install it <a href="https://www.goby.app/" className="underline hover:opacity-80" target="_blank">here</a></p>);
-      return false
+      throw new Error()
     }
 
     try {
       await (window as any).chia.request({ method: "connect" });
-      toast.success('Successfully Connected')
       this.detectEvents()
-      return true
     } catch (error: any) {
-        console.log(error)
-        toast.error(`Wallet - ${error?.message || String(error.message)}`);
-        return false
+      throw error;
     }
   }
 
@@ -63,8 +59,7 @@ class gobyWallet implements WalletIntegrationInterface {
       }
       return
     } catch (error: any) {
-        console.log(error)
-        toast.error(`Wallet - ${error?.message || String(error.message)}`);
+      throw error;
     }
   }
 
@@ -72,7 +67,7 @@ class gobyWallet implements WalletIntegrationInterface {
     // Goby wallet balance retrieval logic
   }
 
-  async addAsset(assetId: string, symbol: string, logo: string, fullName: string): Promise<boolean> {
+  async addAsset(assetId: string, symbol: string, logo: string, fullName: string): Promise<void> {
     let symbolM = symbol
     let logoM = logo
 
@@ -92,13 +87,10 @@ class gobyWallet implements WalletIntegrationInterface {
         }
       }
       const response = await (window as any).chia.request({ method: 'walletWatchAsset', params })
-      toast.success(`Adding ${symbol} to Goby`)
-      return true;
+      toast.success(`Added ${symbol} to Goby`)
     } catch (error: any) {
-        console.log(error)
-        toast.error(`Wallet - ${error?.message || String(error.message)}`);
-    }
-    return false;  
+      throw error;
+    } 
   }
 
   async getAddress() {
@@ -115,6 +107,7 @@ class gobyWallet implements WalletIntegrationInterface {
           }
         }
       }
+      return null;
   }
 
   detectEvents(): void {
