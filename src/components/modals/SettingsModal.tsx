@@ -1,4 +1,5 @@
 import { Dialog, Transition } from '@headlessui/react';
+import DevFeeSelector from '../DevFeeSelector';
 import ThemeSwitcher from '../ThemeSwitcher';
 import { Fragment } from 'react';
 
@@ -43,16 +44,11 @@ function SettingsModal({ isOpen, setIsOpen, theme, setTheme }: ConnectWalletModa
                     {/* Settings Options */}
                     <div className="mt-10 flex flex-col gap-4">
 
+                        <p className="font-medium">Theme</p>
                         <ThemeSwitcher theme={theme} setTheme={setTheme} />
 
-                        {/* Example Settings Menu Item */}
-                        {/* <div className={`hover:opacity-80 bg-brandDark/10 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 rounded-xl cursor-pointer`}>
-                            <div className="flex items-center gap-4">
-                                <Image src="/assets/xch.webp" height={40} width={40} alt={'Chia Wallet Logo'} className="rounded-full" />
-                                <p className="font-medium text-lg">Chia Wallet</p>
-                            </div>
-                            <button className={`font-medium rounded-lg px-2 py-1 before:content-['Coming_Soon']`}></button>
-                        </div> */}
+                        <p className="font-medium">Dev Fee</p>
+                        <DevFeeSelector />
 
                     </div>
                     </Dialog.Panel>
