@@ -9,7 +9,6 @@ import Navbar from '@/components/Navbar';
 import { Provider } from 'react-redux';
 import '@/styles/globals.css';
 
-import { useAppDispatch } from '@/hooks';
 import { detectWalletEvents } from '@/redux/walletSlice';
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -55,7 +54,12 @@ export default function App({ Component, pageProps }: AppProps) {
           <Navbar theme={theme} setTheme={setTheme} />
           <Toaster position="bottom-right"
             toastOptions={{
+              className: "bg-slate-100 dark:bg-[#1E2124]/90 dark:text-brandLight backdrop-blur-3xl w-full sm:w-auto",
               loading: {
+                // iconTheme: {
+                //   primary: "",
+                //   secondary: "transparent",
+                // },
                 duration: 45000,
               },
               success: {
