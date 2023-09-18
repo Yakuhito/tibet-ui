@@ -42,7 +42,7 @@ function DevFeeSelector() {
           break;
       }
     }
-  }, [devFee]); // Only need this to fire when devFee is available
+  }, [devFee, selectedFee]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
