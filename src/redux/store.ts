@@ -14,11 +14,13 @@ import {
   REGISTER,
 } from "redux-persist";
 import storage from 'redux-persist/lib/storage'
+import devFeeReducer from './devFeeSlice';
 
 const rootReducer = combineReducers({
   wallet: walletReducer,
   walletConnect: walletConnectReducer,
   completeWithWallet: completeWithWalletReducer,
+  devFee: devFeeReducer,
 });
 
 const persistConfig = {
