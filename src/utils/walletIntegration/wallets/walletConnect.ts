@@ -121,8 +121,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           return session;
         }
     } catch (error) {
-      console.log('Error:', error)
-      toast.error(`Wallet - ${error}`)
+      console.log('Error:', error);
     }
   }
 
