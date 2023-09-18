@@ -1,4 +1,4 @@
-import { useState, useEffect, type ChangeEvent } from "react";
+import { useState, useEffect, type ChangeEvent, useRef } from "react";
 import { setDevFee } from "@/redux/devFeeSlice";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
@@ -8,6 +8,8 @@ function DevFeeSelector() {
 
   const dispatch = useAppDispatch();
   const devFee = useSelector((state: RootState) => state.devFee.devFee);
+
+  const inputRef = useRef<HTMLInputElement>(null);
   
   // Keep track of which option the user has selected
   const [selectedFee, setSelectedFee] = useState<0.3 | 0.7 | "Custom">();
@@ -17,8 +19,9 @@ function DevFeeSelector() {
   
   // Clear input value if it's not the selected option
   useEffect(() => {
-    if (selectedFee !== "Custom") {
+    if (selectedFee !== "Custom" && inputRef.current) {
       setInputValue("");
+      inputRef.current.blur();
     }
   }, [selectedFee])
   
@@ -101,6 +104,7 @@ function DevFeeSelector() {
       >
         <input
           type="text"
+          ref={inputRef}
           className={`w-full h-full bg-transparent text-center focus:outline-none ${
             selectedFee === "Custom"
               ? "placeholder-brandLight"
@@ -109,6 +113,7 @@ function DevFeeSelector() {
           placeholder="Custom"
           value={inputValue}
           onChange={handleChange}
+          autoFocus={false}
         />
         {inputValue && <span className="font-medium pt-[2px]">%</span>}
       </div>
