@@ -1,4 +1,6 @@
 import { generateOffer, walletClasses } from './walletIntegrationInterface';
+import { connectWallet } from '@/redux/walletSlice';
+import store from '@/redux/store';
 
 class WalletManager {
 
@@ -48,6 +50,7 @@ class WalletManager {
 
   public async detectEvents(wallet: string): Promise<void> {
     const walletClass = this.getWalletClassFromString(wallet);
+    store.dispatch(connectWallet(wallet));
     return await walletClass.detectEvents();
   }
 
