@@ -1,7 +1,11 @@
 import CompleteWithWalletModal from './walletIntegration/CompleteWithWalletModal';
+import { setDevFee as setReduxDevFee } from '@/redux/devFeeSlice';
+import { useAppDispatch } from '@/hooks';
 import React, { useState, useEffect } from 'react';
 import { type Token, ActionType } from '../api';
 import GenerateOffer from './GenerateOffer';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
 import Liquidity from './Liquidity';
 import Swap from './Swap';
 
@@ -25,16 +29,14 @@ const TabContainer: React.FC<TabContainerProps> = ({ tokens, selectedToken, setS
   const [activeTab, setActiveTab] = useState<'swap' | 'liquidity'>(SWAP_ENABLED ? 'swap' : 'liquidity');
   const [generateOfferData, setGenerateOfferData] = useState<GenerateOfferData | null>(null);
   const [orderRefreshActive, setOrderRefreshActive] = useState(false)
-  const [devFee, setDevFee] = useState(0.003)
   const [dataRefreshPercent, setDataRefreshPercent] = useState(0);
 
-  // Remember & restore user dev fee preference (if >= 0.3%)
-  useEffect(() => {
-    const devFee = localStorage.getItem('devFee');
-    if (devFee && parseFloat(devFee) >= 0.003) {
-      setDevFee(parseFloat(devFee));
-    }
-  }, []);
+
+  const dispatch = useAppDispatch();
+  const devFee = useSelector((state: RootState) => state.devFee.devFee);
+  const setDevFee = (fee: number) => {
+    dispatch(setReduxDevFee(fee))
+  }
 
   // Update data refresh loader percent
   useEffect(() => {
