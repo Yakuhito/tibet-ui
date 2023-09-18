@@ -85,28 +85,37 @@ function ConnectWalletModal({ isOpen, setIsOpen, isWalletOnWrongChain }: Connect
                                 ${walletConnectActive ? "before:content-['Connected']" : "before:content-['Connect']"}`}
                                 ></button>
                             </div>
-                            {(isWalletConnectOpen || walletConnectActive || pairingUri) ? 
 
-                            <div className="animate-fadeIn text-sm bg-brandDark/10 font-medium px-4 py-4 rounded-b-xl flex flex-col gap-2 border-2 border-transparent hover:border-brandDark/10">
-                                <p className="text-base">Sessions</p>
-                                <WalletConnectQR />
-                                {!pairingUri && (
-                                    <ul className="flex flex-col gap-2">
-                                    {
-                                        walletConnectSessions.map((session: SessionTypes.Struct) => (
-                                            <WalletConnectSession key={session.topic} img={session.peer.metadata.icons[0]} name={session.peer.metadata.name} topic={session.topic} />
-                                        ))
-                                    }
-
-                                        <li onClick={() => dispatch(connectSession())} className={`select-none rounded-xl px-8 py-4 cursor-pointer hover:opacity-80 flex justify-center items-center w-full bg-brandDark/10 h-10 animate-fadeIn`}>
-                                            <PlusIcon className='w-6 h-auto' />
-                                        </li>
-
-                                    </ul>
+                            <Transition
+                              show={isWalletConnectOpen || Boolean(walletConnectActive) || Boolean(pairingUri)}
+                              enter="transition-all duration-300"
+                              enterFrom="max-h-[0] opacity-0"
+                              enterTo="max-h-[1000px] opacity-100"
+                              leave="transition-all duration-300"
+                              leaveFrom="max-h-[1000px] opacity-100"
+                              leaveTo="max-h-[0] opacity-0"
+                            >
+                                {(ref) => (
+                                    <div ref={ref} className="animate-fadeIn text-sm bg-brandDark/10 font-medium px-4 py-4 rounded-b-xl flex flex-col gap-2 border-2 border-transparent hover:border-brandDark/10">
+                                        <p className="text-base">Sessions</p>
+                                        <WalletConnectQR />
+                                        {!pairingUri && (
+                                            <ul className="flex flex-col gap-2">
+                                            {
+                                                walletConnectSessions.map((session: SessionTypes.Struct) => (
+                                                    <WalletConnectSession key={session.topic} img={session.peer.metadata.icons[0]} name={session.peer.metadata.name} topic={session.topic} />
+                                                ))
+                                            }
+        
+                                                <li onClick={() => dispatch(connectSession())} className={`select-none rounded-xl px-8 py-4 cursor-pointer hover:opacity-80 flex justify-center items-center w-full bg-brandDark/10 h-10 animate-fadeIn`}>
+                                                    <PlusIcon className='w-6 h-auto' />
+                                                </li>
+                                        
+                                            </ul>
+                                        )}
+                                    </div>
                                 )}
-                            </div>
-                            : <></>
-                            }
+                            </Transition>
                         </div>
 
 
