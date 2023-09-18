@@ -1,7 +1,8 @@
+import { useAppDispatch, useAppSelector as useSelector } from '@/hooks';
+import store, { persistor, type RootState } from '@/redux/store';
 import { PersistGate } from 'redux-persist/integration/react';
 import TwitterIcon from '@/components/icons/TwitterIcon';
 import { Analytics } from '@vercel/analytics/react';
-import store, { persistor } from '@/redux/store';
 import { useState, useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import type { AppProps } from 'next/app';
@@ -10,6 +11,7 @@ import { Provider } from 'react-redux';
 import '@/styles/globals.css';
 
 import { detectWalletEvents } from '@/redux/walletSlice';
+import { setDevFee } from '@/redux/devFeeSlice';
 
 export default function App({ Component, pageProps }: AppProps) {
 
@@ -47,6 +49,13 @@ export default function App({ Component, pageProps }: AppProps) {
   // On page reload, wallet event listeners need to be re-established (i.e. if user disconnects from their wallet, the UI will update)
   store.dispatch(detectWalletEvents());
 
+  // Only persist devFee if >= 0.3%
+  const state = store.getState();
+  const devFee = state.devFee.devFee;
+  if (devFee <= 0.003) {
+    store.dispatch(setDevFee(0.003));
+  }
+
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
@@ -56,10 +65,6 @@ export default function App({ Component, pageProps }: AppProps) {
             toastOptions={{
               className: "bg-slate-100 dark:bg-[#1E2124]/90 dark:text-brandLight backdrop-blur-3xl w-full sm:w-auto",
               loading: {
-                // iconTheme: {
-                //   primary: "",
-                //   secondary: "transparent",
-                // },
                 duration: 45000,
               },
               success: {
