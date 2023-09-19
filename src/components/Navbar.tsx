@@ -1,8 +1,11 @@
 import ConnectButton from './walletIntegration/ConnectButton';
+import { setIsOpen } from '@/redux/settingsModalSlice';
 import SettingsModal from './modals/SettingsModal';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
+import { useAppDispatch } from '@/hooks';
 import { useRouter } from 'next/router';
 import CogIcon from './icons/CogIcon';
-import { useState } from 'react';
 import Logo from './icons/Logo';
 import Link from 'next/link';
 import React from 'react';
@@ -14,7 +17,11 @@ interface NavbarProps {
 
 export default function Navbar({ theme, setTheme }: NavbarProps) {
   const router = useRouter();
-  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
+  const dispatch = useAppDispatch();
+  const isSettingsModalOpen = useSelector((state: RootState) => state.settingsModal.isOpen);
+  const setIsSettingsModalOpen = (value: boolean) => {
+    dispatch(setIsOpen(value));
+  }
 
   return (
     <>
@@ -31,7 +38,7 @@ export default function Navbar({ theme, setTheme }: NavbarProps) {
             <Link href="/faq" className={`font-medium text-brandDark px-6 py-1.5 rounded-xl ${router.asPath === "/faq" ? 'dark:text-brandLight bg-brandDark/10' : 'text-brandDark/70 dark:text-brandLight/50 hover:opacity-80'}`}>FAQs</Link>
             <Link href={`${process.env.NEXT_PUBLIC_INFO_BASE_URL}`} className="font-medium text-brandDark text-brandDark/70 dark:text-brandLight/50 px-6 py-1.5 rounded-xl hover:opacity-80">Stats</Link>
           </nav>
-          <CogIcon onClick={() => setIsSettingsModalOpen(true)} />
+          <CogIcon onClick={() => dispatch(setIsOpen(true))} />
           <SettingsModal isOpen={isSettingsModalOpen} setIsOpen={setIsSettingsModalOpen} theme={theme} setTheme={setTheme} />
           <div className="hidden sm:block ">
             <ConnectButton />

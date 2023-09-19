@@ -1,11 +1,12 @@
 import { Token, Pair, getPairByLauncherId, getInputPrice, getOutputPrice, ActionType } from '../api';
 import GenerateOfferButton from './atomic/GenerateOfferButton';
+import { setIsOpen } from '@/redux/settingsModalSlice';
 import { GenerateOfferData } from './TabContainer';
 import TokenSelector from './atomic/TokenSelector';
 import BooleanSwitch from './atomic/BooleanSwitch';
-import DevFeeModal from './modals/DevFeeModal';
 import { UNKNWN, XCH } from '@/shared_tokens';
 import { useState, useEffect } from 'react';
+import { useAppDispatch } from '@/hooks';
 import TickIcon from './icons/TickIcon';
 import CogIcon from './icons/CogIcon';
 import SwapInput from './SwapInput';
@@ -21,6 +22,9 @@ type SwapProps = {
 };
 
 const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedToken, setSelectedToken, devFee, setDevFee }) => {
+
+  const dispatch = useAppDispatch();
+
   const [pair, setPair] = useState<Pair | null>(null);
   const [isBuySelected, setIsBuySelected] = useState(true);
   const [amount0, setAmount0] = useState(0);
@@ -127,7 +131,6 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
   // State management for high price impact banner user confirmation checkbox
   const [highPriceImpactConfirmed, setHighPriceImpactConfirmed] = useState(false);
 
-  const [isDevFeeModalOpen, setIsDevFeeModalOpen] = useState(false)
 
   return (
     <div className="w-fill">
@@ -226,11 +229,10 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
           <div className="flex justify-between w-full">
             <div className="flex items-center gap-1">
               <p>Dev fee</p>
-              <CogIcon className="w-4 hover:rotate-45 transition cursor-pointer dark:fill-brandLight" onClick={() => setIsDevFeeModalOpen(true)} />
+              <CogIcon className="w-4 hover:rotate-45 transition cursor-pointer dark:fill-brandLight" onClick={() => dispatch(setIsOpen(true))} />
             </div>
             <p className="font-medium">{(devFee * 100).toFixed(2) + '%'}</p>
           </div>
-          <DevFeeModal isOpen={isDevFeeModalOpen} setIsOpen={setIsDevFeeModalOpen} setDevFee={setDevFee} devFee={devFee} />
           
         </div>
         )
