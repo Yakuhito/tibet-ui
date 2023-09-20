@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector as useSelector } from '@/hooks';
 import store, { persistor, type RootState } from '@/redux/store';
 import { PersistGate } from 'redux-persist/integration/react';
-import TwitterIcon from '@/components/icons/TwitterIcon';
+import XIcon from '@/components/icons/XIcon';
 import { Analytics } from '@vercel/analytics/react';
 import { useState, useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
@@ -87,7 +87,7 @@ export default function App({ Component, pageProps }: AppProps) {
             </div>
             <footer className="pb-6 pt-12 mb-[76px] md:mb-0 text-center text-brandDark mt-auto mx-auto flex flex-col items-center">
               <a href="https://twitter.com/TibetSwap" target="_blank" rel="noopener noreferrer" className="underline ml-1">
-                <TwitterIcon />
+                <XIcon />
               </a>
             </footer>
           </div>
