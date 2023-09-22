@@ -1,6 +1,8 @@
+import { getTokens } from '@/redux/globalOnLoadDataSlice';
 import TabContainer from '../components/TabContainer';
-import { Token, getAllTokens } from '../api';
+import { type Token, getAllTokens } from '../api';
 import { useState, useEffect } from 'react';
+import { useAppDispatch } from '@/hooks';
 import Head from 'next/head';
 
 const Home: React.FC = () => {
@@ -15,6 +17,10 @@ const Home: React.FC = () => {
     }
     fetchTokens();
   }, []);
+
+  // Store tokens globally in Redux
+  const dispatch = useAppDispatch();
+  dispatch(getTokens())
 
   return (
     <>
