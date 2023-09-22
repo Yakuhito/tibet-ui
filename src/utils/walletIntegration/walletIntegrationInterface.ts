@@ -1,3 +1,7 @@
+export interface walletNamesType {
+  walletNames: "Goby" | "Hoogii" | "WalletConnect";
+}
+
 export interface generateOffer {
     requestAssets: {
       assetId: string
