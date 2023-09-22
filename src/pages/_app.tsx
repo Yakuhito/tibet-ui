@@ -80,12 +80,12 @@ export default function App({ Component, pageProps }: AppProps) {
                 }
               }
             }} />
-          <div className="min-h-[calc(100svh-96px)] flex flex-col px-4">
+          <div className="flex flex-col px-4">
             <div className="pt-12">
               <Component {...pageProps}  />
               <Analytics />
             </div>
-            <footer className="pb-6 pt-12 mb-[76px] md:mb-0 text-center text-brandDark mt-auto mx-auto flex flex-col items-center">
+            <footer className="pb-6 pt-12 text-center text-brandDark mt-auto mx-auto flex flex-col items-center">
               <a href="https://twitter.com/TibetSwap" target="_blank" rel="noopener noreferrer" className="underline ml-1">
                 <XIcon />
               </a>
