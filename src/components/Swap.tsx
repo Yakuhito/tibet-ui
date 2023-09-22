@@ -1,9 +1,7 @@
-import { Token, Pair, getPairByLauncherId, getInputPrice, getOutputPrice, ActionType } from '../api';
+import { type Token, type Pair, getPairByLauncherId, getInputPrice, getOutputPrice, ActionType } from '../api';
 import GenerateOfferButton from './atomic/GenerateOfferButton';
 import { setIsOpen } from '@/redux/settingsModalSlice';
 import { GenerateOfferData } from './TabContainer';
-import TokenSelector from './atomic/TokenSelector';
-import BooleanSwitch from './atomic/BooleanSwitch';
 import { UNKNWN, XCH } from '@/shared_tokens';
 import { useState, useEffect } from 'react';
 import { useAppDispatch } from '@/hooks';
@@ -135,12 +133,6 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
   return (
     <div className="w-fill">
 
-      <TokenSelector
-        selectedToken={selectedToken ?? null}
-        tokens={tokens ?? []}
-        onChange={setSelectedTokenAndWarn}
-        disabled={disabled}/>
-
       <SwapInput
         token0={XCH}
         token1={selectedToken ?? UNKNWN}
@@ -168,11 +160,12 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
             }
         }}
         disabled={selectedToken == null || pair == null}
+        selectToken={setSelectedTokenAndWarn}
       />
 
       {/* High price impact warning banner */}
       { priceImpact >= 0.1 && (
-      <div className="bg-red-400/50 dark:bg-red-400/20 rounded-xl text-red-700 dark:text-red-600 p-4 mt-8 flex items-center gap-4">
+      <div className="bg-red-400/50 dark:bg-red-400/20 rounded-xl text-red-700 dark:text-red-600 p-4 mt-8 flex items-center gap-4 -mb-4">
         <label className="inline-flex items-center cursor-pointer">
           <div className="relative">
             <input
