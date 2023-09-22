@@ -1,10 +1,19 @@
-import { generateOffer, walletClasses } from './walletIntegrationInterface';
+import { generateOffer } from './walletIntegrationInterface';
 import { connectWallet } from '@/redux/walletSlice';
 import store from '@/redux/store';
+
+import WalletConnect from './wallets/walletConnect';
+import HoogiiWallet from './wallets/hoogiiWallet';
+import GobyWallet from './wallets/gobyWallet';
 
 class WalletManager {
 
   private getWalletClassFromString(wallet: string) {
+    const walletClasses: Record<string, any> = {
+      Goby: GobyWallet,
+      Hoogii: HoogiiWallet,
+      WalletConnect: WalletConnect,
+    };
     const WalletClass = new walletClasses[wallet]();
     if (!WalletClass) {
       throw new Error(`${wallet} is not currently integrated with TibetSwap`);
