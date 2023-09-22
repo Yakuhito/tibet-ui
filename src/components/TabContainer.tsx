@@ -1,11 +1,11 @@
 import CompleteWithWalletModal from './walletIntegration/CompleteWithWalletModal';
 import { setDevFee as setReduxDevFee } from '@/redux/devFeeSlice';
-import { useAppDispatch } from '@/hooks';
 import React, { useState, useEffect } from 'react';
 import { type Token, ActionType } from '../api';
 import GenerateOffer from './GenerateOffer';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
+import { useAppDispatch } from '@/hooks';
 import Liquidity from './Liquidity';
 import Swap from './Swap';
 
@@ -28,8 +28,6 @@ const TabContainer: React.FC<TabContainerProps> = ({ tokens, selectedToken, setS
   const SWAP_ENABLED = !emergency_withdraw && process.env.NEXT_PUBLIC_SWAP_ENABLED === 'true';
   const [activeTab, setActiveTab] = useState<'swap' | 'liquidity'>(SWAP_ENABLED ? 'swap' : 'liquidity');
   const [generateOfferData, setGenerateOfferData] = useState<GenerateOfferData | null>(null);
-  const [orderRefreshActive, setOrderRefreshActive] = useState(false)
-  const [dataRefreshPercent, setDataRefreshPercent] = useState(0);
 
 
   const dispatch = useAppDispatch();
@@ -38,23 +36,9 @@ const TabContainer: React.FC<TabContainerProps> = ({ tokens, selectedToken, setS
     dispatch(setReduxDevFee(fee))
   }
 
-  // Update data refresh loader percent
-  useEffect(() => {
-    if(generateOfferData !== null && orderRefreshActive && activeTab === 'swap') {
-      var interval = setInterval(() => {
-          setDataRefreshPercent(percent => (percent < 100 ? percent + 1 : percent));
-      }, 50); // Update every 50 milliseconds
-    } else {
-      setDataRefreshPercent(0)
-    }
-      return () => {
-        clearInterval(interval);
-      };
-    }, [generateOfferData, orderRefreshActive, activeTab]);
-
   const renderContent = (generateOffer: (data: GenerateOfferData) => void, data: GenerateOfferData | null) => {
     if(data !== null) {
-      return <GenerateOffer data={data} setOrderRefreshActive={setOrderRefreshActive} devFee={devFee} dataRefreshPercent={dataRefreshPercent} setGenerateOfferData={setGenerateOfferData} setDataRefreshPercent={setDataRefreshPercent} activeTab={activeTab} />;
+      return <GenerateOffer data={data} devFee={devFee} setGenerateOfferData={setGenerateOfferData} activeTab={activeTab} />;
     }
 
     if (activeTab === 'swap') {
