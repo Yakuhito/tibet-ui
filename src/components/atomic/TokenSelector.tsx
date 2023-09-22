@@ -37,7 +37,7 @@ function TokenSelectorNew({ selectedToken, selectToken, disabled }: TokenSelecto
       >
         {/* Token Image */}
         {selectedToken && !isPlaceholderToken && (
-          <Image className="rounded-full border-0 border-brandLight animate-fadeIn" src={selectedToken.image_url} width={25} height={25} alt={selectedToken.name} />
+          <Image className="rounded-full border-0 border-brandLight animate-fadeIn max-h-[25px] aspect-square" src={selectedToken.image_url} width={25} height={25} alt={selectedToken.name} />
         )}
 
         {/* Token Name or "Select Token" if no token selected */}
