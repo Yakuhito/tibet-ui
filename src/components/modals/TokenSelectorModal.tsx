@@ -45,7 +45,7 @@ function TokenSelectorModal({ isOpen, setIsOpen, setSelectedToken }: TokenSelect
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
             >
-              <div className="fixed inset-0 dark:bg-black/80 backdrop-blur" />
+              <div className="fixed inset-0 dark:bg-zinc-900/90 backdrop-blur" />
             </Transition.Child>
     
             <div className="fixed inset-0 overflow-y-auto">
