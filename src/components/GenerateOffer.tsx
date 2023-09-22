@@ -2,30 +2,27 @@ import { ActionType, createOfferForPair, getInputPrice, getLiquidityQuote, getOu
 import AddAssetButton from './walletIntegration/AddAssetButton';
 import type { OfferResponse, Pair, Quote, Token } from '@/api';
 import type { GenerateOfferData } from './TabContainer';
-import { useEffect, useState, useContext } from 'react';
+import { generateOffer } from '@/redux/walletSlice';
 import BarLoader from 'react-spinners/BarLoader';
 import CopyButton from './atomic/CopyButton';
-import SuccessScreen from './SuccessScreen';
 import { RingLoader } from 'react-spinners';
+import { useEffect, useState } from 'react';
+import SuccessScreen from './SuccessScreen';
+import { type RootState } from '@/redux/store';
+import { useSelector } from 'react-redux';
 import CrossIcon from './icons/CrossIcon';
+import { useAppDispatch } from '@/hooks';
 import Image from 'next/image';
 
-import { generateOffer } from '@/redux/walletSlice';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/store';
-import { useAppDispatch } from '@/hooks';
 
 type GenerateOfferProps = {
   data: GenerateOfferData;
-  setOrderRefreshActive: (value: boolean) => void;
   devFee: number;
-  dataRefreshPercent: number;
   setGenerateOfferData: (value: GenerateOfferData) => void;
-  setDataRefreshPercent: (value: number) => void;
   activeTab: 'swap' | 'liquidity';
 };
 
-const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActive, devFee, setGenerateOfferData, setDataRefreshPercent, activeTab }) => {
+const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, devFee, setGenerateOfferData, activeTab }) => {
     const [step, setStep] = useState<number>(0);
     /*
         steps:
@@ -76,7 +73,6 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                           setGenerateOfferData(newOfferData);
                         }
                     }
-                    setDataRefreshPercent(0)
                 }
                 if (activeTab === 'swap') updateOfferDataSwap()
 
@@ -113,7 +109,6 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                           setGenerateOfferData(newOfferData);
                         }
                     }
-                    setDataRefreshPercent(0)
                 }
                 if (activeTab === 'liquidity') updateOfferDataLiquidity()
 
@@ -136,7 +131,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
             }, 4000)
             return () => {if (step !== 3) clearInterval(updateOrderData)}
         }
-    }, [data, pair, setDataRefreshPercent, setGenerateOfferData, activeTab, step])
+    }, [data, pair, setGenerateOfferData, activeTab, step])
 
     
     
@@ -153,7 +148,6 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                 );
                 setPairAndQuote([pair, quote]);
             } else if(step === 0) {
-                setOrderRefreshActive(true)
                 const numAssets = data.offer.length + data.request.length;
                 if(numAssets === 2) {
                     const token0IsXCH = data.offer[0][1];
@@ -172,7 +166,6 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                         const expectedTokenAmount = getInputPrice(xchAmount, pair.xch_reserve, pair.token_reserve);
                         if(expectedTokenAmount > tokenAmount) {
                             setStep(-1);
-                            setOrderRefreshActive(false);
                         } else {
                             const expectedXCHAmount = getOutputPrice(tokenAmount, pair.xch_reserve, pair.token_reserve)
                             if(expectedXCHAmount < xchAmount) {
@@ -189,7 +182,6 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                         const expectedXCHAmount = getInputPrice(tokenAmount, pair.token_reserve, pair.xch_reserve);
                         if(expectedXCHAmount < xchAmount) {
                             setStep(-1);
-                            setOrderRefreshActive(false);
                         } else {
                             if(expectedXCHAmount > xchAmount) {
                                 const newOfferData = {...data};
@@ -255,14 +247,13 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                     devFee * (data.offer[0][1] ? data.offer[0][2] : data.request[0][2])
                 );
                 setOfferResponse(offerResponse);
-                setOrderRefreshActive(false)
             }
         }
 
         if([0, 3].includes(step)) {
             namelessFunction();
         }
-    }, [data, step, pairAndQuote, offer, offerResponse, setOrderRefreshActive, setGenerateOfferData, devFee]);
+    }, [data, step, pairAndQuote, offer, offerResponse, setGenerateOfferData, devFee]);
 
     const listAssets = (a: [Token, boolean, number][], isOfferingAsset: boolean) => {
         const amountWithFee = (e: [Token, boolean, number]) => {
