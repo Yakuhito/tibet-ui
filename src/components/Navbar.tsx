@@ -47,13 +47,13 @@ export default function Navbar({ theme, setTheme }: NavbarProps) {
         </div>
       </header>
 
-      <header className="md:hidden fixed bottom-0 left-0 w-full bg-brandLight/50 dark:bg-zinc-900/50 backdrop-blur-xl z-20 p-4">
+      {/* <header className="md:hidden fixed bottom-0 left-0 w-full bg-brandLight/50 dark:bg-zinc-900/50 backdrop-blur-xl z-20 p-4">
         <nav className="flex items-center rounded-xl p-1 w-full text-center">
             <Link href="/" className={`w-full font-medium text-brandDark px-6 py-1.5 rounded-xl ${router.asPath === "/" || router.pathname === "/[pair_short_name]" ? 'dark:text-brandLight bg-brandDark/10' : 'text-brandDark/70 dark:text-brandLight/50 hover:opacity-80'}`}>Trade</Link>
             <Link href="/faq" className={`w-full font-medium text-brandDark px-6 py-1.5 rounded-xl ${router.asPath === "/faq" ? 'dark:text-brandLight bg-brandDark/10' : 'text-brandDark/70 dark:text-brandLight/50 hover:opacity-80'}`}>FAQs</Link>
             <Link href={`${process.env.NEXT_PUBLIC_INFO_BASE_URL}`} className="w-full font-medium text-brandDark text-brandDark/70 dark:text-brandLight/50 px-6 py-1.5 rounded-xl hover:opacity-80">Stats</Link>
         </nav>
-      </header>
+      </header> */}
     </>
   );
 };
