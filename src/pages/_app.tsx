@@ -59,7 +59,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <div>
+        <div className="min-h-screen relative">
           <Navbar theme={theme} setTheme={setTheme} />
           <Toaster position="bottom-right"
             toastOptions={{
@@ -81,11 +81,11 @@ export default function App({ Component, pageProps }: AppProps) {
               }
             }} />
           <div className="flex flex-col px-4">
-            <div className="pt-12">
+            <div className="pt-12 pb-[96px]">
               <Component {...pageProps}  />
               <Analytics />
             </div>
-            <footer className="pb-6 pt-12 text-center text-brandDark mt-auto mx-auto flex flex-col items-center">
+            <footer className="absolute bottom-0 w-full left-0 pb-6 pt-12 text-center text-brandDark mt-full mx-auto flex flex-col items-center">
               <a href="https://twitter.com/TibetSwap" target="_blank" rel="noopener noreferrer" className="underline ml-1">
                 <XIcon />
               </a>
