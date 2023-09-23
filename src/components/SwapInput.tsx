@@ -29,7 +29,7 @@ const SwapInputs: React.FC<SwapInputsProps> = ({
   return (
     <div className="w-fill mt-8">
 
-      <div className={`relative h-[102px] transition-transform ${isBuySelected ? 'translate-y-0' : 'translate-y-[calc(100%+0.5rem)]'}`}>
+      <div className={`relative h-[102px] transition-transform duration-300 ease-in-out ${isBuySelected ? 'translate-y-0' : 'translate-y-[calc(100%+0.5rem)]'}`}>
         <AssetAmountInput
           token={token0}
           value={amount0}
@@ -47,7 +47,7 @@ const SwapInputs: React.FC<SwapInputsProps> = ({
           <ChevronDownIcon className="h-4 w-4" />
       </div>
 
-      <div className={`relative h-[102px] transition-transform ${isBuySelected ? 'translate-y-0' : 'translate-y-[calc(-100%-0.5rem)]'}`}>
+      <div className={`relative h-[102px] transition-transform duration-300 ease-in-out ${isBuySelected ? 'translate-y-0' : 'translate-y-[calc(-100%-0.5rem)]'}`}>
         <AssetAmountInput
           token={token1}
           value={amount1}

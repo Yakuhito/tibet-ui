@@ -41,7 +41,7 @@ const LiquidityInput: React.FC<LiquidityInputsProps> = ({
         selectToken={selectToken}
       />
 
-      <div className={`mt-2 transition-transform ${isAddSelected ? 'translate-y-0' : 'translate-y-[calc(100%+0.5rem)]'}`}>
+      <div className={`mt-2 transition-transform duration-300 ease-in-out ${isAddSelected ? 'translate-y-0' : 'translate-y-[calc(100%+0.5rem)]'}`}>
         <AssetAmountInput
           token={token1}
           value={amount1}
@@ -59,7 +59,7 @@ const LiquidityInput: React.FC<LiquidityInputsProps> = ({
           <ChevronDownIcon className="h-4 w-4" />
       </div>
 
-      <div className={`transition-transform ${isAddSelected ? 'translate-y-0' : 'translate-y-[calc(-100%-0.5rem)]'}`}>
+      <div className={`transition-transform duration-300 ease-in-out ${isAddSelected ? 'translate-y-0' : 'translate-y-[calc(-100%-0.5rem)]'}`}>
         <AssetAmountInput
           token={token2}
           value={amount2}
