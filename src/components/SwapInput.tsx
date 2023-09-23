@@ -1,7 +1,6 @@
 import AssetAmountInput from "@/components/atomic/AssetAmountInput";
 import ChevronDownIcon from "@/components/icons/ChevronDownIcon";
 import type { Token } from "../api";
-import { Transition } from "@headlessui/react";
 
 type SwapInputsProps = {
   token0: Token;
