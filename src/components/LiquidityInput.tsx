@@ -41,7 +41,7 @@ const LiquidityInput: React.FC<LiquidityInputsProps> = ({
         selectToken={selectToken}
       />
 
-      <div className="mt-2">
+      <div className={`mt-2 transition-transform ${isAddSelected ? 'translate-y-0' : 'translate-y-[calc(100%+0.5rem)]'}`}>
         <AssetAmountInput
           token={token1}
           value={amount1}
@@ -56,17 +56,19 @@ const LiquidityInput: React.FC<LiquidityInputsProps> = ({
         className={`bg-slate-100 dark:bg-zinc-900 w-10 h-10 -mt-4 -mb-4 mx-auto rounded-full select-none items-center justify-center flex z-10 relative border-2 border-brandDark/10 
         ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
         onClick={disabled ? () => {} : onArrowClick}>
-          <ChevronDownIcon className={`h-4 w-4 ${isAddSelected ? "" : "rotate-180"}`} />
+          <ChevronDownIcon className="h-4 w-4" />
       </div>
 
-      <AssetAmountInput
-        token={token2}
-        value={amount2}
-        onChange={(val) => onAmountsChanged(amount0, amount1, val)}
-        maxDecimals={3}
-        disabled={disabled || isAddSelected}
-        selectToken={selectToken}
-      />
+      <div className={`transition-transform ${isAddSelected ? 'translate-y-0' : 'translate-y-[calc(-100%-0.5rem)]'}`}>
+        <AssetAmountInput
+          token={token2}
+          value={amount2}
+          onChange={(val) => onAmountsChanged(amount0, amount1, val)}
+          maxDecimals={3}
+          disabled={disabled || isAddSelected}
+          selectToken={selectToken}
+        />
+      </div>
 
     </div>
   );
