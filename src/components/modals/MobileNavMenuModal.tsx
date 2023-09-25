@@ -1,15 +1,18 @@
 import { Dialog, Transition } from '@headlessui/react';
 import CrossIcon from '../icons/CrossIcon';
 import { useRouter } from 'next/router';
+import CogIcon from '../icons/CogIcon';
 import { Fragment } from 'react';
 import Link from 'next/link';
 
 interface MobileNavMenuModalProps {
     isOpen: boolean;
     setIsOpen: (value: boolean) => void;
+    setIsSettingsModalOpen: (value: boolean) => void;
+    isSettingsModalOpen: boolean;
 }
 
-function MobileNavMenuModal({ isOpen, setIsOpen }: MobileNavMenuModalProps) {
+function MobileNavMenuModal({ isOpen, setIsOpen, setIsSettingsModalOpen, isSettingsModalOpen }: MobileNavMenuModalProps) {
   const router = useRouter();
   return (    
     <Transition appear show={isOpen} as={Fragment}>
@@ -44,7 +47,7 @@ function MobileNavMenuModal({ isOpen, setIsOpen }: MobileNavMenuModalProps) {
                 <CrossIcon onClick={() => setIsOpen(false)} className="w-8 h-8 fill-brandDark cursor-pointer ml-auto -mr-2 hover:opacity-80 dark:fill-brandLight" />
 
                 {/* Menu Options */}
-                <div className="flex flex-col max-h-full">
+                <div className="flex flex-col h-full max-h-[calc(100svh-56px)]">
 
                   <Transition.Child
                     as={Fragment}
@@ -61,6 +64,10 @@ function MobileNavMenuModal({ isOpen, setIsOpen }: MobileNavMenuModalProps) {
                       <li className={`${router.asPath === "/info" ? 'text-brandDark' : ''} hover:pl-1 hover:text-brandDark transition-all`} onClick={() => setIsOpen(false)}><Link className="focus:outline-none" href="https://info.v2.tibetswap.io/">Info</Link></li>
                     </ul>
                   </Transition.Child>
+                  <div onClick={() => setIsSettingsModalOpen(true)} className="bg-brandDark/20 rounded-xl text-2xl font-medium flex justify-start items-center gap-2 p-4 mt-auto mb-8 group">
+                    <CogIcon className={`w-6 transition cursor-pointer dark:fill-brandLight ${isSettingsModalOpen ? 'rotate-45': ''}`} />
+                    <p>Settings</p>
+                  </div>
 
 
                 </div>

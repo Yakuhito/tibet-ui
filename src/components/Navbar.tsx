@@ -42,15 +42,15 @@ export default function Navbar({ theme, setTheme }: NavbarProps) {
             <Link href="/faq" className={`font-medium text-brandDark px-6 py-1.5 rounded-xl ${router.asPath === "/faq" ? 'dark:text-brandLight bg-brandDark/10' : 'text-brandDark/70 dark:text-brandLight/50 hover:opacity-80'}`}>FAQs</Link>
             <Link href={`${process.env.NEXT_PUBLIC_INFO_BASE_URL}`} className="font-medium text-brandDark text-brandDark/70 dark:text-brandLight/50 px-6 py-1.5 rounded-xl hover:opacity-80">Stats</Link>
           </nav>
-          <CogIcon onClick={() => dispatch(setIsOpen(true))} />
+          <CogIcon className="w-6 hover:rotate-45 ml-auto transition cursor-pointer fill-brandDark dark:fill-brandLight hidden sm:block" onClick={() => dispatch(setIsOpen(true))} />
           <SettingsModal isOpen={isSettingsModalOpen} setIsOpen={setIsSettingsModalOpen} theme={theme} setTheme={setTheme} />
-          <div className="hidden sm:block ">
+          <div className="ml-auto sm:ml-0">
             <ConnectButton />
           </div>
           
           {/* Mobile Navigation */}
           <MenuIcon className="w-8 text-brandDark dark:text-brandLight cursor-pointer hover:opacity-80 sm:hidden" onClick={() => setIsMobileNavModalOpen(true)}  />
-          <MobileNavMenuModal isOpen={isMobileNavModalOpen} setIsOpen={setIsMobileNavModalOpen} />
+          <MobileNavMenuModal isOpen={isMobileNavModalOpen} setIsOpen={setIsMobileNavModalOpen} setIsSettingsModalOpen={setIsSettingsModalOpen} isSettingsModalOpen={isSettingsModalOpen} />
           
         </div>
       </header>
