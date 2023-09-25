@@ -53,6 +53,7 @@ function TokenSelectorModal({ isOpen, setIsOpen, setSelectedToken }: TokenSelect
         <div className="group-hover:pl-0.5 transition-all pl-0">
           <p className="font-medium text-xl">{token.short_name}</p>
         </div>
+        {!token.verified && <p className="text-brandLight bg-red-700 text-sm rounded-full px-3 font-medium" title="This token is not verified">Unverified</p>}
       </li>
     )
   }
