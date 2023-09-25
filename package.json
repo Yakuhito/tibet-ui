@@ -31,11 +31,14 @@
     "react-redux": "^8.1.2",
     "react-spinners": "^0.13.8",
     "react-transition-group": "^4.4.5",
+    "react-virtualized-auto-sizer": "^1.0.20",
+    "react-window": "^1.8.9",
     "redux-persist": "^6.0.0",
     "typescript": "5.0.4"
   },
   "devDependencies": {
     "@types/canvas-confetti": "^1.6.0",
+    "@types/react-window": "^1.8.5",
     "@vercel/analytics": "^1.0.1",
     "@walletconnect/auth-client": "^2.1.0",
     "autoprefixer": "^10.4.14",
