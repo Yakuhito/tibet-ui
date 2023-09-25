@@ -112,7 +112,7 @@ function TokenSelectorModal({ isOpen, setIsOpen, setSelectedToken }: TokenSelect
                       {filteredTokens && (
                         <div className="absolute w-full h-full min-h-full max-h-full left-0 top-0">
                           <AutoSizer>
-                            {({ height, width }) => (
+                            {({ height, width }: {height: number, width: number}) => (
                               <List
                                 className="List"
                                 height={height}
