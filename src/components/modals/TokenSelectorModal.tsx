@@ -87,7 +87,7 @@ function TokenSelectorModal({ isOpen, setIsOpen, setSelectedToken }: TokenSelect
 
                     <Dialog.Title as="h3" className="text-[2.5rem] sm:text-5xl pt-4 pb-4 md:pb-8 font-bold text-black dark:text-brandLight">Select a token</Dialog.Title>
 
-                    {/* Settings Options */}
+                    {/* Main Content Container */}
                     <div className="flex flex-col max-h-full min-h-full">
 
                       {/* Search */}
@@ -126,9 +126,6 @@ function TokenSelectorModal({ isOpen, setIsOpen, setSelectedToken }: TokenSelect
                         </div>
 
                       </Transition.Child>
-
-                      
-
 
                     </div>
                     </Dialog.Panel>
