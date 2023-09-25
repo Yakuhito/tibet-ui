@@ -1,9 +1,10 @@
 type CrossIconProps = {
   className?: string;
   title?: string;
+  onClick?: () => void;
 }
 
-function CrossIcon({ className="fill-[#b91c1c]", title }: CrossIconProps) {
+function CrossIcon({ className="fill-[#b91c1c]", title, onClick=() => {} }: CrossIconProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -11,6 +12,7 @@ function CrossIcon({ className="fill-[#b91c1c]", title }: CrossIconProps) {
       width="14px"
       height="14px"
       className={className}
+      onClick={onClick}
     >
       {title && <title>{title}</title>}
       <path
