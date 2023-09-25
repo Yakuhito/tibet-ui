@@ -391,7 +391,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, devFee, setGenerate
                     }
 
                     {/* Complete with Wallet Integration Button */}
-                    {connectedWallet && <button className="bg-brandDark hover:opacity-90 text-brandLight w-full py-4 rounded-xl font-medium" onClick={completeWithWallet}>Use Wallet to Complete Order</button>}
+                    {connectedWallet && <button className="bg-brandDark hover:opacity-90 bg-gradient-to-br from-[#7fa9b8]/90 to-brandDark/90 dark:from-brandDark dark:to-[#152f38] text-brandLight w-full py-4 rounded-xl font-medium" onClick={completeWithWallet}>Use Wallet to Complete Order</button>}
                     {connectedWallet && <p className="flex w-full justify-center font-medium my-4">— OR —</p>}
 
                     {/* Input for user to paste manually generated offer in */}
@@ -405,7 +405,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, devFee, setGenerate
                     {/* Submit offer manually button */}
                     <button
                         onClick={() => setStep(3)}
-                        className={`${offer.length === 0 ? 'bg-brandDark/10 dark:text-brandLight/30 cursor-not-allowed' : 'bg-green-700 hover:opacity-90'} text-brandLight px-4 py-4 rounded-xl w-full mt-4 font-medium`}
+                        className={`${offer.length === 0 ? 'cursor-not-allowed opacity-20' : 'hover:opacity-90 opacity-100'} bg-gradient-to-br from-[#7fa9b8]/90 to-brandDark/90 dark:from-brandDark dark:to-[#152f38] text-brandLight px-4 py-4 rounded-xl w-full mt-4 font-medium`}
                         disabled={offer.length === 0}
                     >
                         Submit Manually
