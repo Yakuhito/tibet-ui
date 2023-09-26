@@ -17,7 +17,7 @@ function MenuIcon({ className, title, onClick=() => {} }: MenuIconProps) {
         stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
-        stroke-width="32"
+        strokeWidth="32"
         d="M112 304h288M112 208h288"
       />
     </svg>
