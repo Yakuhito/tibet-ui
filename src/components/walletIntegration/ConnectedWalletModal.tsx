@@ -81,7 +81,7 @@ function ConnectWalletModal({ isOpen, setIsOpen, isWalletOnWrongChain }: Connect
 
                         {/* Wallet Connect */}
                         <div>
-                            <div onClick={() => walletConnectSessions.length ? dispatch(connectWallet("WalletConnect")) : (connectWCSession(), setIsPairingQRModalOpen(true))} className={`${walletConnectActive ? `bg-green-700/20 focus:ring-green-700/20` : 'bg-brandDark/10'} ${walletConnectActive || pairingUri || isPairingQRModalOpen ? 'rounded-t-xl' : 'rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
+                            <div onClick={() => walletConnectSessions.length ? dispatch(connectWallet("WalletConnect")) : (connectWCSession(), setIsPairingQRModalOpen(true))} className={`${walletConnectActive ? `bg-green-700/20 focus:ring-green-700/20` : 'bg-brandDark/10'} ${walletConnectActive || (pairingUri && isPairingQRModalOpen) || isPairingQRModalOpen ? 'rounded-t-xl' : 'rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
                                 <div className="flex items-center gap-4">
                                     <WalletConnectIcon className="w-10 h-10" />
                                     <p className="font-medium text-lg">Wallet Connect</p>
