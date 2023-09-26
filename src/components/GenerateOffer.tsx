@@ -278,7 +278,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, devFee, setGenerate
         return (
             <ul className="list-none m-0 font-medium">
                 {a.map(e => (
-                    <li key={e[0].asset_id} className="flex-col gap-2 items-center pb-2 last:pb-0">
+                    <li key={e[0].asset_id} className="flex-col gap-2 items-center pb-2 last:pb-0 animate-fadeIn">
                         {/* If swap, add dev fee on top of quote */}
                         <div className="flex gap-2 items-center">
                             <Image src={e[0].image_url} width={30} height={30} alt="Token logo" className="rounded-full outline-brandDark/20 p-0.5" />
@@ -287,7 +287,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, devFee, setGenerate
                         </div>
                         
                         {e[1] ? null :
-                        (<div className="rounded-lg mt-2 mb-4 flex gap-2 ml-4">
+                        (<div className="rounded-lg mt-2 mb-4 flex gap-2 ml-4 animate-fadeIn">
                             <div className="flex gap-2 text-sm font-normal pl-[calc(0.5rem+12px)]">
                                 <CopyButton copyText={e[0].asset_id}>Asset ID</CopyButton>
                                 <AddAssetButton asset_id={e[0].asset_id} short_name={e[0].short_name} image_url={e[0].image_url} name={e[0].name} />
@@ -348,10 +348,73 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, devFee, setGenerate
         // Loading (verify data)
         if(step === 0) {
             return (
-                <div className="mt-16 mb-16 flex justify-center items-center flex-col">
-                    <BarLoader width={164} speedMultiplier={2} color={"#526e78"} />
-                    <div className='mt-4 font-medium'>Verifying trade data</div>
+                <div className="text-left w-full">
+                    <div className="mb-4 bg-brandDark/10 rounded-xl p-4">
+                        <p className="mb-4 font-medium text-2xl text-brandDark dark:text-brandLight">Offering</p>
+
+                        {data.offer.map((item, index) => (
+                            <li key={index} className="flex-col gap-2 items-center pb-2 last:pb-0 animate-fadeIn list-none" >
+                                <div className="flex gap-2 items-center max-w-[294px]">
+                                    <div className="w-[30px] h-[30px] aspect-square rounded-full bg-brandDark/10 animate-pulse"></div>
+                                    <div className="w-full h-6 rounded-full bg-brandDark/10 animate-pulse"></div>
+                                </div>
+
+                                {!item[1] && <div className="rounded-lg mt-2 mb-4 flex gap-2 ml-4">
+                                    <div className="flex gap-2 text-sm font-normal pl-[calc(0.5rem+12px)]">
+                                        <div className="bg-brandDark/10 w-[106px] h-[28px] rounded-lg"></div>
+                                        <div className="bg-brandDark/10 w-[144px] h-[28px] rounded-lg"></div>
+                                    </div>
+                                </div>}
+                            </li>
+                        ))}
+
+                        
+                    </div>
+
+                    <div className="mb-4 mt-4 bg-brandDark/10 rounded-xl p-4">
+                        <p className="mb-4 font-medium text-2xl text-brandDark dark:text-brandLight">Requesting</p>
+                        {/* {listAssets(data.request, false)} */}
+                        {data.request.map((item, index) => (
+                            <li key={index} className="flex-col gap-2 items-center pb-2 last:pb-0 animate-fadeIn list-none" >
+                                <div className="flex gap-2 items-center max-w-[294px]">
+                                    <div className="w-[30px] h-[30px] aspect-square rounded-full bg-brandDark/10 animate-pulse"></div>
+                                    <div className="w-full h-6 rounded-full bg-brandDark/10 animate-pulse"></div>
+                                </div>
+
+                                {!item[1] && <div className="rounded-lg mt-2 mb-4 flex gap-2 ml-4">
+                                    <div className="flex gap-2 text-sm font-normal pl-[calc(0.5rem+12px)]">
+                                        <div className="bg-brandDark/10 w-[106px] h-[28px] rounded-lg"></div>
+                                        <div className="bg-brandDark/10 w-[144px] h-[28px] rounded-lg"></div>
+                                    </div>
+                                </div>}
+                            </li>
+                        ))}
+                    </div>
+                    
+                    <p className="py-4 px-4 mb-12 bg-brandDark/10 rounded-xl h-[56px] animate-pulse"></p>
+
+                    {/* Complete with Wallet Integration Button */}
+                    {connectedWallet && <button className="bg-brandDark bg-gradient-to-br from-[#7fa9b8]/90 to-brandDark/90 dark:from-brandDark dark:to-[#152f38] text-brandLight w-full py-4 rounded-xl font-medium text-opacity-0" disabled aria-disabled onClick={completeWithWallet}>Use Wallet to Complete Order</button>}
+                    {connectedWallet && <p className="flex w-16 h-6 mx-auto rounded-full justify-center font-medium my-4 text-opacity-0 bg-brandDark/10"></p>}
+
+                    {/* Input for user to paste manually generated offer in */}
+                    <input type="text"
+                        value={offer}
+                        className='w-full py-4 px-4 border text-brandDark dark:border-brandDark dark:bg-brandDark/20 rounded-xl focus:outline-none'
+                        onChange={e => setOffer(e.target.value)}
+                        aria-disabled
+                        disabled
+                    />
+
+                    {/* Submit offer manually button */}
+                    <button
+                        className={`cursor-not-allowed opacity-20 text-opacity-0 bg-gradient-to-br from-[#7fa9b8]/90 to-brandDark/90 dark:from-brandDark dark:to-[#152f38] text-brandLight px-4 py-4 rounded-xl w-full mt-4 font-medium`}
+                        disabled={true}
+                    >
+                        Submit Manually
+                    </button>
                 </div>
+
             );
         };
         // Verified - display summary of order & ask user to confirm
@@ -379,12 +442,12 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, devFee, setGenerate
                     
                     <p className="py-4 px-4 font-medium mb-12 bg-brandDark/10 rounded-xl">
                         <span>Suggested fee</span>
-                        <span className="font-normal pl-2">{fee} {process.env.NEXT_PUBLIC_XCH}</span>
+                        <span className="font-normal pl-2 animate-fadeIn">{fee} {process.env.NEXT_PUBLIC_XCH}</span>
                     </p>
 
                     {/* High fee warning banner */}
                     {ishighFee && (
-                    <div className="bg-red-400/50 dark:bg-red-400/20 rounded-xl text-red-700 dark:text-red-600 p-4 mb-4 flex items-center gap-4">
+                    <div className="bg-red-400/50 dark:bg-red-400/20 rounded-xl text-red-700 dark:text-red-600 p-4 mb-4 flex items-center gap-4 animate-fadeIn">
                       <p className="font-medium text-sm">Our suggested fee seems high compared to your trade size. You might want to wait for the next block, or try with a lower fee.</p>
                     </div>
                     )
