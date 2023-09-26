@@ -1,7 +1,6 @@
 import { setPairingUri } from '@/redux/walletConnectSlice';
 import { Transition } from '@headlessui/react';
 import CopyButton from '../atomic/CopyButton';
-import { useEffect, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useAppDispatch } from '@/hooks';
 

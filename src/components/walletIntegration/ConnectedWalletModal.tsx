@@ -5,13 +5,13 @@ import type { SessionTypes } from "@walletconnect/types";
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useState, useEffect } from 'react';
 import { connectWallet } from '@/redux/walletSlice';
+import WalletConnectQR from './WalletConnectQR';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { useAppDispatch } from '@/hooks';
 import PlusIcon from '../icons/PlusIcon';
 import Image from 'next/image';
 
-import WalletConnectQR from './WalletConnectQR';
 
 
 
@@ -36,7 +36,6 @@ function ConnectWalletModal({ isOpen, setIsOpen, isWalletOnWrongChain }: Connect
     const gobyActive = connectedWallet === "Goby";
     const hoogiiActive = connectedWallet === "Hoogii";
 
-    const [isWalletConnectOpen, setIsWalletConnectOpen] = useState(false);
     const pairingUri = useSelector((state: RootState) => state.walletConnect.pairingUri);
     const [isPairingQRModalOpen, setIsPairingQRModalOpen] = useState(false);
 
@@ -82,7 +81,7 @@ function ConnectWalletModal({ isOpen, setIsOpen, isWalletOnWrongChain }: Connect
 
                         {/* Wallet Connect */}
                         <div>
-                            <div onClick={() => walletConnectSessions.length ? dispatch(connectWallet("WalletConnect")) : (connectWCSession(), setIsPairingQRModalOpen(true))} className={`${walletConnectActive ? `bg-green-700/20 focus:ring-green-700/20` : 'bg-brandDark/10'} ${isWalletConnectOpen || walletConnectActive || pairingUri || isPairingQRModalOpen ? 'rounded-t-xl' : 'rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
+                            <div onClick={() => walletConnectSessions.length ? dispatch(connectWallet("WalletConnect")) : (connectWCSession(), setIsPairingQRModalOpen(true))} className={`${walletConnectActive ? `bg-green-700/20 focus:ring-green-700/20` : 'bg-brandDark/10'} ${walletConnectActive || pairingUri || isPairingQRModalOpen ? 'rounded-t-xl' : 'rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
                                 <div className="flex items-center gap-4">
                                     <WalletConnectIcon className="w-10 h-10" />
                                     <p className="font-medium text-lg">Wallet Connect</p>
@@ -97,7 +96,7 @@ function ConnectWalletModal({ isOpen, setIsOpen, isWalletOnWrongChain }: Connect
                             </div>
 
                             <Transition
-                              show={isWalletConnectOpen || Boolean(walletConnectActive) || Boolean(pairingUri && isPairingQRModalOpen) || Boolean(isPairingQRModalOpen)}
+                              show={Boolean(walletConnectActive) || Boolean(pairingUri && isPairingQRModalOpen) || Boolean(isPairingQRModalOpen)}
                               enter="transition-all duration-300"
                               enterFrom="max-h-[0] opacity-0"
                               enterTo="max-h-[1000px] opacity-100"
