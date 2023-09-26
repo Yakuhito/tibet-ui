@@ -41,7 +41,7 @@ function ConnectWalletModal({ isOpen, setIsOpen, isWalletOnWrongChain }: Connect
 
     const connectWCSession = async () => {
         const response = await dispatch(connectSession());
-        if (response) {
+        if (response.payload) { // If pairing is successful
             setIsPairingQRModalOpen(false);
         }
     }
@@ -104,26 +104,24 @@ function ConnectWalletModal({ isOpen, setIsOpen, isWalletOnWrongChain }: Connect
                               leaveFrom="max-h-[1000px] opacity-100"
                               leaveTo="max-h-[0] opacity-0"
                             >
-                                {(ref) => (
-                                    <div ref={ref} className="animate-fadeIn text-sm bg-brandDark/10 font-medium px-4 py-4 rounded-b-xl flex flex-col gap-2 border-2 border-transparent hover:border-brandDark/10">
-                                        <p className={`text-base transition-opacity ${isPairingQRModalOpen || (!isPairingQRModalOpen && !walletConnectSessions.length) ? 'opacity-0' : ''}`}>Sessions</p>
-                                        <WalletConnectQR pairingUri={pairingUri} isOpen={isPairingQRModalOpen} setIsOpen={setIsPairingQRModalOpen} />
-                                        {!pairingUri && !isPairingQRModalOpen && (
-                                            <ul className="flex flex-col gap-2">
-                                            {
-                                                walletConnectSessions.map((session: SessionTypes.Struct) => (
-                                                    <WalletConnectSession key={session.topic} img={session.peer.metadata.icons[0]} name={session.peer.metadata.name} topic={session.topic} />
-                                                ))
-                                            }
-        
-                                                <li onClick={() => (connectWCSession(), setIsPairingQRModalOpen(true))} className={`select-none rounded-xl px-8 py-4 cursor-pointer hover:opacity-80 flex justify-center items-center w-full bg-brandDark/10 h-10 animate-fadeIn`}>
-                                                    <PlusIcon className='w-6 h-auto' />
-                                                </li>
-                                        
-                                            </ul>
-                                        )}
-                                    </div>
-                                )}
+                                <div className="animate-fadeIn text-sm bg-brandDark/10 font-medium px-4 py-4 rounded-b-xl flex flex-col gap-2 border-2 border-transparent hover:border-brandDark/10">
+                                    <p className={`text-base transition-opacity ${isPairingQRModalOpen || (!isPairingQRModalOpen && !walletConnectSessions.length) ? 'opacity-0' : ''}`}>Sessions</p>
+                                    <WalletConnectQR pairingUri={pairingUri} isOpen={isPairingQRModalOpen} setIsOpen={setIsPairingQRModalOpen} />
+                                    {!pairingUri && !isPairingQRModalOpen && (
+                                        <ul className="flex flex-col gap-2">
+                                        {
+                                            walletConnectSessions.map((session: SessionTypes.Struct) => (
+                                                <WalletConnectSession key={session.topic} img={session.peer.metadata.icons[0]} name={session.peer.metadata.name} topic={session.topic} />
+                                            ))
+                                        }
+    
+                                            <li onClick={() => (connectWCSession(), setIsPairingQRModalOpen(true))} className={`select-none rounded-xl px-8 py-4 cursor-pointer hover:opacity-80 flex justify-center items-center w-full bg-brandDark/10 h-10 animate-fadeIn`}>
+                                                <PlusIcon className='w-6 h-auto' />
+                                            </li>
+                                    
+                                        </ul>
+                                    )}
+                                </div>
                             </Transition>
                         </div>
 
