@@ -115,7 +115,7 @@ function TokenSelectorModal({ isOpen, setIsOpen, setSelectedToken }: TokenSelect
                             {({ height, width }: {height: number, width: number}) => (
                               <List
                                 className="List"
-                                height={height}
+                                height={height ? height : 0}
                                 itemCount={filteredTokens.length}
                                 itemSize={68}
                                 width={width}
