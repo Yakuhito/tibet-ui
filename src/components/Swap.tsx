@@ -194,7 +194,7 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
 
       {/* Price details Section */}
       { selectedToken !== null && pair !== null && amount0 !== 0 && (
-        <div className="flex flex-col p-6 rounded-2xl mt-2 gap-1 bg-brandDark/0 text-sm">
+        <div className="flex flex-col p-6 rounded-2xl mt-2 gap-1 text-sm">
           {/* Price */}
           <div className="flex justify-between w-full">
             <p>Price</p>
@@ -217,7 +217,7 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
           <div className="flex justify-between w-full">
             <div className="flex items-center gap-1">
               <p>Dev fee</p>
-              <CogIcon className="w-4 hover:rotate-45 transition cursor-pointer dark:fill-brandLight" onClick={() => dispatch(setIsOpen(true))} />
+              <CogIcon className="w-4 mb-[-1px] hover:rotate-45 transition fill-brandDark cursor-pointer dark:fill-brandLight" onClick={() => dispatch(setIsOpen(true))} />
             </div>
             <p className="font-medium">{(devFee * 100).toFixed(2) + '%'}</p>
           </div>
