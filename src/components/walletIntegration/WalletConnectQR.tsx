@@ -17,10 +17,10 @@ function WalletConnectQR({ pairingUri, isOpen, setIsOpen } : WalletConnectQRProp
   return ( 
     <Transition
       show={Boolean(isOpen)}
-      enter="transition-all duration-300"
+      enter="transition-all duration-300 ease-out"
       enterFrom="max-h-[0] opacity-0"
       enterTo="max-h-[300px] opacity-100"
-      leave="transition-all duration-300"
+      leave="transition-all duration-300 ease-in"
       leaveFrom="max-h-[300px] opacity-100"
       leaveTo="max-h-[0] opacity-0"
     >
