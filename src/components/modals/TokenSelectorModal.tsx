@@ -1,13 +1,12 @@
+import { CSSProperties, ChangeEvent, Fragment, forwardRef, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { CSSProperties, ChangeEvent, Fragment, useState } from 'react';
-import SearchIcon from '../icons/SearchIcon';
+import { FixedSizeList as List } from "react-window";
+import AutoSizer from "react-virtualized-auto-sizer";
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import type { Token } from '@/api';
 import Image from 'next/image';
 
-import { FixedSizeList as List } from "react-window";
-import AutoSizer from "react-virtualized-auto-sizer";
 
 interface TokenSelectorProps {
     isOpen: boolean;
@@ -42,7 +41,10 @@ function TokenSelectorModal({ isOpen, setIsOpen, setSelectedToken }: TokenSelect
     return (
       <li
         key={token.asset_id}
-        style={style}
+        style={{
+          ...style,
+          top: `${parseFloat(`${style.top}`) + 32}px`
+        }}
         className="flex gap-6 max-h-full items-center select-none cursor-pointer group hover:bg-brandDark/0 px-4 py-2 rounded-lg"
         onClick={() => selectToken(token)}
       >
@@ -58,6 +60,20 @@ function TokenSelectorModal({ isOpen, setIsOpen, setSelectedToken }: TokenSelect
     )
   }
 
+  const innerElementType = forwardRef(function ({ style, ...rest }: { style: CSSProperties }, ref: React.Ref<HTMLDivElement>) {
+    return (
+      <div
+        ref={ref}
+        style={{
+          ...style,
+          height: `${parseFloat(`${style.height}`) + 32 * 2}px`
+        }}
+        {...rest}
+      />
+    )
+
+  })
+  innerElementType.displayName = "InnerElementType";
 
   
   return (    
@@ -94,10 +110,7 @@ function TokenSelectorModal({ isOpen, setIsOpen, setSelectedToken }: TokenSelect
                 <div className="flex flex-col max-h-full min-h-full">
 
                   {/* Search */}
-                  <div className="relative w-full flex flex-col items-center">
-                    {/* <SearchIcon className="h-6 absolute left-4" /> */}
-                    <input type="text" placeholder="Search by token or asset ID" className="w-full bg-brandDark/10 px-4 py-2 rounded-xl focus:outline-none text-xl" onChange={handleSearchChange} />
-                  </div>
+                  <input type="text" placeholder="Search by token or asset ID" className="w-full bg-brandDark/10 px-4 py-2 rounded-xl focus:outline-none text-xl" onChange={handleSearchChange} />
 
                   <Transition.Child
                     as={Fragment}
@@ -119,6 +132,7 @@ function TokenSelectorModal({ isOpen, setIsOpen, setSelectedToken }: TokenSelect
                                 itemCount={filteredTokens.length}
                                 itemSize={68}
                                 width={width}
+                                innerElementType={innerElementType}
                               >
                                 {tokenRow}
                               </List>
