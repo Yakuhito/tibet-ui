@@ -98,7 +98,7 @@ function ConnectWalletModal({ isOpen, setIsOpen, isWalletOnWrongChain }: Connect
                                 {(ref) => (
                                     <div ref={ref} className="animate-fadeIn text-sm bg-brandDark/10 font-medium px-4 py-4 rounded-b-xl flex flex-col gap-2 border-2 border-transparent hover:border-brandDark/10">
                                         <p className="text-base">Sessions</p>
-                                        <WalletConnectQR />
+                                        <WalletConnectQR pairingUri={pairingUri} />
                                         {!pairingUri && (
                                             <ul className="flex flex-col gap-2">
                                             {
