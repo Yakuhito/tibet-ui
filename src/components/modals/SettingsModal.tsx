@@ -1,7 +1,6 @@
-import { Dialog, Transition } from '@headlessui/react';
 import DevFeeSelector from '../DevFeeSelector';
 import ThemeSwitcher from '../ThemeSwitcher';
-import { Fragment } from 'react';
+import Modal from '../atomic/Modal';
 
 interface ConnectWalletModalProps {
     isOpen: boolean;
@@ -12,51 +11,20 @@ interface ConnectWalletModalProps {
 
 function SettingsModal({ isOpen, setIsOpen, theme, setTheme }: ConnectWalletModalProps) {
     return (    
-        <Transition appear show={isOpen} as={Fragment}>
-            <Dialog as="div" className="relative z-20" onClose={() => setIsOpen(false)}>
-            <Transition.Child
-                as={Fragment}
-                enter="ease-out duration-300"
-                enterFrom="opacity-0"
-                enterTo="opacity-100"
-                leave="ease-in duration-200"
-                leaveFrom="opacity-100"
-                leaveTo="opacity-0"
-            >
-                <div className="fixed inset-0 bg-brandDark/10 backdrop-blur-sm" />
-            </Transition.Child>
-    
-            <div className="fixed inset-0 overflow-y-auto">
-                <div className="flex min-h-full items-center justify-center p-4 text-center">
-                <Transition.Child
-                    as={Fragment}
-                    enter="ease-out duration-300"
-                    enterFrom="opacity-0 scale-95"
-                    enterTo="opacity-100 scale-100"
-                    leave="ease-in duration-200"
-                    leaveFrom="opacity-100 scale-100"
-                    leaveTo="opacity-0 scale-95"
-                >
-                    <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white dark:bg-zinc-900 p-6 text-left align-middle shadow-xl transition-all">
+        <Modal isOpen={isOpen} setIsOpen={setIsOpen} title="Settings">
+            {/* Settings Options */}
+            <div className="flex flex-col gap-4">
 
-                    <Dialog.Title as="h3" className="text-[2.5rem] sm:text-5xl pt-4 pb-4 font-bold text-black dark:text-brandLight">Settings</Dialog.Title>
+                <p className="font-medium">Theme</p>
+                <ThemeSwitcher theme={theme} setTheme={setTheme} />
 
-                    {/* Settings Options */}
-                    <div className="mt-10 flex flex-col gap-4">
+                <p className="font-medium">Dev Fee</p>
+                <DevFeeSelector />
 
-                        <p className="font-medium">Theme</p>
-                        <ThemeSwitcher theme={theme} setTheme={setTheme} />
-
-                        <p className="font-medium">Dev Fee</p>
-                        <DevFeeSelector />
-
-                    </div>
-                    </Dialog.Panel>
-                </Transition.Child>
-                </div>
             </div>
-            </Dialog>
-        </Transition>
+        </Modal>
+
+
      );
 }
 
