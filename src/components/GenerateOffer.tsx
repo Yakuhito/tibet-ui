@@ -456,7 +456,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, devFee, setGenerate
 
                     {/* Complete with Wallet Integration Button */}
                     {connectedWallet && isWalletConnectActuallyConnected && <button className="bg-brandDark hover:opacity-90 bg-gradient-to-br from-[#7fa9b8]/90 to-brandDark/90 dark:from-brandDark dark:to-[#152f38] text-brandLight w-full py-4 rounded-xl font-medium" onClick={completeWithWallet}>Use Wallet to Complete Order</button>}
-                    {connectedWallet && <p className="flex w-full justify-center font-medium my-4">— OR —</p>}
+                    {connectedWallet && isWalletConnectActuallyConnected && <p className="flex w-full justify-center font-medium my-4">— OR —</p>}
 
                     {/* Input for user to paste manually generated offer in */}
                     <input type="text"
