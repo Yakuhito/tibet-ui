@@ -69,7 +69,7 @@ const TabContainer: React.FC<TabContainerProps> = ({ tokens, selectedToken, setS
 
       {/* Display swap/liquidity toggle */}
       {generateOfferData == null ? (
-      <div className="flex gap-4 px-2 text-xl mb-4 mt-2">
+      <div className="flex gap-4 px-2 text-xl mt-2">
         <button
           className={`font-medium ${
             activeTab === 'swap' ? 'text-black dark:text-brandLight' : 'text-black/50 dark:text-brandLight/50 hover:opacity-80'
@@ -100,7 +100,7 @@ const TabContainer: React.FC<TabContainerProps> = ({ tokens, selectedToken, setS
           Liquidity
         </button>
       </div>) : (
-        <div className="w-full mb-12">
+        <div className="w-full mb-8 mt-2">
           <div className="rounded-xl inline-flex hover:opacity-80 cursor-pointer" onClick={() => setGenerateOfferData(null)}>
             <p className="text-xl font-medium text-brandDark dark:text-brandLight">‹ Back</p>
           </div>
