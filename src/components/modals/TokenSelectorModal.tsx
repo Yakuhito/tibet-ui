@@ -126,6 +126,15 @@ function TokenSelectorModal({ isOpen, setIsOpen, setSelectedToken }: TokenSelect
                     leaveTo="opacity-0 translate-y-10 blur"
                   >
                     <div className="relative h-[calc(100svh-164px)]">
+                      {/* Loading state or if no tokens available */}
+                      {!tokens && (
+                        <ul className="py-8">
+                          <li className="flex gap-6 max-h-full items-center select-none cursor-pointer group hover:bg-brandDark/0 px-4 py-2 rounded-lg">
+                              <div className="w-10 h-10 aspect-square rounded-full flex justify-center bg-brandDark/20 backdrop-blur animate-pulse"></div>
+                              <div className="flex w-full h-8 bg-brandDark/10 rounded-full animate-pulse"></div>
+                          </li>
+                        </ul>
+                      )}
                       {filteredTokens && (
                         <div className="absolute w-full h-full min-h-full max-h-full left-0 top-0">
                           <AutoSizer>
