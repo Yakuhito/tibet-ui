@@ -63,9 +63,13 @@ export default function App({ Component, pageProps }: AppProps) {
           <Navbar theme={theme} setTheme={setTheme} />
           <Toaster position="bottom-right"
             toastOptions={{
-              className: "bg-slate-100 dark:bg-[#1E2124]/90 dark:text-brandLight backdrop-blur-3xl w-full sm:w-auto",
+              className: "!bg-brandLight/80 backdrop-blur w-full sm:w-auto !px-4 !py-3 !rounded-xl font-medium text-sm",
               loading: {
                 duration: 45000,
+                iconTheme: {
+                  primary: "black",
+                  secondary: "transparent"
+                }
               },
               success: {
                 iconTheme: {
