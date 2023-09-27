@@ -136,7 +136,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     // Fetch previous connection
     try {
         if (!signClient) {
-          toast.error('Not connected via WalletConnect or could not sign client')
+          toast.error('Not connected via WalletConnect or could not sign client', { id: 'failed-to-sign-client' })
           return;
         }
         

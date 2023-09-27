@@ -11,7 +11,7 @@ class gobyWallet implements WalletIntegrationInterface {
     // Check if Goby extension is installed
     const { chia } = (window as any);
     if (!Boolean(chia && chia.isGoby)) {
-      toast.error(<p>You don&apos;t have Goby Wallet installed. You can install it <a href="https://www.goby.app/" className="underline hover:opacity-80" target="_blank">here</a></p>);
+      toast.error(<p>You don&apos;t have Goby Wallet installed. You can install it <a href="https://www.goby.app/" className="underline hover:opacity-80" target="_blank">here</a></p>, { id: 'goby-not-installed' });
       throw new Error()
     }
 
