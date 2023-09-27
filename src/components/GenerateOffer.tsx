@@ -343,6 +343,8 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, devFee, setGenerate
 
     }
 
+    const walletConnectSelectedSession = useSelector((state: RootState) => state.walletConnect.selectedSession);
+    const isWalletConnectActuallyConnected = connectedWallet === "WalletConnect" ? Boolean(connectedWallet === "WalletConnect" && walletConnectSelectedSession) : true;
 
     const renderContent = (step: number) => {
         // Loading (verify data)
@@ -373,7 +375,6 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, devFee, setGenerate
 
                     <div className="mb-4 mt-4 bg-brandDark/10 rounded-xl p-4">
                         <p className="mb-4 font-medium text-2xl text-brandDark dark:text-brandLight">Requesting</p>
-                        {/* {listAssets(data.request, false)} */}
                         {data.request.map((item, index) => (
                             <li key={index} className="flex-col gap-2 items-center pb-2 last:pb-0 animate-fadeIn list-none" >
                                 <div className="flex gap-2 items-center max-w-[294px]">
@@ -454,7 +455,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, devFee, setGenerate
                     }
 
                     {/* Complete with Wallet Integration Button */}
-                    {connectedWallet && <button className="bg-brandDark hover:opacity-90 bg-gradient-to-br from-[#7fa9b8]/90 to-brandDark/90 dark:from-brandDark dark:to-[#152f38] text-brandLight w-full py-4 rounded-xl font-medium" onClick={completeWithWallet}>Use Wallet to Complete Order</button>}
+                    {connectedWallet && isWalletConnectActuallyConnected && <button className="bg-brandDark hover:opacity-90 bg-gradient-to-br from-[#7fa9b8]/90 to-brandDark/90 dark:from-brandDark dark:to-[#152f38] text-brandLight w-full py-4 rounded-xl font-medium" onClick={completeWithWallet}>Use Wallet to Complete Order</button>}
                     {connectedWallet && <p className="flex w-full justify-center font-medium my-4">— OR —</p>}
 
                     {/* Input for user to paste manually generated offer in */}
