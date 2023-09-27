@@ -59,7 +59,7 @@ function DevFeeSelector() {
 
   return (
     <div
-      className={`hover:border-brandDark/10 border-2 border-transparent flex gap-2 items-center h-[76px] bg-brandDark/10 rounded-xl p-2 text-center font-medium`}
+      className={`hover:border-brandDark/10 border-2 gap-1 border-transparent flex items-center h-16 bg-brandDark/10 rounded-2xl p-1.5 text-center font-medium`}
     >
       {/* 0.3% Option */}
       <p

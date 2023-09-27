@@ -15,11 +15,15 @@ function SettingsModal({ isOpen, setIsOpen, theme, setTheme }: ConnectWalletModa
             {/* Settings Options */}
             <div className="flex flex-col gap-4">
 
-                <p className="font-medium">Theme</p>
-                <ThemeSwitcher theme={theme} setTheme={setTheme} />
+                <div>
+                    <p className="font-medium text-brandDark pb-2">Theme</p>
+                    <ThemeSwitcher theme={theme} setTheme={setTheme} />
+                </div>
 
-                <p className="font-medium">Dev Fee</p>
-                <DevFeeSelector />
+                <div>
+                    <p className="font-medium text-brandDark pb-2">Dev Fee</p>
+                    <DevFeeSelector />
+                </div>
 
             </div>
         </Modal>
