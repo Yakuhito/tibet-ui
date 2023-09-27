@@ -17,6 +17,7 @@ interface AddAssetButtonProps {
 function AddAssetButton({ asset_id, short_name, image_url, name, onCompletion = () => {} }: AddAssetButtonProps) {
 
     const dispatch = useAppDispatch();
+    const connectedWallet = useSelector((state: RootState) => state.wallet.connectedWallet);
     const walletName = useSelector((state: RootState) => state.wallet.name);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isAdded, setIsAdded] = useState<boolean>(false);
@@ -32,7 +33,7 @@ function AddAssetButton({ asset_id, short_name, image_url, name, onCompletion = 
     }
 
     // Only display button if it's supported by the active wallet
-    if (walletName === "Goby" ||  walletName === "WalletConnect") {
+    if ((walletName === "Goby" ||  walletName === "WalletConnect") && connectedWallet) {
         return ( 
             <button onClick={() => !isLoading && !isAdded ? addAssetToWallet(asset_id, short_name, image_url, name) : null} className={`${isLoading ? 'animate-pulse' : ''} ${isAdded ? 'bg-green-700/20 text-green-700 cursor-default hover:opacity-100' : 'bg-brandDark/10 text-brandDark dark:text-brandLight'} h-fit w-[144px] transition font-medium hover:opacity-80 py-1 px-4 whitespace-nowrap rounded-lg flex justify-center items-center gap-2`}>
                 {!isLoading && !isAdded && <Image src={walletName === "Goby" ? "/assets/goby.webp" : "/assets/xch.webp"} width={16} height={16} alt="Token logo" className="rounded-full" />}
