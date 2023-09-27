@@ -112,7 +112,7 @@ const CompleteWithWalletModal = () => {
           enter="ease-out duration-300"
           enterFrom="opacity-0"
           enterTo="opacity-100"
-          leave="ease-in duration-200"
+          leave="ease-in duration-2 00"
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
       >
