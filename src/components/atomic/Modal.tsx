@@ -47,7 +47,7 @@ function Modal({isOpen, setIsOpen, title, children, onClose=() => {}}: ModalProp
 
             <Dialog.Title as="h3" className="text-2xl sm:text-3xl pt-3 pb-4 font-bold text-black dark:text-brandLight pr-14">{title}</Dialog.Title>
             <div className="bg-brandDark/10 w-10 h-10 rounded-full flex justify-center items-center absolute top-8 right-8 cursor-pointer hover:opacity-80" onClick={close}>
-              <CrossIcon className="fill-black h-4 w-4" />
+              <CrossIcon className="fill-black dark:fill-brandLight h-4 w-4" />
             </div>
 
             {/* Main Content Options */}
