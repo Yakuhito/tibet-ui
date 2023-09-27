@@ -342,11 +342,6 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           },
         });
 
-        toast.promise(request, {
-          loading: 'Sent request to your Chia Wallet',
-          success: 'Request accepted',
-          error: 'Unable to fetch your wallets'
-        })
         const wallets = await request;
         
         if (wallets.isSuccess) {
@@ -356,7 +351,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
         }
         
       } catch (error: any) {
-      console.log(error.message)
+        console.log(error.message)
     }
   }
 
@@ -387,11 +382,6 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           },
         });
 
-        toast.promise(request, {
-          loading: 'Sent request to your Chia Wallet',
-          success: 'Request accepted',
-          error: 'Failed to add asset to wallet'
-        })
         const response = await request;
         console.log(response)
         return;
