@@ -52,11 +52,13 @@ function ConnectButton() {
       return 'Manage Wallet';
     };
 
+    const isWalletConnectActuallyConnected = connectedWallet === "WalletConnect" ? Boolean(connectedWallet === "WalletConnect" && walletConnectSelectedSession) : true;
+
     return ( 
         <>
             <button onClick={() => setIsWalletModalOpen(true)} className="flex items-center gap-2 bg-brandDark/10  text-brandDark dark:text-brandLight px-6 py-1.5 font-medium rounded-xl animate-fadeIn hover:opacity-80">
-                {(connectedWallet && displayWalletImage) && <Image src={displayWalletImage} width={20} height={20} alt={`${walletName} wallet logo`} className="rounded-full" />}
-                {!connectedWallet || (connectedWallet === "WalletConnect" && !walletConnectSelectedSession) ? 'Connect Wallet' : displayAddress()}
+                {(connectedWallet && displayWalletImage && isWalletConnectActuallyConnected) && <Image src={displayWalletImage} width={20} height={20} alt={`${walletName} wallet logo`} className="rounded-full" />}
+                {!connectedWallet || !isWalletConnectActuallyConnected ? 'Connect Wallet' : displayAddress()}
             </button>
             <ConnectWalletModal isOpen={isWalletModalOpen} setIsOpen={setIsWalletModalOpen} isWalletOnWrongChain={isWalletOnWrongChain} />
         </>
