@@ -1,6 +1,8 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+import type { RootState } from './store';
+
 import { getAllTokens, type Token } from '@/api';
-import { RootState } from './store';
 
 export interface globalOnLoadDataSliceState {
   tokens: Token[] | null;

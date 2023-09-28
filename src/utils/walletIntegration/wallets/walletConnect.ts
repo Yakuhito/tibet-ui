@@ -1,12 +1,14 @@
-import { setUserMustAddTheseAssetsToWallet, setOfferRejected, setRequestStep } from '@/redux/completeWithWalletSlice';
-import WalletIntegrationInterface, { generateOffer } from '../walletIntegrationInterface';
-import { getAllSessions, setPairingUri, selectSession } from '@/redux/walletConnectSlice';
-import { connectWallet, disconnectWallet } from '@/redux/walletSlice';
 import type { SessionTypes } from "@walletconnect/types";
 import SignClient from "@walletconnect/sign-client";
 import Client from '@walletconnect/sign-client';
-import store from '../../../redux/store';
 import { toast } from 'react-hot-toast';
+
+import store from '../../../redux/store';
+import WalletIntegrationInterface, { generateOffer } from '../walletIntegrationInterface';
+
+import { setConnectedWallet } from '@/redux/walletSlice';
+import { connectSession, setPairingUri, selectSession, setSessions, deleteTopicFromFingerprintMemory } from '@/redux/walletConnectSlice';
+import { setUserMustAddTheseAssetsToWallet, setOfferRejected, setRequestStep } from '@/redux/completeWithWalletSlice';
 
 
 interface wallet {
@@ -48,7 +50,22 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
   }
 
   async updateSessions() {
-    await store.dispatch(getAllSessions())
+    try {
+      const sessions = await this.getAllSessions();
+      if (sessions) {
+        store.dispatch(setSessions(sessions))
+        return
+      } else {
+        store.dispatch(setSessions([]))
+        store.dispatch(setConnectedWallet(null))
+        console.error('No WC sessions found');
+      }
+    } catch (error: any) {
+      if (error.message) {
+        console.error(`WalletConnect - ${error.message}`);
+      }
+      throw error;
+    }
   }
 
   async deleteTopicFromLocalStorage(topic: string) {
@@ -65,7 +82,8 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
   async updateConnectedWalletOnDisconnect(topic?: string) {
     const state = store.getState();
     if (!state.walletConnect.sessions.length) {
-      await store.dispatch(disconnectWallet("WalletConnect"));
+      
+      store.dispatch(setConnectedWallet(null));
     }
 
     if (!topic) return
@@ -116,8 +134,15 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           this.detectEvents()
 
           await this.updateSessions();
+          store.dispatch(connectSession(session))
           // Update main wallet slice to notify that it is now the active wallet
-          await store.dispatch(connectWallet("WalletConnect"))
+          const setConnectedWalletInfo = {
+            wallet: "WalletConnect",
+            address: null,
+            image: session.peer.metadata.icons[0],
+            name: "WalletConnect"
+          }
+          store.dispatch(setConnectedWallet(setConnectedWalletInfo))
           return session;
         }
     } catch (error) {
@@ -141,7 +166,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
         }
         
         // Send request to get Wallets via WalletConnect
-        signClient.disconnect({
+        await signClient.disconnect({
           topic,
           reason: {
             code: 6000,
@@ -153,8 +178,11 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
 
         await this.updateSessions();
         await this.updateConnectedWalletOnDisconnect();
+
+        // Remove any saved fingerprint preference if any
+        store.dispatch(deleteTopicFromFingerprintMemory(topic));
+
       } catch (error: any) {
-        // localStorage.removeItem('wc@2:client:0.3//session');
         this.updateSessions();
         console.log(error.message);
     }
@@ -308,7 +336,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
         }
 
     } catch (error) {
-      toast.error(`Wallet - Failed to generate offer`)
+      // toast.error(`Wallet - Failed to generate offer`)
       store.dispatch(setOfferRejected(true));
     }
     
@@ -355,7 +383,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     }
   }
 
-  async addAsset(assetId: string, symbol: string, logo: string, fullName: string): Promise<void> {
+  async addAsset(assetId: string, symbol: string, logo: string, fullName: string): Promise<void | boolean> {
     const displayName = `${symbol.includes('TIBET-') ? `TibetSwap Liquidity (${symbol})` : `${fullName} (${symbol})`}`
 
     // Sign client
@@ -383,8 +411,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
         });
 
         const response = await request;
-        console.log(response)
-        return;
+        return true;
 
     } catch (error: any) {
       console.log(`Wallet - ${error.message}`)
@@ -435,7 +462,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     signClient.on("session_delete", async ({ id, topic }) => {
 
       // Check localstorage and ensure it is removed from there
-      await this.deleteTopicFromLocalStorage(topic);
+      // await this.deleteTopicFromLocalStorage(topic);
 
       await this.updateSessions();
       await this.updateConnectedWalletOnDisconnect(topic);

@@ -1,10 +1,5 @@
 import { useDispatch, useSelector, TypedUseSelectorHook } from 'react-redux';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import completeWithWalletReducer from './completeWithWalletSlice';
-import globalOnLoadDataReducer from './globalOnLoadDataSlice';
-import walletConnectReducer from './walletConnectSlice';
-import settingsModalReducer from './settingsModalSlice';
-import walletReducer from './walletSlice';
 import {
   persistStore,
   persistReducer,
@@ -16,15 +11,21 @@ import {
   REGISTER,
 } from "redux-persist";
 import storage from 'redux-persist/lib/storage';
+
+import completeWithWalletReducer from './completeWithWalletSlice';
+import globalOnLoadDataReducer from './globalOnLoadDataSlice';
+import walletConnectReducer from './walletConnectSlice';
+import settingsModalReducer from './settingsModalSlice';
+import walletReducer from './walletSlice';
 import devFeeReducer from './devFeeSlice';
 
 const rootReducer = combineReducers({
-  wallet: walletReducer,
-  walletConnect: walletConnectReducer,
   completeWithWallet: completeWithWalletReducer,
-  devFee: devFeeReducer,
-  settingsModal: settingsModalReducer,
   globalOnLoadData: globalOnLoadDataReducer,
+  walletConnect: walletConnectReducer,
+  settingsModal: settingsModalReducer,
+  wallet: walletReducer,
+  devFee: devFeeReducer,
 });
 
 const persistConfig = {

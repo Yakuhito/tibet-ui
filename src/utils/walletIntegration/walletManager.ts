@@ -1,10 +1,12 @@
-import { generateOffer, walletNamesType } from './walletIntegrationInterface';
-import { connectWallet } from '@/redux/walletSlice';
-import store from '@/redux/store';
+import toast from 'react-hot-toast';
 
+import { generateOffer, walletNamesType } from './walletIntegrationInterface';
 import WalletConnect from './wallets/walletConnect';
 import HoogiiWallet from './wallets/hoogiiWallet';
 import GobyWallet from './wallets/gobyWallet';
+
+import store, { RootState } from '@/redux/store';
+import { setConnectedWallet } from '@/redux/walletSlice';
 
 class WalletManager {
 
@@ -22,24 +24,56 @@ class WalletManager {
   }
 
   public async connect(wallet: walletNamesType["walletNames"]): Promise<void> {
-    const walletClass = this.getWalletClassFromString(wallet);
-    await walletClass.connect();
+    try {
+      const walletClass = this.getWalletClassFromString(wallet);
+      const response = await walletClass.connect();
+      if (response) {
+        const address = await this.getAddress(wallet);
+        const image = this.getImage(wallet);
+        const name = this.getName(wallet);
+        const setConnectedWalletInfo = {
+          wallet,
+          address,
+          image,
+          name
+        }
+        store.dispatch(setConnectedWallet(setConnectedWalletInfo))
+      }
+    } catch (error: any) {
+      if (error.message) {
+        toast.error(`Wallet - ${error.message}`);
+      }
+    }
   }
 
   public async disconnect(wallet: walletNamesType["walletNames"]): Promise<void> {
     const walletClass = this.getWalletClassFromString(wallet);
-    await walletClass.disconnect();
+    const response = await walletClass.disconnect();
+    if (response) store.dispatch(setConnectedWallet(null));
   }
 
-  public async generateOffer(wallet: walletNamesType["walletNames"], requestAssets: generateOffer["requestAssets"], offerAssets: generateOffer["offerAssets"], fee: number | undefined): Promise<string | void> {
-    const walletClass = this.getWalletClassFromString(wallet);
+  public async generateOffer(requestAssets: generateOffer["requestAssets"], offerAssets: generateOffer["offerAssets"], fee: number | undefined): Promise<string | void> {
+    const state = store.getState() as RootState;
+    const connectedWallet = state.wallet.connectedWallet;
+    if (!connectedWallet) throw Error('You must connect a wallet to add an asset');
+    const walletClass = this.getWalletClassFromString(connectedWallet);
     const offer = await walletClass.generateOffer(requestAssets, offerAssets, fee);
-    return offer;
+    if (offer) {
+      return offer;
+    }
   }
 
-  public async addAsset(wallet: walletNamesType["walletNames"], assetId: string, symbol: string, logo: string, fullName: string): Promise<void> {
-    const walletClass = this.getWalletClassFromString(wallet);
-    await walletClass.addAsset(assetId, symbol, logo, fullName);
+  public async addAsset(assetId: string, symbol: string, logo: string, fullName: string): Promise<void | boolean> {
+    const state = store.getState() as RootState;
+    const connectedWallet = state.wallet.connectedWallet;
+    if (!connectedWallet) throw Error('You must connect a wallet to add an asset');
+    try {
+      const walletClass = this.getWalletClassFromString(connectedWallet);
+      await walletClass.addAsset(assetId, symbol, logo, fullName);
+      return true;
+    } catch (error: any) {
+        console.error(error)
+    }
   }
 
   public async getAddress(wallet: walletNamesType["walletNames"]): Promise<string | null> {
@@ -57,10 +91,12 @@ class WalletManager {
     return walletClass.name;
   }
 
-  public async detectEvents(wallet: walletNamesType["walletNames"]): Promise<void> {
-    const walletClass = this.getWalletClassFromString(wallet);
-    store.dispatch(connectWallet(wallet));
-    return await walletClass.detectEvents();
+  public async detectEvents(): Promise<void> {
+    const wallet = store.getState().wallet.connectedWallet;
+    if (wallet) {
+      const walletClass = this.getWalletClassFromString(wallet);
+      return await walletClass.detectEvents();
+    }
   }
 
 }
