@@ -57,7 +57,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
         return
       } else {
         store.dispatch(setSessions([]))
-        store.dispatch(setConnectedWallet(null))
+        if (store.getState().wallet.connectedWallet === "WalletConnect") store.dispatch(setConnectedWallet(null))
         console.error('No WC sessions found');
       }
     } catch (error: any) {
@@ -81,8 +81,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
   // If the session being disconnected is the only session connected, then disconnect the wallet in the wallet slice
   async updateConnectedWalletOnDisconnect(topic?: string) {
     const state = store.getState();
-    if (!state.walletConnect.sessions.length) {
-      
+    if (!state.walletConnect.sessions.length && "WalletConnect" === store.getState().wallet.connectedWallet) {
       store.dispatch(setConnectedWallet(null));
     }
 
@@ -463,7 +462,6 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
 
       // Check localstorage and ensure it is removed from there
       // await this.deleteTopicFromLocalStorage(topic);
-
       await this.updateSessions();
       await this.updateConnectedWalletOnDisconnect(topic);
     })

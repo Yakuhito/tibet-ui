@@ -49,7 +49,8 @@ class WalletManager {
   public async disconnect(wallet: walletNamesType["walletNames"]): Promise<void> {
     const walletClass = this.getWalletClassFromString(wallet);
     const response = await walletClass.disconnect();
-    if (response) store.dispatch(setConnectedWallet(null));
+    const currentWallet = store.getState().wallet.connectedWallet;
+    if (response && wallet === currentWallet) store.dispatch(setConnectedWallet(null));
   }
 
   public async generateOffer(requestAssets: generateOffer["requestAssets"], offerAssets: generateOffer["offerAssets"], fee: number | undefined): Promise<string | void> {
@@ -95,8 +96,20 @@ class WalletManager {
     const wallet = store.getState().wallet.connectedWallet;
     if (wallet) {
       const walletClass = this.getWalletClassFromString(wallet);
-      return await walletClass.detectEvents();
+      await walletClass.detectEvents();
     }
+
+    // Always detect WC events if there are still active sessions
+    const walletConnectSessions = store.getState().walletConnect.sessions;
+    if (walletConnectSessions.length) {
+      const WalletConnect = this.getWalletClassFromString("WalletConnect");
+      await WalletConnect.detectEvents();
+    }
+
+    if (wallet === "WalletConnect" && !walletConnectSessions.length) {
+      store.dispatch(setConnectedWallet(null))
+    }
+
   }
 
 }

@@ -46,16 +46,16 @@ export default function App({ Component, pageProps }: AppProps) {
 
   }, [theme]);
 
-  // On page reload, wallet event listeners need to be re-established (i.e. if user disconnects from their wallet, the UI will update)
-  const walletManager = new WalletManager();
-  walletManager.detectEvents();
-
   // Only persist devFee if >= 0.3%
   const state = store.getState();
   const devFee = state.devFee.devFee;
   if (devFee <= 0.003) {
     store.dispatch(setDevFee(0.003));
   }
+
+  // On page reload, wallet event listeners need to be re-established (i.e. if user disconnects from their wallet, the UI will update)
+  const walletManager = new WalletManager();
+  walletManager.detectEvents();
 
   return (
     <Provider store={store}>
