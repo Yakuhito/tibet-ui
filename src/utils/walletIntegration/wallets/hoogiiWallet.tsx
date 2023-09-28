@@ -10,7 +10,7 @@ class hoogiiWallet implements WalletIntegrationInterface {
     // Check if Hoogii extension is installed
     const { chia } = (window as any);
     if (!Boolean(chia && chia.hoogii.isHoogii)) {
-      toast.error(<p>You don&apos;t have Hoogii Wallet installed. You can install it <a href="https://hoogii.app/" className="underline hover:opacity-80" target="_blank">here</a></p>);
+      toast.error(<p>You don&apos;t have Hoogii Wallet installed. You can install it <a href="https://hoogii.app/" className="underline hover:opacity-80" target="_blank">here</a></p>, { id: 'hoogii-not-installed' });
       throw new Error()
     }
 

@@ -2,30 +2,27 @@ import { ActionType, createOfferForPair, getInputPrice, getLiquidityQuote, getOu
 import AddAssetButton from './walletIntegration/AddAssetButton';
 import type { OfferResponse, Pair, Quote, Token } from '@/api';
 import type { GenerateOfferData } from './TabContainer';
-import { useEffect, useState, useContext } from 'react';
+import { generateOffer } from '@/redux/walletSlice';
 import BarLoader from 'react-spinners/BarLoader';
 import CopyButton from './atomic/CopyButton';
-import SuccessScreen from './SuccessScreen';
 import { RingLoader } from 'react-spinners';
+import { useEffect, useState } from 'react';
+import SuccessScreen from './SuccessScreen';
+import { type RootState } from '@/redux/store';
+import { useSelector } from 'react-redux';
 import CrossIcon from './icons/CrossIcon';
+import { useAppDispatch } from '@/hooks';
 import Image from 'next/image';
 
-import { generateOffer } from '@/redux/walletSlice';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/store';
-import { useAppDispatch } from '@/hooks';
 
 type GenerateOfferProps = {
   data: GenerateOfferData;
-  setOrderRefreshActive: (value: boolean) => void;
   devFee: number;
-  dataRefreshPercent: number;
   setGenerateOfferData: (value: GenerateOfferData) => void;
-  setDataRefreshPercent: (value: number) => void;
   activeTab: 'swap' | 'liquidity';
 };
 
-const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActive, devFee, setGenerateOfferData, setDataRefreshPercent, activeTab }) => {
+const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, devFee, setGenerateOfferData, activeTab }) => {
     const [step, setStep] = useState<number>(0);
     /*
         steps:
@@ -76,7 +73,6 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                           setGenerateOfferData(newOfferData);
                         }
                     }
-                    setDataRefreshPercent(0)
                 }
                 if (activeTab === 'swap') updateOfferDataSwap()
 
@@ -113,7 +109,6 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                           setGenerateOfferData(newOfferData);
                         }
                     }
-                    setDataRefreshPercent(0)
                 }
                 if (activeTab === 'liquidity') updateOfferDataLiquidity()
 
@@ -136,7 +131,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
             }, 4000)
             return () => {if (step !== 3) clearInterval(updateOrderData)}
         }
-    }, [data, pair, setDataRefreshPercent, setGenerateOfferData, activeTab, step])
+    }, [data, pair, setGenerateOfferData, activeTab, step])
 
     
     
@@ -153,7 +148,6 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                 );
                 setPairAndQuote([pair, quote]);
             } else if(step === 0) {
-                setOrderRefreshActive(true)
                 const numAssets = data.offer.length + data.request.length;
                 if(numAssets === 2) {
                     const token0IsXCH = data.offer[0][1];
@@ -172,7 +166,6 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                         const expectedTokenAmount = getInputPrice(xchAmount, pair.xch_reserve, pair.token_reserve);
                         if(expectedTokenAmount > tokenAmount) {
                             setStep(-1);
-                            setOrderRefreshActive(false);
                         } else {
                             const expectedXCHAmount = getOutputPrice(tokenAmount, pair.xch_reserve, pair.token_reserve)
                             if(expectedXCHAmount < xchAmount) {
@@ -189,7 +182,6 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                         const expectedXCHAmount = getInputPrice(tokenAmount, pair.token_reserve, pair.xch_reserve);
                         if(expectedXCHAmount < xchAmount) {
                             setStep(-1);
-                            setOrderRefreshActive(false);
                         } else {
                             if(expectedXCHAmount > xchAmount) {
                                 const newOfferData = {...data};
@@ -255,14 +247,13 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                     devFee * (data.offer[0][1] ? data.offer[0][2] : data.request[0][2])
                 );
                 setOfferResponse(offerResponse);
-                setOrderRefreshActive(false)
             }
         }
 
         if([0, 3].includes(step)) {
             namelessFunction();
         }
-    }, [data, step, pairAndQuote, offer, offerResponse, setOrderRefreshActive, setGenerateOfferData, devFee]);
+    }, [data, step, pairAndQuote, offer, offerResponse, setGenerateOfferData, devFee]);
 
     const listAssets = (a: [Token, boolean, number][], isOfferingAsset: boolean) => {
         const amountWithFee = (e: [Token, boolean, number]) => {
@@ -287,7 +278,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
         return (
             <ul className="list-none m-0 font-medium">
                 {a.map(e => (
-                    <li key={e[0].asset_id} className="flex-col gap-2 items-center pb-2 last:pb-0">
+                    <li key={e[0].asset_id} className="flex-col gap-2 items-center pb-2 last:pb-0 animate-fadeIn">
                         {/* If swap, add dev fee on top of quote */}
                         <div className="flex gap-2 items-center">
                             <Image src={e[0].image_url} width={30} height={30} alt="Token logo" className="rounded-full outline-brandDark/20 p-0.5" />
@@ -296,7 +287,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                         </div>
                         
                         {e[1] ? null :
-                        (<div className="rounded-lg mt-2 mb-4 flex gap-2 ml-4">
+                        (<div className="rounded-lg mt-2 mb-4 flex gap-2 ml-4 animate-fadeIn">
                             <div className="flex gap-2 text-sm font-normal pl-[calc(0.5rem+12px)]">
                                 <CopyButton copyText={e[0].asset_id}>Asset ID</CopyButton>
                                 <AddAssetButton asset_id={e[0].asset_id} short_name={e[0].short_name} image_url={e[0].image_url} name={e[0].name} />
@@ -352,15 +343,79 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
 
     }
 
+    const walletConnectSelectedSession = useSelector((state: RootState) => state.walletConnect.selectedSession);
+    const isWalletConnectActuallyConnected = connectedWallet === "WalletConnect" ? Boolean(connectedWallet === "WalletConnect" && walletConnectSelectedSession) : true;
 
     const renderContent = (step: number) => {
         // Loading (verify data)
         if(step === 0) {
             return (
-                <div className="mt-16 mb-16 flex justify-center items-center flex-col">
-                    <BarLoader width={164} speedMultiplier={2} color={"#526e78"} />
-                    <div className='mt-4 font-medium'>Verifying trade data</div>
+                <div className="text-left w-full">
+                    <div className="mb-4 bg-brandDark/10 rounded-xl p-4">
+                        <p className="mb-4 font-medium text-2xl text-brandDark dark:text-brandLight">Offering</p>
+
+                        {data.offer.map((item, index) => (
+                            <li key={index} className="flex-col gap-2 items-center pb-2 last:pb-0 animate-fadeIn list-none" >
+                                <div className="flex gap-2 items-center max-w-[294px]">
+                                    <div className="w-[30px] h-[30px] aspect-square rounded-full bg-brandDark/10 animate-pulse"></div>
+                                    <div className="w-full h-6 rounded-full bg-brandDark/10 animate-pulse"></div>
+                                </div>
+
+                                {!item[1] && <div className="rounded-lg mt-2 mb-4 flex gap-2 ml-4">
+                                    <div className="flex gap-2 text-sm font-normal pl-[calc(0.5rem+12px)]">
+                                        <div className="bg-brandDark/10 w-[106px] h-[28px] rounded-lg"></div>
+                                        <div className="bg-brandDark/10 w-[144px] h-[28px] rounded-lg"></div>
+                                    </div>
+                                </div>}
+                            </li>
+                        ))}
+
+                        
+                    </div>
+
+                    <div className="mb-4 mt-4 bg-brandDark/10 rounded-xl p-4">
+                        <p className="mb-4 font-medium text-2xl text-brandDark dark:text-brandLight">Requesting</p>
+                        {data.request.map((item, index) => (
+                            <li key={index} className="flex-col gap-2 items-center pb-2 last:pb-0 animate-fadeIn list-none" >
+                                <div className="flex gap-2 items-center max-w-[294px]">
+                                    <div className="w-[30px] h-[30px] aspect-square rounded-full bg-brandDark/10 animate-pulse"></div>
+                                    <div className="w-full h-6 rounded-full bg-brandDark/10 animate-pulse"></div>
+                                </div>
+
+                                {!item[1] && <div className="rounded-lg mt-2 mb-4 flex gap-2 ml-4">
+                                    <div className="flex gap-2 text-sm font-normal pl-[calc(0.5rem+12px)]">
+                                        <div className="bg-brandDark/10 w-[106px] h-[28px] rounded-lg"></div>
+                                        <div className="bg-brandDark/10 w-[144px] h-[28px] rounded-lg"></div>
+                                    </div>
+                                </div>}
+                            </li>
+                        ))}
+                    </div>
+                    
+                    <p className="py-4 px-4 mb-12 bg-brandDark/10 rounded-xl h-[56px] animate-pulse"></p>
+
+                    {/* Complete with Wallet Integration Button */}
+                    {connectedWallet && <button className="bg-brandDark bg-gradient-to-br from-[#7fa9b8]/90 to-brandDark/90 dark:from-brandDark dark:to-[#152f38] text-brandLight w-full py-4 rounded-xl font-medium text-opacity-0" disabled aria-disabled onClick={completeWithWallet}>Use Wallet to Complete Order</button>}
+                    {connectedWallet && <p className="flex w-16 h-6 mx-auto rounded-full justify-center font-medium my-4 text-opacity-0 bg-brandDark/10"></p>}
+
+                    {/* Input for user to paste manually generated offer in */}
+                    <input type="text"
+                        value={offer}
+                        className='w-full py-4 px-4 border text-brandDark dark:border-brandDark dark:bg-brandDark/20 rounded-xl focus:outline-none'
+                        onChange={e => setOffer(e.target.value)}
+                        aria-disabled
+                        disabled
+                    />
+
+                    {/* Submit offer manually button */}
+                    <button
+                        className={`cursor-not-allowed opacity-20 text-opacity-0 bg-gradient-to-br from-[#7fa9b8]/90 to-brandDark/90 dark:from-brandDark dark:to-[#152f38] text-brandLight px-4 py-4 rounded-xl w-full mt-4 font-medium`}
+                        disabled={true}
+                    >
+                        Submit Manually
+                    </button>
                 </div>
+
             );
         };
         // Verified - display summary of order & ask user to confirm
@@ -388,20 +443,20 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                     
                     <p className="py-4 px-4 font-medium mb-12 bg-brandDark/10 rounded-xl">
                         <span>Suggested fee</span>
-                        <span className="font-normal pl-2">{fee} {process.env.NEXT_PUBLIC_XCH}</span>
+                        <span className="font-normal pl-2 animate-fadeIn">{fee} {process.env.NEXT_PUBLIC_XCH}</span>
                     </p>
 
                     {/* High fee warning banner */}
                     {ishighFee && (
-                    <div className="bg-red-400/50 dark:bg-red-400/20 rounded-xl text-red-700 dark:text-red-600 p-4 mb-4 flex items-center gap-4">
+                    <div className="bg-red-400/50 dark:bg-red-400/20 rounded-xl text-red-700 dark:text-red-600 p-4 mb-4 flex items-center gap-4 animate-fadeIn">
                       <p className="font-medium text-sm">Our suggested fee seems high compared to your trade size. You might want to wait for the next block, or try with a lower fee.</p>
                     </div>
                     )
                     }
 
                     {/* Complete with Wallet Integration Button */}
-                    {connectedWallet && <button className="bg-brandDark hover:opacity-90 text-brandLight w-full py-4 rounded-xl font-medium" onClick={completeWithWallet}>Use Wallet to Complete Order</button>}
-                    {connectedWallet && <p className="flex w-full justify-center font-medium my-4">— OR —</p>}
+                    {connectedWallet && isWalletConnectActuallyConnected && <button className="bg-brandDark hover:opacity-90 bg-gradient-to-br from-[#7fa9b8]/90 to-brandDark/90 dark:from-brandDark dark:to-[#152f38] text-brandLight w-full py-4 rounded-xl font-medium" onClick={completeWithWallet}>Use Wallet to Complete Order</button>}
+                    {connectedWallet && isWalletConnectActuallyConnected && <p className="flex w-full justify-center font-medium my-4">— OR —</p>}
 
                     {/* Input for user to paste manually generated offer in */}
                     <input type="text"
@@ -414,7 +469,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, setOrderRefreshActi
                     {/* Submit offer manually button */}
                     <button
                         onClick={() => setStep(3)}
-                        className={`${offer.length === 0 ? 'bg-brandDark/10 dark:text-brandLight/30 cursor-not-allowed' : 'bg-green-700 hover:opacity-90'} text-brandLight px-4 py-4 rounded-xl w-full mt-4 font-medium`}
+                        className={`${offer.length === 0 ? 'cursor-not-allowed opacity-20' : 'hover:opacity-90 opacity-100'} bg-gradient-to-br from-[#7fa9b8]/90 to-brandDark/90 dark:from-brandDark dark:to-[#152f38] text-brandLight px-4 py-4 rounded-xl w-full mt-4 font-medium`}
                         disabled={offer.length === 0}
                     >
                         Submit Manually

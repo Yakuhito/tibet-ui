@@ -1,7 +1,8 @@
+import { useAppDispatch, useAppSelector as useSelector } from '@/hooks';
+import store, { persistor, type RootState } from '@/redux/store';
 import { PersistGate } from 'redux-persist/integration/react';
-import TwitterIcon from '@/components/icons/TwitterIcon';
+import XIcon from '@/components/icons/XIcon';
 import { Analytics } from '@vercel/analytics/react';
-import store, { persistor } from '@/redux/store';
 import { useState, useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import type { AppProps } from 'next/app';
@@ -10,6 +11,7 @@ import { Provider } from 'react-redux';
 import '@/styles/globals.css';
 
 import { detectWalletEvents } from '@/redux/walletSlice';
+import { setDevFee } from '@/redux/devFeeSlice';
 
 export default function App({ Component, pageProps }: AppProps) {
 
@@ -47,20 +49,27 @@ export default function App({ Component, pageProps }: AppProps) {
   // On page reload, wallet event listeners need to be re-established (i.e. if user disconnects from their wallet, the UI will update)
   store.dispatch(detectWalletEvents());
 
+  // Only persist devFee if >= 0.3%
+  const state = store.getState();
+  const devFee = state.devFee.devFee;
+  if (devFee <= 0.003) {
+    store.dispatch(setDevFee(0.003));
+  }
+
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <div>
+        <div className="min-h-screen relative">
           <Navbar theme={theme} setTheme={setTheme} />
           <Toaster position="bottom-right"
             toastOptions={{
-              className: "bg-slate-100 dark:bg-[#1E2124]/90 dark:text-brandLight backdrop-blur-3xl w-full sm:w-auto",
+              className: "!bg-brandLight/80 backdrop-blur w-full sm:w-auto !px-4 !py-3 !rounded-xl font-medium text-sm",
               loading: {
-                // iconTheme: {
-                //   primary: "",
-                //   secondary: "transparent",
-                // },
                 duration: 45000,
+                iconTheme: {
+                  primary: "black",
+                  secondary: "transparent"
+                }
               },
               success: {
                 iconTheme: {
@@ -75,14 +84,14 @@ export default function App({ Component, pageProps }: AppProps) {
                 }
               }
             }} />
-          <div className="min-h-[calc(100svh-96px)] flex flex-col px-4">
-            <div className="pt-12">
+          <div className="flex flex-col px-4">
+            <div className="pt-12 pb-[96px]">
               <Component {...pageProps}  />
               <Analytics />
             </div>
-            <footer className="pb-6 pt-12 mb-[76px] md:mb-0 text-center text-brandDark mt-auto mx-auto flex flex-col items-center">
+            <footer className="absolute bottom-0 w-full left-0 pb-6 pt-12 text-center text-brandDark mt-full mx-auto flex flex-col items-center">
               <a href="https://twitter.com/TibetSwap" target="_blank" rel="noopener noreferrer" className="underline ml-1">
-                <TwitterIcon />
+                <XIcon />
               </a>
             </footer>
           </div>

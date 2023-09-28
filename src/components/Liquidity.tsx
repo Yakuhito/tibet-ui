@@ -1,8 +1,6 @@
 import { Token, Pair, getPairByLauncherId, getLiquidityQuote, ActionType } from '../api';
 import { UNKNWN, XCH, getLiquidityToken } from '@/shared_tokens';
 import GenerateOfferButton from './atomic/GenerateOfferButton';
-import BooleanSwitch from './atomic/BooleanSwitch';
-import TokenSelector from './atomic/TokenSelector';
 import { GenerateOfferData } from './TabContainer';
 import LiquidityInput from './LiquidityInput';
 import { useState, useEffect } from 'react';
@@ -127,18 +125,6 @@ const Liquidity: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, 
         <p>Providing liquidity carries associated risks, such as impermanent loss and the possibility of security vulnerabilities. Please take time to do your own research before adding assets to the protocol.</p>
       </div>
       
-      <BooleanSwitch
-        isSelected={isAddSelected}
-        onChange={ emergency_withdraw ? () => {} : setIsAddSelected }
-        trueLabel='Add'
-        falseLabel='Remove'/>
-
-      <TokenSelector
-        selectedToken={selectedToken ?? null}
-        tokens={tokens ?? []}
-        onChange={setSelectedTokenAndWarn}
-        disabled={disabled}/>
-
       <LiquidityInput
         token0={XCH}
         token1={selectedToken ?? UNKNWN}
@@ -170,6 +156,7 @@ const Liquidity: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, 
             setAmount2(liquidity);
         }}
         disabled={selectedToken == null || pair == null}
+        selectToken={setSelectedTokenAndWarn}
       />
 
       <GenerateOfferButton

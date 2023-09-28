@@ -31,29 +31,24 @@ span.css-1u9des2-indicatorSeparator {
 
 /* Pretty Scrollbar */
 *::-webkit-scrollbar {
-  width: 12px;
+  width: 14px;
+  height: 18px;
 }
- 
-*::-webkit-scrollbar-track {
-background: transparent;
+
+*::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+*::-webkit-scrollbar-corner {
+  background-color: transparent;
 }
 
 *::-webkit-scrollbar-thumb {
-background: #526e78;
-border-radius: 1rem;
-border: 3px solid #EFF4F7;
-}
-
-@media (prefers-color-scheme: dark) {
-  .dark ::-webkit-scrollbar-thumb {
-    background: #526e78;
-    border-radius: 1rem;
-    border: 3px solid #18181b;
-  }
-}
-
-.dark *::-webkit-scrollbar-thumb {
-  background: #526e78;
-  border-radius: 1rem;
-  border: 3px solid #18181b;
+  height: 30px;
+  border: 4px solid transparent;
+  background-clip: padding-box;
+  background-color: rgba(82, 110, 120, 0.1);
+  -webkit-border-radius: 7px;
 }

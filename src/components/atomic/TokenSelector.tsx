@@ -1,149 +1,65 @@
-import CrossIcon from '../icons/CrossIcon';
-import Tick from '../icons/TickIcon';
-import Select from 'react-select';
-import { Token } from '../../api';
-import Image from 'next/image';
+import TokenSelectorModal from '../modals/TokenSelectorModal';
+import ChevronDownIcon from '../icons/ChevronDownIcon';
+import type { Token } from '../../api';
+import { useState } from 'react';
+import Image from "next/image";
 
-type TokenSelectorProps = {
-    selectedToken: Token | null;
-    onChange: (token: Token) => void;
-    tokens: Token[];
-    disabled: boolean;
-  };  
-
-const customStyles = {
-  option: (provided: any, state: any) => {
-    return {
-      ...provided,
-      cursor: 'pointer',
-      color: undefined,
-      fontWeight: 500,
-      backgroundColor: undefined,
-      paddingTop: '1rem',
-      paddingBottom: '1rem',
-      paddingLeft: '.5rem',
-      borderRadius: '0.5rem',
-      ':not(:last-child)': {
-        marginBottom: '2px',
-      },
-      ':active': {
-        backgroundColor: undefined,
-      }
-    };
-  },
-  singleValue: (provided: any, state: any) => {
-    return {
-      ...provided,
-      display: 'flex',
-      alignItems: 'center',
-      fontWeight: 500,
-      paddingTop: 10,
-      paddingBottom: 10,
-      marginLeft: '-1rem',
-      color: undefined,
-    };
-  },
-  placeholder: (provided: any) => {
-    return {
-      ...provided,
-      paddingTop: 10,
-      paddingBottom: 10,
-      fontWeight: 500,
-      color: undefined,
-    };
-  },
-  control: (provided: any, state: any) => ({
-    ...provided,
-    border: 0,
-    borderRadius: '0.75rem',
-    backgroundColor: '#526e781a',
-    ':hover': {
-      opacity: 0.8,
-    },
-    paddingLeft: '1rem',
-    boxShadow: state.isFocused ? '0 0 0 3px rgb(82 110 120 / 0.4)' : provided.boxShadow,
-    transition: 0,
-    cursor: 'pointer',
-  }),
-  dropdownIndicator: (provided: any, state: any) => ({
-    ...provided,
-    color: state.isFocused ? '#526e78' : 'rgb(82 110 120 / 35%)',
-  }),
-  menu: (provided: any, state: any) => ({
-    ...provided,
-    backgroundColor: undefined,
-    borderRadius: '0.75rem',
-    border: 0,
-    paddingLeft: '4px',
-    paddingRight: '4px',
-    '@media (prefers-color-scheme: dark)': {
-      '*::-webkit-scrollbar-thumb': {
-        borderColor: '#1E2124',
-      }
-    },
-  }),
-};
-
-// For tailwind dark theme compatibility
-const customClassNames = {
-  menu: (state: any) => "bg-slate-100 dark:bg-[#1E2124]",
-  singleValue: (state: any) => "dark:text-brandLight",
-  option: (state: any) => (`dark:text-brandLight ${state.isSelected ? 'bg-[#E0E7EC] dark:bg-zinc-900' : state.isFocused ? 'bg-[#E0E7EC] dark:bg-zinc-900' : 'transparent'}`),
-  placeholder: (state: any) => "text-black dark:text-brandLight"
+interface TokenSelectorProps {
+  selectedToken: Token;
+  selectToken: (token: Token) => void;
+  disabled?: boolean;
 }
 
-const TokenSelector: React.FC<TokenSelectorProps> = ({
-    selectedToken,
-    onChange,
-    tokens,
-    disabled
-  }) => {
+function TokenSelectorNew({ selectedToken, selectToken, disabled }: TokenSelectorProps) {
   
-    const tkToOption = (token: Token) => {
-      const imgSrc = token.image_url;
-      return {
-        value: token,
-        label: (
-          <div className="flex items-center gap-2 pl-4">
-            <Image className="rounded-full animate-fadeIn w-6 h-6" src={imgSrc} alt={`${token.short_name} logo`} width={24} height={24} priority />
-            <p>{`${token.name} (${token.short_name})`}</p>
-            {token.verified && <Tick title="Verified" />}
-            {!token.verified && <CrossIcon title="Unverified" />}
-          </div>
-        ),
-        imageSrc: imgSrc,
-        id: token.pair_id,
-      };
-    };
+  const [isTokenSelectorModalOpen, setIsTokenSelectorModalOpen] = useState<boolean>(false);
 
-    const customFilterOption = (option: any, rawInput: string): boolean => {
-      const input = rawInput.toLowerCase();
-    
-      // Check the 'short_name' and 'name' properties of the token
-      if (option.value && option.value.short_name && option.value.name) {
-        const shortName = option.value.short_name.toLowerCase();
-        const name = option.value.name.toLowerCase();
-        return shortName.includes(input) || name.includes(input);
-      }
-    
-      return false;
-    };
+  const isChia = selectedToken.name.toLowerCase().includes("chia") && !selectedToken.asset_id;
+  const isPlaceholderToken = selectedToken.name === "Unknown Token";
+  const isLiquidityPlaceholder = selectedToken.short_name === "TIBET-XXX-XCH";
+  const isLiquidityToken = selectedToken.name === "Pair Liquidity Token";
 
-    return (
-      <div className="mt-2 token-selector">
-        <Select
-          styles={customStyles}
-          classNames={customClassNames}
-          value={selectedToken ? tkToOption(selectedToken) : null}
-          options={tokens.map(tkToOption)}
-          onChange={(value) => onChange(value!.value)}
-          isDisabled={disabled}
-          placeholder="Select a token..."
-          filterOption={customFilterOption}
-        />
+  return (
+    <>
+      <div
+        className={`h-fit text-brandDark dark:text-brandLight/80 transition flex justify-center items-center font-medium gap-2 rounded-full p-2 px-5 select-none 
+        ${isChia || isLiquidityPlaceholder || isLiquidityToken
+            ? `cursor-not-allowed px-4 pr-5 ${disabled ? 'opacity-30' : ''}`
+            : "cursor-pointer bg-brandDark/10 hover:opacity-80 active:scale-[98%]"
+        }
+        ${isPlaceholderToken ? "px-3 bg-gradient-to-br from-[#7fa9b8]/90 to-brandDark/90 text-brandLight" : ""}
+      `}
+        onClick={() =>
+          isChia || isLiquidityPlaceholder || isLiquidityToken
+            ? null
+            : setIsTokenSelectorModalOpen(true)
+        }
+      >
+        {/* Token Image */}
+        {selectedToken && !isPlaceholderToken && (
+          <Image className="rounded-full border-0 border-brandLight animate-fadeIn max-h-[25px] aspect-square" src={selectedToken.image_url} width={25} height={25} alt={selectedToken.name} />
+        )}
+
+        {/* Token Name or "Select Token" if no token selected */}
+        <p className="whitespace-nowrap">
+          {selectedToken && !isPlaceholderToken
+            ? selectedToken.short_name
+            : "Select Token"}
+        </p>
+
+        {/* Down arrow icon if user is allowed to select */}
+        {selectedToken &&
+          !isChia &&
+          !isLiquidityPlaceholder &&
+          !isLiquidityToken && (
+            <div className="w-4">
+              <ChevronDownIcon className="w-4 pt-0.5" />
+            </div>
+          )}
       </div>
-    );
-  };
-  
+      <TokenSelectorModal isOpen={isTokenSelectorModalOpen} setIsOpen={setIsTokenSelectorModalOpen} setSelectedToken={selectToken} />
+    </>
+  );
+}
 
-export default TokenSelector;
+export default TokenSelectorNew;

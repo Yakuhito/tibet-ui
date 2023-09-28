@@ -1,6 +1,6 @@
 import { type ChangeEvent, useState } from 'react';
+import TokenSelector from './TokenSelector';
 import type { Token } from '../../api';
-import Image from 'next/image';
 
 type AssetAmountInputProps = {
   token: Token;
@@ -8,9 +8,10 @@ type AssetAmountInputProps = {
   onChange: (value: number) => void;
   maxDecimals: number;
   disabled?: boolean;
+  selectToken: (token: Token) => void;
 };
 
-const AssetAmountInput: React.FC<AssetAmountInputProps> = ({ token, onChange, maxDecimals, disabled, value }) => {
+const AssetAmountInput: React.FC<AssetAmountInputProps> = ({ token, onChange, maxDecimals, disabled, value, selectToken }) => {
 
   const [inputValue, setInputValue] = useState<number | string>("");
 
@@ -26,29 +27,21 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({ token, onChange, ma
   }
 
   return (
-    <div className={`flex justify-between bg-brandDark/10 p-6 rounded-xl relative pt-[59px] ${disabled ? 'opacity-30' : ''}`}>
+    <div className={`flex justify-between items-center bg-brandDark/10 p-6 rounded-xl relative ${disabled ? 'bg-opacity-30' : ''}`}>
 
-      {/* Token Short_Name */}
-      <div className={`absolute top-6 ${disabled ? 'cursor-not-allowed': ''}`}>
-        <div className="flex justify-center items-center  rounded-full py-1 font-bold">
-          <Image className="mr-1 rounded-full animate-fadeIn" width={24} height={24} src={token.image_url ?? '/logo.jpg'} alt={token.name} />
-          <span>{token.short_name}</span>
-        </div>
-      </div>
+        <input
+          className={`w-full text-4xl font-bold px-2 focus:outline-none bg-transparent leading-normal ${disabled ? 'bg-gray-100 cursor-not-allowed opacity-30': ''}`}
+          value={value != 0 ? value / Math.pow(10, maxDecimals) : inputValue}
+          onChange={handleInputChange}
+          disabled={disabled}
+          inputMode="decimal"
+          pattern="[0-9]*"
+          placeholder="0"
+          type="number"
+          min={0}
+        />
 
-      {/* Input/Value */}
-      <input
-        className={`w-full text-4xl font-bold px-2 focus:outline-none bg-transparent leading-normal ${disabled ? 'bg-gray-100 cursor-not-allowed': ''}`}
-        // value={value / Math.pow(10, maxDecimals)}
-        value={value != 0 ? value / Math.pow(10, maxDecimals) : inputValue}
-        onChange={handleInputChange}
-        disabled={disabled}
-        inputMode="decimal"
-        pattern="[0-9]*"
-        placeholder="0"
-        type="number"
-        min={0}
-      />
+        <TokenSelector selectedToken={token} selectToken={selectToken} disabled={disabled} />
 
     </div>
   );

@@ -1,7 +1,11 @@
 import CompleteWithWalletModal from './walletIntegration/CompleteWithWalletModal';
+import { setDevFee as setReduxDevFee } from '@/redux/devFeeSlice';
 import React, { useState, useEffect } from 'react';
 import { type Token, ActionType } from '../api';
 import GenerateOffer from './GenerateOffer';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
+import { useAppDispatch } from '@/hooks';
 import Liquidity from './Liquidity';
 import Swap from './Swap';
 
@@ -24,35 +28,17 @@ const TabContainer: React.FC<TabContainerProps> = ({ tokens, selectedToken, setS
   const SWAP_ENABLED = !emergency_withdraw && process.env.NEXT_PUBLIC_SWAP_ENABLED === 'true';
   const [activeTab, setActiveTab] = useState<'swap' | 'liquidity'>(SWAP_ENABLED ? 'swap' : 'liquidity');
   const [generateOfferData, setGenerateOfferData] = useState<GenerateOfferData | null>(null);
-  const [orderRefreshActive, setOrderRefreshActive] = useState(false)
-  const [devFee, setDevFee] = useState(0.003)
-  const [dataRefreshPercent, setDataRefreshPercent] = useState(0);
 
-  // Remember & restore user dev fee preference (if >= 0.3%)
-  useEffect(() => {
-    const devFee = localStorage.getItem('devFee');
-    if (devFee && parseFloat(devFee) >= 0.003) {
-      setDevFee(parseFloat(devFee));
-    }
-  }, []);
 
-  // Update data refresh loader percent
-  useEffect(() => {
-    if(generateOfferData !== null && orderRefreshActive && activeTab === 'swap') {
-      var interval = setInterval(() => {
-          setDataRefreshPercent(percent => (percent < 100 ? percent + 1 : percent));
-      }, 50); // Update every 50 milliseconds
-    } else {
-      setDataRefreshPercent(0)
-    }
-      return () => {
-        clearInterval(interval);
-      };
-    }, [generateOfferData, orderRefreshActive, activeTab]);
+  const dispatch = useAppDispatch();
+  const devFee = useSelector((state: RootState) => state.devFee.devFee);
+  const setDevFee = (fee: number) => {
+    dispatch(setReduxDevFee(fee))
+  }
 
   const renderContent = (generateOffer: (data: GenerateOfferData) => void, data: GenerateOfferData | null) => {
     if(data !== null) {
-      return <GenerateOffer data={data} setOrderRefreshActive={setOrderRefreshActive} devFee={devFee} dataRefreshPercent={dataRefreshPercent} setGenerateOfferData={setGenerateOfferData} setDataRefreshPercent={setDataRefreshPercent} activeTab={activeTab} />;
+      return <GenerateOffer data={data} devFee={devFee} setGenerateOfferData={setGenerateOfferData} activeTab={activeTab} />;
     }
 
     if (activeTab === 'swap') {
@@ -83,7 +69,7 @@ const TabContainer: React.FC<TabContainerProps> = ({ tokens, selectedToken, setS
 
       {/* Display swap/liquidity toggle */}
       {generateOfferData == null ? (
-      <div className="flex gap-4 px-2 text-xl mb-4 mt-8">
+      <div className="flex gap-4 px-2 text-xl mt-2">
         <button
           className={`font-medium ${
             activeTab === 'swap' ? 'text-black dark:text-brandLight' : 'text-black/50 dark:text-brandLight/50 hover:opacity-80'
@@ -114,7 +100,7 @@ const TabContainer: React.FC<TabContainerProps> = ({ tokens, selectedToken, setS
           Liquidity
         </button>
       </div>) : (
-        <div className="w-full mb-12">
+        <div className="w-full mb-8 mt-2">
           <div className="rounded-xl inline-flex hover:opacity-80 cursor-pointer" onClick={() => setGenerateOfferData(null)}>
             <p className="text-xl font-medium text-brandDark dark:text-brandLight">‹ Back</p>
           </div>

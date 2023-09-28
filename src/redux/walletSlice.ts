@@ -1,11 +1,11 @@
-import { type generateOffer as generateOfferType, walletClasses } from '@/utils/walletIntegration/walletIntegrationInterface';
+import { type generateOffer as generateOfferType, walletNamesType } from '@/utils/walletIntegration/walletIntegrationInterface';
 import WalletManager from '@/utils/walletIntegration/walletManager';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-hot-toast';
 import { RootState } from './store';
 
 export interface WalletState {
-  connectedWallet: keyof typeof walletClasses | null;
+  connectedWallet: walletNamesType["walletNames"] | null;
   isPending: boolean;
   address: string | null;
   image: string | null;
@@ -16,7 +16,7 @@ export interface WalletState {
 
 // ASYNC
 /////////////////////////////////
-export const connectWallet = createAsyncThunk('wallet/connectWallet', async (wallet: keyof typeof walletClasses, { getState }) => {
+export const connectWallet = createAsyncThunk('wallet/connectWallet', async (wallet: walletNamesType["walletNames"], { getState }) => {
   try {
     const walletManager = new WalletManager();
     await walletManager.connect(wallet);
@@ -37,7 +37,7 @@ export const connectWallet = createAsyncThunk('wallet/connectWallet', async (wal
   }
 });
 
-export const disconnectWallet = createAsyncThunk('wallet/disconnectWallet', async (wallet: keyof typeof walletClasses) => {
+export const disconnectWallet = createAsyncThunk('wallet/disconnectWallet', async (wallet: walletNamesType["walletNames"]) => {
   try {
     const walletManager = new WalletManager();
     await walletManager.disconnect(wallet);

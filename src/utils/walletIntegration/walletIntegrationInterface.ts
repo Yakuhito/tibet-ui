@@ -1,12 +1,6 @@
-import WalletConnect from './wallets/walletConnect';
-import HoogiiWallet from './wallets/hoogiiWallet';
-import GobyWallet from './wallets/gobyWallet';
-
-export const walletClasses: Record<string, any> = {
-  Goby: GobyWallet,
-  Hoogii: HoogiiWallet,
-  WalletConnect: WalletConnect,
-};
+export interface walletNamesType {
+  walletNames: "Goby" | "Hoogii" | "WalletConnect";
+}
 
 export interface generateOffer {
     requestAssets: {

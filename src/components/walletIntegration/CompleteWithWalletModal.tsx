@@ -112,15 +112,15 @@ const CompleteWithWalletModal = () => {
           enter="ease-out duration-300"
           enterFrom="opacity-0"
           enterTo="opacity-100"
-          leave="ease-in duration-200"
+          leave="ease-in duration-2 00"
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
       >
-          <div className="fixed inset-0 bg-brandDark/10 backdrop-blur-sm" />
+          <div className="fixed inset-0 bg-brandDark/10 backdrop-blur" />
       </Transition.Child>
 
       <div className="fixed inset-0 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center">
+          <div className="flex min-h-full items-end sm:items-center justify-center p-4 text-center">
           <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -132,7 +132,7 @@ const CompleteWithWalletModal = () => {
           >
               <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white dark:bg-zinc-900 p-6 text-left align-middle shadow-xl transition-all">
 
-              <Dialog.Title as="h3" className="text-[2.5rem] sm:text-5xl pt-0 pb-4 font-bold text-black dark:text-brandLight">
+              <Dialog.Title as="h3" className="text-2xl sm:text-3xl pt-3 pb-4 font-bold text-black dark:text-brandLight">
                 <ul className="flex gap-2 mb-8">
                   <li className={`bg-brandDark w-full h-1 rounded-full`}></li>
                   <ul className="w-full flex">
