@@ -1,8 +1,10 @@
-import TokenSelectorModal from '../modals/TokenSelectorModal';
-import ChevronDownIcon from '../icons/ChevronDownIcon';
-import type { Token } from '../../api';
 import { useState } from 'react';
 import Image from "next/image";
+
+import type { Token } from '../../api';
+
+import TokenSelectorModal from './modals/TokenSelectorModal';
+import ChevronDownIcon from './icons/ChevronDownIcon';
 
 interface TokenSelectorProps {
   selectedToken: Token;

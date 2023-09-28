@@ -2,11 +2,14 @@ import { CSSProperties, ChangeEvent, Fragment, forwardRef, useState } from 'reac
 import { Dialog, Transition } from '@headlessui/react';
 import { FixedSizeList as List } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
-import CrossIcon from '../icons/CrossIcon';
 import { useSelector } from 'react-redux';
+import Image from 'next/image';
+
+import CrossIcon from '../icons/CrossIcon';
+
 import { RootState } from '@/redux/store';
 import type { Token } from '@/api';
-import Image from 'next/image';
+
 
 
 interface TokenSelectorProps {
@@ -107,7 +110,7 @@ function TokenSelectorModal({ isOpen, setIsOpen, setSelectedToken }: TokenSelect
 
                 <Dialog.Title as="h3" className="text-[2.5rem] sm:text-5xl pt-4 pb-4 md:pb-8 font-bold text-black dark:text-brandLight">Select a token</Dialog.Title>
                 <div className="bg-brandDark/10 w-10 h-10 rounded-full flex justify-center items-center absolute top-8 right-4 cursor-pointer hover:opacity-80" onClick={() => setIsOpen(false)}>
-                  <CrossIcon className="fill-black h-4 w-4" />
+                  <CrossIcon className="fill-black dark:fill-brandLight h-4 w-4" />
                 </div>
 
                 {/* Main Content Container */}
@@ -144,7 +147,7 @@ function TokenSelectorModal({ isOpen, setIsOpen, setSelectedToken }: TokenSelect
                                 height={height ? height : 0}
                                 itemCount={filteredTokens.length}
                                 itemSize={68}
-                                width={width}
+                                width={width ? width : 0}
                                 innerElementType={innerElementType}
                               >
                                 {tokenRow}

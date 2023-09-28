@@ -1,6 +1,7 @@
-import DevFeeSelector from '../DevFeeSelector';
-import ThemeSwitcher from '../ThemeSwitcher';
-import Modal from '../atomic/Modal';
+import Modal from '../Modal';
+
+import DevFeeSelector from './DevFeeSelector';
+import ThemeSwitcher from './ThemeSwitcher';
 
 interface ConnectWalletModalProps {
     isOpen: boolean;

@@ -1,6 +1,7 @@
-import AssetAmountInput from "@/components/atomic/AssetAmountInput";
-import ChevronDownIcon from "@/components/icons/ChevronDownIcon";
-import type { Token } from "../api";
+import type { Token } from "../../api";
+
+import ChevronDownIcon from "@/components/shared/icons/ChevronDownIcon";
+import AssetAmountInput from "@/components/shared/AssetAmountInput";
 
 type LiquidityInputsProps = {
   token0: Token;

@@ -1,13 +1,17 @@
-import { type Token, type Pair, getPairByLauncherId, getInputPrice, getOutputPrice, ActionType } from '../api';
-import GenerateOfferButton from './atomic/GenerateOfferButton';
-import { setIsOpen } from '@/redux/settingsModalSlice';
-import { GenerateOfferData } from './TabContainer';
-import { UNKNWN, XCH } from '@/shared_tokens';
 import { useState, useEffect } from 'react';
-import { useAppDispatch } from '@/hooks';
-import TickIcon from './icons/TickIcon';
-import CogIcon from './icons/CogIcon';
+
+import { type Token, type Pair, getPairByLauncherId, getInputPrice, getOutputPrice, ActionType } from '../../api';
+import GenerateOfferButton from '../shared/GenerateOfferButton';
+import TickIcon from '../shared/icons/TickIcon';
+import CogIcon from '../shared/icons/CogIcon';
+
+import type { GenerateOfferData } from './TabContainer';
 import SwapInput from './SwapInput';
+
+import { setIsOpen } from '@/redux/settingsModalSlice';
+import { UNKNWN, XCH } from '@/shared_tokens';
+import { useAppDispatch } from '@/hooks';
+
 
 type SwapProps = {
   disabled: boolean;

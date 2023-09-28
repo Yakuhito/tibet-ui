@@ -1,13 +1,18 @@
-import { disconnectSession, selectSession, setSelectedFingerprint } from '@/redux/walletConnectSlice';
-import { connectWallet } from '@/redux/walletSlice';
 import { useState, useEffect } from 'react';
-import CrossIcon from '../icons/CrossIcon';
 import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/store';
-import { useAppDispatch } from '@/hooks';
 import Image from 'next/image';
 
+import CrossIcon from '../../icons/CrossIcon';
+
 import FingerprintListbox from './FingerprintListbox';
+
+import { selectSession, setSelectedFingerprint } from '@/redux/walletConnectSlice';
+import { type RootState } from '@/redux/store';
+import WalletManager from '@/utils/walletIntegration/walletManager';
+import { useAppDispatch } from '@/hooks';
+import WalletConnect from "@/utils/walletIntegration/wallets/walletConnect";
+
+
 
 interface WalletConnectSession {
   img: string;
@@ -18,6 +23,7 @@ interface WalletConnectSession {
 function WalletConnectSession({ img, name, topic }: WalletConnectSession) {
 
   const dispatch = useAppDispatch();
+
   const [isHovering, setIsHovering] = useState(false);
 
   const connectedWallet = useSelector((state: RootState) => state.wallet.connectedWallet);
@@ -32,6 +38,9 @@ function WalletConnectSession({ img, name, topic }: WalletConnectSession) {
   const defaultFingerprint = session ? Number(session.namespaces.chia.accounts[0].split(":")[2]) : 0;
   const [userSelectedFingerprint, setUserSelectedFingerprint] = useState<number | undefined>(selectedFingerprint ? selectedFingerprint : defaultFingerprint);
   const [fingerprints, setFingerprints] = useState<number[] | undefined>()
+
+  const walletManager = new WalletManager();
+  const walletConnect = new WalletConnect();
 
   // Set fingerprints array
   useEffect(() => {
@@ -55,7 +64,7 @@ function WalletConnectSession({ img, name, topic }: WalletConnectSession) {
 
   const handleClick = () => {
     if (!isConnectedWalletWalletConnect) {
-      dispatch(connectWallet("WalletConnect"));
+      walletManager.connect("WalletConnect")
     }
     dispatch(selectSession(topic));
   }
@@ -77,7 +86,7 @@ function WalletConnectSession({ img, name, topic }: WalletConnectSession) {
           className={`bg-red-700/80 hover:bg-red-700 rounded py-1 px-1 text-xs text-brandLight transition-opacity`}
           onMouseEnter={() => setIsHovering(false)}
           onMouseLeave={() => setIsHovering(true)}
-          onClick={() => dispatch(disconnectSession(topic))}
+          onClick={() => walletConnect.disconnectSession(topic)}
         >
           <CrossIcon className='fill-white' />
         </button>

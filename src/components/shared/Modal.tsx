@@ -1,6 +1,7 @@
 import { Transition, Dialog } from "@headlessui/react";
 import { Fragment, ReactNode } from "react";
-import CrossIcon from "../icons/CrossIcon";
+
+import CrossIcon from "./icons/CrossIcon";
 
 interface ModalProps {
   isOpen: boolean;

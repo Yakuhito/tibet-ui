@@ -1,6 +1,7 @@
 import { useState, useEffect, type ChangeEvent, useRef } from "react";
-import { setDevFee } from "@/redux/devFeeSlice";
 import { useSelector } from "react-redux";
+
+import { setDevFee } from "@/redux/devFeeSlice";
 import { RootState } from "@/redux/store";
 import { useAppDispatch } from "@/hooks";
 

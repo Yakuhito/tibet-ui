@@ -1,6 +1,7 @@
-import ChevronUpDownIcon from '../icons/ChevronUpDownIcon';
 import { Listbox, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
+
+import ChevronUpDownIcon from '../../icons/ChevronUpDownIcon';
 
 interface FingerprintListboxProps {
   fingerprints: number[] | undefined;

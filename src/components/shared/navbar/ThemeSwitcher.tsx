@@ -1,5 +1,5 @@
-import MoonIcon from "./icons/MoonIcon";
-import SunIcon from "./icons/SunIcon";
+import MoonIcon from "../icons/MoonIcon";
+import SunIcon from "../icons/SunIcon";
 
 interface ThemeSwitcherProps {
   theme: "dark" | "light" | "auto";

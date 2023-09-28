@@ -1,9 +1,12 @@
-import { Token, Pair, getPairByLauncherId, getLiquidityQuote, ActionType } from '../api';
-import { UNKNWN, XCH, getLiquidityToken } from '@/shared_tokens';
-import GenerateOfferButton from './atomic/GenerateOfferButton';
-import { GenerateOfferData } from './TabContainer';
-import LiquidityInput from './LiquidityInput';
 import { useState, useEffect } from 'react';
+
+import { Token, Pair, getPairByLauncherId, getLiquidityQuote, ActionType } from '../../api';
+import GenerateOfferButton from '../shared/GenerateOfferButton';
+
+import type { GenerateOfferData } from './TabContainer';
+import LiquidityInput from './LiquidityInput';
+
+import { UNKNWN, XCH, getLiquidityToken } from '@/shared_tokens';
 
 type LiquidityProps = {
   disabled: boolean;

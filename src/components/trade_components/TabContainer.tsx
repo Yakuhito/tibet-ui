@@ -1,13 +1,16 @@
-import CompleteWithWalletModal from './walletIntegration/CompleteWithWalletModal';
-import { setDevFee as setReduxDevFee } from '@/redux/devFeeSlice';
-import React, { useState, useEffect } from 'react';
-import { type Token, ActionType } from '../api';
-import GenerateOffer from './GenerateOffer';
 import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/store';
-import { useAppDispatch } from '@/hooks';
+import React, { useState } from 'react';
+
+import { type Token, ActionType } from '../../api';
+
+import CompleteWithWalletModal from './CompleteWithWalletModal';
+import GenerateOffer from './GenerateOffer';
 import Liquidity from './Liquidity';
 import Swap from './Swap';
+
+import { RootState } from '@/redux/store';
+import { useAppDispatch } from '@/hooks';
+import { setDevFee as setReduxDevFee } from '@/redux/devFeeSlice';
 
 export interface GenerateOfferData {
   pairId: string;

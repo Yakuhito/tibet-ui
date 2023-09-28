@@ -1,16 +1,22 @@
-import ConnectButton from './walletIntegration/ConnectButton';
-import MobileNavMenuModal from './modals/MobileNavMenuModal';
-import { setIsOpen } from '@/redux/settingsModalSlice';
-import SettingsModal from './modals/SettingsModal';
 import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/store';
-import { useAppDispatch } from '@/hooks';
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
-import MenuIcon from './icons/MenuIcon';
-import CogIcon from './icons/CogIcon';
-import Logo from './icons/Logo';
 import Link from 'next/link';
+
+import MenuIcon from '../icons/MenuIcon';
+import CogIcon from '../icons/CogIcon';
+import Logo from '../icons/Logo';
+
+import ConnectButton from './walletIntegration/ConnectButton';
+import MobileNavMenuModal from './MobileNavMenuModal';
+import SettingsModal from './SettingsModal';
+
+import { setIsOpen } from '@/redux/settingsModalSlice';
+import { RootState } from '@/redux/store';
+import { useAppDispatch } from '@/hooks';
+
+
+
 
 interface NavbarProps {
   theme: "dark" | "light" | "auto";

@@ -1,17 +1,17 @@
-import { useAppDispatch, useAppSelector as useSelector } from '@/hooks';
-import store, { persistor, type RootState } from '@/redux/store';
 import { PersistGate } from 'redux-persist/integration/react';
-import XIcon from '@/components/icons/XIcon';
 import { Analytics } from '@vercel/analytics/react';
 import { useState, useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import type { AppProps } from 'next/app';
-import Navbar from '@/components/Navbar';
 import { Provider } from 'react-redux';
-import '@/styles/globals.css';
 
-import { detectWalletEvents } from '@/redux/walletSlice';
+import Navbar from '@/components/shared/navbar/Navbar';
+import XIcon from '@/components/shared/icons/XIcon';
+import store, { persistor } from '@/redux/store';
 import { setDevFee } from '@/redux/devFeeSlice';
+import '@/styles/globals.css';
+import WalletManager from '@/utils/walletIntegration/walletManager';
+
 
 export default function App({ Component, pageProps }: AppProps) {
 
@@ -47,7 +47,8 @@ export default function App({ Component, pageProps }: AppProps) {
   }, [theme]);
 
   // On page reload, wallet event listeners need to be re-established (i.e. if user disconnects from their wallet, the UI will update)
-  store.dispatch(detectWalletEvents());
+  const walletManager = new WalletManager();
+  walletManager.detectEvents();
 
   // Only persist devFee if >= 0.3%
   const state = store.getState();

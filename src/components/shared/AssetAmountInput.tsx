@@ -1,6 +1,8 @@
 import { type ChangeEvent, useState } from 'react';
-import TokenSelector from './TokenSelector';
+
 import type { Token } from '../../api';
+
+import TokenSelector from './TokenSelector';
 
 type AssetAmountInputProps = {
   token: Token;

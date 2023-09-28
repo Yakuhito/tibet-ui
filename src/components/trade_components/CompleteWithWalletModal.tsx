@@ -1,11 +1,13 @@
-import { setUserMustAddTheseAssetsToWallet, setOfferRejected, setRequestStep } from '@/redux/completeWithWalletSlice';
-import AddAssetButton from '@/components/walletIntegration/AddAssetButton';
 import { Dialog, Transition } from '@headlessui/react';
 import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/store';
-import { useAppDispatch } from '@/hooks';
 import React, { Fragment } from 'react';
 import Image from 'next/image';
+
+import { setUserMustAddTheseAssetsToWallet, setOfferRejected, setRequestStep } from '@/redux/completeWithWalletSlice';
+import AddAssetButton from '@/components/shared/navbar/walletIntegration/AddAssetButton';
+import { RootState } from '@/redux/store';
+import { useAppDispatch } from '@/hooks';
+
 
 const CompleteWithWalletModal = () => {
 

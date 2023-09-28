@@ -1,7 +1,9 @@
-import { setPairingUri } from '@/redux/walletConnectSlice';
 import { Transition } from '@headlessui/react';
-import CopyButton from '../atomic/CopyButton';
 import { QRCodeSVG } from 'qrcode.react';
+
+import CopyButton from '../../CopyButton';
+
+import { setPairingUri } from '@/redux/walletConnectSlice';
 import { useAppDispatch } from '@/hooks';
 
 interface WalletConnectQRProps {

@@ -1,9 +1,10 @@
 import { Dialog, Transition } from '@headlessui/react';
-import CrossIcon from '../icons/CrossIcon';
 import { useRouter } from 'next/router';
-import CogIcon from '../icons/CogIcon';
 import { Fragment } from 'react';
 import Link from 'next/link';
+
+import CogIcon from '../icons/CogIcon';
+import CrossIcon from '../icons/CrossIcon';
 
 interface MobileNavMenuModalProps {
     isOpen: boolean;

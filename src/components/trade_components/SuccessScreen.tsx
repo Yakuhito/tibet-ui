@@ -1,10 +1,13 @@
-import DexieDuckIcon from './icons/DexieDuckIcon';
-import type { GenerateOfferData } from './TabContainer';
 import { Fragment, useEffect, useState } from 'react';
 import { Transition } from '@headlessui/react';
-import type { OfferResponse } from '@/api';
 import confetti from 'canvas-confetti';
 import Image from "next/image";
+
+import DexieDuckIcon from '../shared/icons/DexieDuckIcon';
+
+import type { GenerateOfferData } from './TabContainer';
+
+import type { OfferResponse } from '@/api';
 
 interface SuccessScreenProps {
     offerData: GenerateOfferData;
