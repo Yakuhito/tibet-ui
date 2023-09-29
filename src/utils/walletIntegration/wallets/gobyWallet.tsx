@@ -37,7 +37,7 @@ class gobyWallet implements WalletIntegrationInterface {
     }
   }
 
-  disconnect(): void | boolean {
+  disconnect(): boolean {
     // Goby wallet disconnection logic
     return true;
   }
