@@ -11,6 +11,7 @@ import store, { persistor } from '@/redux/store';
 import { setDevFee } from '@/redux/devFeeSlice';
 import '@/styles/globals.css';
 import WalletManager from '@/utils/walletIntegration/walletManager';
+import { getXCHPrice } from '@/redux/globalOnLoadDataSlice';
 
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -56,6 +57,9 @@ export default function App({ Component, pageProps }: AppProps) {
   // On page reload, wallet event listeners need to be re-established (i.e. if user disconnects from their wallet, the UI will update)
   const walletManager = new WalletManager();
   walletManager.detectEvents();
+
+  // Store XCH price globally in Redux
+  store.dispatch(getXCHPrice())
 
   return (
     <Provider store={store}>
