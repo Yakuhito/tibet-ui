@@ -6,6 +6,7 @@ import { getAllTokens, type Token } from '@/api';
 
 export interface globalOnLoadDataSliceState {
   tokens: Token[] | null;
+  xchPrice: number | null;
 }
 
 // ASYNC
@@ -27,10 +28,31 @@ export const getTokens = createAsyncThunk('wallet/getTokens', async (_, { getSta
   }
 });
 
+export const getXCHPrice = createAsyncThunk('wallet/getXCHPrice', async (_, { getState }) => {
+  const state = getState() as RootState;
+
+  // If tokens have previously been loaded
+  if (state.globalOnLoadData.xchPrice) return state.globalOnLoadData.xchPrice;
+
+  
+  // On first request
+  try {
+    const resp = await fetch("https://xchscan.com/api/chia-price");
+    const resp_parsed = await resp.json();
+    return resp_parsed.usd;
+  } catch (error: any) {
+    if (error.message) {
+      console.log("Error while fetching tokens:", error)
+    }
+    throw error;
+  }
+});
+
 // SLICES
 /////////////////////////////////
 const initialState: globalOnLoadDataSliceState = {
   tokens: null,
+  xchPrice: null,
 };
 
 const globalOnLoadDataSlice = createSlice({
@@ -43,6 +65,11 @@ const globalOnLoadDataSlice = createSlice({
       //////////////////////////////////
       .addCase(getTokens.fulfilled, (state, action: PayloadAction<Token[]>) => {
         state.tokens = action.payload;
+      })
+      // GET XCH PRICE
+      //////////////////////////////////
+      .addCase(getXCHPrice.fulfilled, (state, action: PayloadAction<number | null>) => {
+        state.xchPrice = action.payload;
       })
   },
 });
