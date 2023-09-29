@@ -10,6 +10,7 @@ import {
   OnChangeFn,
   flexRender,
 } from '@tanstack/react-table'
+import Link from 'next/link'
 
 import { type Transaction } from '@/analyticsApi'
 
@@ -29,15 +30,15 @@ function Table({ data, columns }: {
   })
 
   return (
-    <div className="p-2">
+    <div className="p-2 w-full">
       <div className="h-2" />
-      <table>
-        <thead>
+      <table className="w-full">
+        <thead className="border-y">
           {table.getHeaderGroups().map(headerGroup => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map(header => {
                 return (
-                  <th key={header.id} colSpan={header.colSpan}>
+                  <th key={header.id} colSpan={header.colSpan} className="text-left text-sm text-brandDark font-medium p-4">
                     {header.isPlaceholder ? null : (
                       <div>
                         {flexRender(
@@ -55,17 +56,19 @@ function Table({ data, columns }: {
         <tbody>
           {table.getRowModel().rows.map(row => {
             return (
-              <tr key={row.id}>
-                {row.getVisibleCells().map(cell => {
-                  return (
-                    <td key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+              <tr key={row.id} className="hover:bg-brandDark/10 transition border-b border-[#e4e4e7]">
+                  {row.getVisibleCells().map(cell => {
+                    return (
+                      <td key={cell.id} className="">
+                        <Link className="px-4 py-6 font-medium block" href={process.env.NEXT_PUBLIC_SPACESCAN_BASE_URL + data[cell.row.index].coin_id} target='_blank'>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </Link>
                     </td>
-                  )
-                })}
+                    )
+                  })}
               </tr>
             )
           })}
