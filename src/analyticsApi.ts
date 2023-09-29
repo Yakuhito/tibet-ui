@@ -40,7 +40,7 @@
   }
   
   // API Functions
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const API_BASE_URL = process.env.NEXT_PUBLIC_INFO_API_BASE_URL;
   
   export async function getRouter(): Promise<Router> {
     const response = await fetch(`${API_BASE_URL}/router`);
