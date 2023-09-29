@@ -62,7 +62,7 @@ function MobileNavMenuModal({ isOpen, setIsOpen, setIsSettingsModalOpen, isSetti
                     <ul className="flex flex-col text-5xl font-bold gap-4">
                       <li className={`${router.asPath === "/" ? 'text-brandDark' : ''} hover:pl-1 hover:text-brandDark transition-all`} onClick={() => setIsOpen(false)}><Link className="focus:outline-none" href="/">Trade</Link></li>
                       <li className={`${router.asPath === "/faq" ? 'text-brandDark' : ''} hover:pl-1 hover:text-brandDark transition-all`} onClick={() => setIsOpen(false)}><Link className="focus:outline-none" href="/faq">FAQ</Link></li>
-                      <li className={`${router.asPath === "/info" ? 'text-brandDark' : ''} hover:pl-1 hover:text-brandDark transition-all`} onClick={() => setIsOpen(false)}><Link className="focus:outline-none" href="https://info.v2.tibetswap.io/">Info</Link></li>
+                      <li className={`${router.asPath === "/info" ? 'text-brandDark' : ''} hover:pl-1 hover:text-brandDark transition-all`} onClick={() => setIsOpen(false)}><Link className="focus:outline-none" href="/analytics">Analytics</Link></li>
                     </ul>
                   </Transition.Child>
                   <div onClick={() => setIsSettingsModalOpen(true)} className="bg-brandDark/20 rounded-xl text-2xl font-medium flex justify-start items-center gap-2 p-4 mt-auto mb-8 group">
