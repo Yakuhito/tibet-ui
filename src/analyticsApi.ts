@@ -55,10 +55,11 @@
   export async function getTransactions(
     pairLauncherId: string,
     limit: number = 42,
-    offset: number = 0
+    offset: number = 0,
+    operation?: Transaction["operation"]
   ): Promise<Transaction[]> {
     const response = await fetch(
-      `${API_BASE_URL}/transactions?pair_launcher_id=${pairLauncherId}&limit=${limit}&offset=${offset}`
+      `${API_BASE_URL}/transactions?pair_launcher_id=${pairLauncherId}&limit=${limit}&offset=${offset}&operation=${operation ? operation : ""}`
     );
     return response.json();
   }
