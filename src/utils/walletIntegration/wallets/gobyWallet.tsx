@@ -1,6 +1,7 @@
-import WalletIntegrationInterface, { generateOffer } from '../walletIntegrationInterface';
 import { toast } from 'react-hot-toast';
 import { bech32m } from 'bech32';
+
+import WalletIntegrationInterface, { generateOffer } from '../walletIntegrationInterface';
 
 class gobyWallet implements WalletIntegrationInterface {
   name = "Goby";
@@ -16,8 +17,9 @@ class gobyWallet implements WalletIntegrationInterface {
     }
 
     try {
-      await (window as any).chia.request({ method: "connect" });
+      const response = await (window as any).chia.request({ method: "connect" });
       this.detectEvents()
+      return response;
     } catch (error: any) {
       throw error;
     }
@@ -35,8 +37,9 @@ class gobyWallet implements WalletIntegrationInterface {
     }
   }
 
-  disconnect(): void {
+  disconnect(): boolean {
     // Goby wallet disconnection logic
+    return true;
   }
 
   async generateOffer(requestAssets: generateOffer["requestAssets"], offerAssets: generateOffer["offerAssets"], fee: number | undefined): Promise<string | void> {
@@ -67,7 +70,7 @@ class gobyWallet implements WalletIntegrationInterface {
     // Goby wallet balance retrieval logic
   }
 
-  async addAsset(assetId: string, symbol: string, logo: string, fullName: string): Promise<void> {
+  async addAsset(assetId: string, symbol: string, logo: string, fullName: string): Promise<void | boolean> {
     let symbolM = symbol
     let logoM = logo
 
@@ -88,6 +91,7 @@ class gobyWallet implements WalletIntegrationInterface {
       }
       const response = await (window as any).chia.request({ method: 'walletWatchAsset', params })
       toast.success(`Added ${symbol} to Goby`)
+      return true;
     } catch (error: any) {
       throw error;
     } 

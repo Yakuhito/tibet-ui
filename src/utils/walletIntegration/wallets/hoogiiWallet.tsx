@@ -1,5 +1,6 @@
-import WalletIntegrationInterface, { generateOffer } from '../walletIntegrationInterface';
 import { toast } from 'react-hot-toast';
+
+import WalletIntegrationInterface, { generateOffer } from '../walletIntegrationInterface';
 
 class hoogiiWallet implements WalletIntegrationInterface {
   name = "Hoogii";
@@ -15,8 +16,9 @@ class hoogiiWallet implements WalletIntegrationInterface {
     }
 
     try {
-      await (window as any).chia.hoogii.request({ method: "connect" });
+      const response = await (window as any).chia.hoogii.request({ method: "connect" });
       this.detectEvents()
+      return response;
     } catch (error: any) {
       throw error;
     }
@@ -81,8 +83,9 @@ class hoogiiWallet implements WalletIntegrationInterface {
     });
   }
 
-  disconnect(): void {
+  disconnect(): void | boolean {
     // Hoogii wallet disconnection logic
+    return true;
   }
 
   async generateOffer(requestAssets: generateOffer["requestAssets"], offerAssets: generateOffer["offerAssets"], fee: number | undefined): Promise<string | void> {
@@ -114,7 +117,7 @@ class hoogiiWallet implements WalletIntegrationInterface {
     // Hoogii wallet balance retrieval logic
   }
 
-  async addAsset(assetId: string, symbol: string, logo: string, fullName: string): Promise<void> {
+  async addAsset(assetId: string, symbol: string, logo: string, fullName: string): Promise<void | boolean> {
     throw new Error("Hoogii doesn't have support for adding an assets programatically");
   }
 

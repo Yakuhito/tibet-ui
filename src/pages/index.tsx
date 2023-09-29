@@ -1,9 +1,12 @@
-import { getTokens } from '@/redux/globalOnLoadDataSlice';
-import TabContainer from '../components/TabContainer';
-import { type Token, getAllTokens } from '../api';
 import { useState, useEffect } from 'react';
-import { useAppDispatch } from '@/hooks';
 import Head from 'next/head';
+
+import { type Token, getAllTokens } from '../api';
+
+import TabContainer from '@/components/trade_components/TabContainer';
+import { getTokens } from '@/redux/globalOnLoadDataSlice';
+import { useAppDispatch } from '@/hooks';
+
 
 const Home: React.FC = () => {
   const [selectedToken, setSelectedToken] = useState<Token | null>(null);

@@ -1,7 +1,9 @@
-import TabContainer from '@/components/TabContainer';
-import { Token, getAllTokens } from '../api';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+
+import { Token, getAllTokens } from '../api';
+
+import TabContainer from '@/components/trade_components/TabContainer';
 
 const PairPreSelect: React.FC = () => {
   

@@ -1,5 +1,6 @@
-import { generateOffer } from '@/utils/walletIntegration/walletIntegrationInterface';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+import { generateOffer } from '@/utils/walletIntegration/walletIntegrationInterface';
 
 export interface completeWithWalletSliceState {
   requestStep: null | "getWallets" | "addAssets" | "getWalletsAgain" | "generateOffer";
