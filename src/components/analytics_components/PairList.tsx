@@ -70,7 +70,7 @@ export const PairList: React.FC<PairListProps> = ({ pairs }) => {
 
   return (
     <table className="w-full font-medium whitespace-nowrap animate-fadeIn">
-      <thead className="text-left text-brandDark/90 sticky top-24 bg-brandLight/80 dark:bg-zinc-900/80">
+      <thead className="text-left text-brandDark/90 sticky top-16 bg-brandLight/80 dark:bg-zinc-900/80">
         <tr className="h-16 sm:text-xl backdrop-blur dark:text-brandLight/80">
           <th><span onClick={() => handleSort('name')} className={`bg-brandDark/10 px-4 rounded-full py-1 select-none cursor-pointer hover:opacity-80 ${sortColumn !== 'name' ? '' : sortOrder === 'desc' ? "after:content-['_▾'] after:text-red-700" : "after:content-['_▴'] after:text-green-700"}`}>Token</span></th>
           <th className="text-right hidden xl:table-cell"><span onClick={() => handleSort('xch_reserve')} className={`bg-brandDark/10 px-4 rounded-full py-1 select-none cursor-pointer hover:opacity-80 ${sortColumn !== 'xch_reserve' ? '' : sortOrder === 'desc' ? "after:content-['_▾'] after:text-red-700" : "after:content-['_▴'] after:text-green-700"}`}>XCH Reserve</span></th>
