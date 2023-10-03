@@ -24,26 +24,65 @@ interface TransactionListProps {
 
 
 export const TransactionList: React.FC<TransactionListProps> = ({ transactions, tokenShortName, moreTxesAvailable, loadingMoreTxes, loadMoreTxes }) => {
+
+  function generateOperationSummary(operation: Transaction['operation'], state_change: Transaction['state_change']) {
+    switch (operation) {
+      case "ADD_LIQUIDITY":
+        return <span>Add {tokenShortName} and XCH</span>;
+      case "SWAP":
+        let swapAdd;
+        let swapRemove;
+        if (state_change.xch < 0) {
+          swapRemove = "XCH";
+          swapAdd = tokenShortName;
+        } else {
+          swapAdd = "XCH";
+          swapRemove = tokenShortName;
+        }
+        return <span>Swap {swapAdd} for {swapRemove}</span>;
+      case "REMOVE_LIQUIDITY":
+        return <span>Remove XCH and {tokenShortName}</span>;
+      default:
+        return;
+    }
+  }
+
+  const getAmountInString = (state_change: Transaction['state_change']) => {
+    if (state_change.xch > 0) {
+      const chiaFormatted = mojoToXCHString(Math.abs(state_change.xch), false);
+      return `${chiaFormatted}`
+    }
+    const tokenFormatted = formatToken(Math.abs(state_change.token), false);
+    return `${tokenFormatted} ${tokenShortName}`
+  }
+
+  const getAmountOutString = (state_change: Transaction['state_change']) => {
+    if (state_change.xch > 0) {
+      const tokenFormatted = formatToken(Math.abs(state_change.token), false);
+      return `${tokenFormatted} ${tokenShortName}`
+    }
+    const chiaFormatted = mojoToXCHString(Math.abs(state_change.xch), false);
+    return `${chiaFormatted}`
+  }
   
   const XCHPrice = useSelector((state: RootState) => state.globalOnLoadData.xchPrice);
-  // Generate transaction table with filter
-  const [transactionFilter, setTransactionFilter] = useState('ALL');
 
   const columns = React.useMemo<ColumnDef<Transaction>[]>(
     () => [
       {
         header: 'Operation',
         accessorKey: 'operation',
+        cell: value => generateOperationSummary(value.row.original.operation, value.row.original.state_change),
       },
       {
-        header: 'Token 0',
+        header: 'Amount In',
         accessorKey: 'state_change.xch',
-        cell: value => mojoToXCHString(Number(value.getValue()), true),
+        cell: value => getAmountInString(value.row.original.state_change),
       },
       {
-        header: 'Token 1',
+        header: 'Amount Out',
         accessorKey: 'state_change.token',
-        cell: value => formatToken(Number(value.getValue()), true),
+        cell: value => getAmountOutString(value.row.original.state_change),
       },
       {
         header: 'Amount (USD)',
