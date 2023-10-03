@@ -16,19 +16,21 @@ export default function PairDetails() {
   const { pair_id } = router.query;
 
   // Number of transactions to get from API at once
-  const PAGINATION = 42;
+  const PAGINATION = 100;
 
   const [transactions, setTransactions] = useState<Transaction[] | null>(null);
   const [moreTxesAvailable, setMoreTxesAvailable] = useState(false);
   const [loadingMoreTxes, setLoadingMoreTxes] = useState(false);
   const [pair, setPair] = useState<Pair | null>(null);
   const [loading, setLoading] = useState(true);
-
+  const [transactionFilter, setTransactionFilter] = useState<'SWAP' | 'ADD_LIQUIDITY' | 'REMOVE_LIQUIDITY'>();
+  
   // On page load, fetch pair details and transactions
   useEffect(() => {
     async function fetchData() {
       try {
-        const [pairData, transactionsData] = await Promise.all([getPair(pair_id as string), getTransactions(pair_id as string, PAGINATION)]);
+        setLoading(true);
+        const [pairData, transactionsData] = await Promise.all([getPair(pair_id as string), getTransactions(pair_id as string, PAGINATION, 0, transactionFilter)]);
         setMoreTxesAvailable(transactionsData.length === PAGINATION);
         setTransactions(transactionsData);
         setLoading(false);
@@ -42,7 +44,7 @@ export default function PairDetails() {
     if(pair_id) {
       fetchData();
     }
-  }, [pair_id]);
+  }, [pair_id, transactionFilter]);
 
   // Handle pagination
   const loadMoreTxes = async () => {
@@ -56,6 +58,7 @@ export default function PairDetails() {
     ]);
     setLoadingMoreTxes(false);
   };
+
 
   // Only render if pair exists
   if (pair === null) return
@@ -98,7 +101,13 @@ export default function PairDetails() {
 
       {/* Latest Transactions Section */}
       <section className="mb-20">
-        <h2 className="font-bold text-5xl py-8 pt-16 pb-12">Transactions</h2>
+        <h2 className="font-bold text-5xl pt-16">Transactions {loading && "HII"}</h2>
+        <ul className="flex gap-0 pt-3 left-0 font-medium pb-8">
+          <li className={`cursor-pointer hover:text-opacity-80 text-black rounded-xl px-2 py-1 ${!transactionFilter ? 'text-opacity-100' : 'text-opacity-50'}`} onClick={() => setTransactionFilter(undefined)}>All</li>
+          <li className={`cursor-pointer hover:text-opacity-80 text-black text-opacity-50 rounded-xl px-2 py-1 ${transactionFilter === "SWAP" ? 'text-opacity-100' : 'text-opacity-50'}`} onClick={() => setTransactionFilter('SWAP')}>Swaps</li>
+          <li className={`cursor-pointer hover:text-opacity-80 text-black text-opacity-50 rounded-xl px-2 py-1 ${transactionFilter === "ADD_LIQUIDITY" ? 'text-opacity-100' : 'text-opacity-50'}`} onClick={() => setTransactionFilter('ADD_LIQUIDITY')}>Add</li>
+          <li className={`cursor-pointer hover:text-opacity-80 text-black text-opacity-50 rounded-xl px-2 py-1 ${transactionFilter === "REMOVE_LIQUIDITY" ? 'text-opacity-100' : 'text-opacity-50'}`} onClick={() => setTransactionFilter('REMOVE_LIQUIDITY')}>Remove</li>
+        </ul>
         <div className="flex flex-col items-center">
           {transactions && !loading && (
             <TransactionList
