@@ -32,7 +32,7 @@ const persistConfig = {
   key: 'root',
   version: 1,
   storage,
-  blacklist: ['completeWithWallet', 'settingsModal', 'globalOnLoadDataReducer'],
+  blacklist: ['completeWithWallet', 'settingsModal', 'globalOnLoadData'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
