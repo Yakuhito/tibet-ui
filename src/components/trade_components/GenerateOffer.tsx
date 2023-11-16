@@ -284,8 +284,8 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, devFee, setGenerate
                         {/* If swap, add dev fee on top of quote */}
                         <div className="flex gap-2 items-center">
                             <Image src={e[0].image_url} width={30} height={30} alt="Token logo" className="rounded-full outline-brandDark/20 p-0.5" />
-                            <p>{amountWithFee(e)}</p>
-                            <p>{process.env.NEXT_PUBLIC_XCH === "TXCH" && e[0].name === "Chia" ? "Testnet Chia" : e[0].name === "Pair Liquidity Token" ? e[0].short_name : e[0].name}</p>
+                            <CopyButton copyText={amountWithFee(e)}>{amountWithFee(e)} {process.env.NEXT_PUBLIC_XCH === "TXCH" && e[0].name === "Chia" ? "Testnet Chia" : e[0].name === "Pair Liquidity Token" ? e[0].short_name : e[0].name}</CopyButton>
+                            <p></p>
                         </div>
                         
                         {e[1] ? null :
@@ -446,7 +446,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, devFee, setGenerate
                     
                     <p className="py-4 px-4 font-medium mb-12 bg-brandDark/10 rounded-xl">
                         <span>Suggested fee</span>
-                        <span className="font-normal pl-2 animate-fadeIn">{fee} {process.env.NEXT_PUBLIC_XCH}</span>
+                        <span><CopyButton copyText={fee}>{fee} {process.env.NEXT_PUBLIC_XCH}</CopyButton></span>
                     </p>
 
                     {/* High fee warning banner */}
