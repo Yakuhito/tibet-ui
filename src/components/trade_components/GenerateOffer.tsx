@@ -331,7 +331,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, devFee, setGenerate
                 }
             ))
 
-        const fee = Number((pairAndQuote![1].fee / Math.pow(10, 12)).toFixed(12))
+        const fee = pairAndQuote![1].fee // Fee in mojos
 
         try {
             const offer = await walletManager.generateOffer(requestAssets, offerAssets, fee)
