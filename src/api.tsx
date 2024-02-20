@@ -1,3 +1,4 @@
+import { bech32m } from 'bech32';
 import axios from 'axios';
 
 // Token model
@@ -159,4 +160,51 @@ export function getLiquidityQuote(
   
   if(checkUnknown && output > unknownReserve) return 0;
   return output;
+}
+
+// CNS Integration
+interface CNSApiResponse {
+  answers: Answer[];
+}
+
+interface Answer {
+  name: string;
+  type: string;
+  time_to_live: number;
+  data: string;
+  proof_coin_name: string;
+  proof_coin_spent_index: number;
+  nft_coin_name: string;
+}
+
+export async function getCNSName(address: string) {
+
+  try {
+    const decodedAddr = bech32m.decode(address)
+    const url = 'https://walletapi.chiabee.net/Name/resolve';
+    const data = {
+      queries: [
+        {
+          name: decodedAddr,
+          type: "name"
+        }
+      ]
+    };
+
+    const res = await axios.post<CNSApiResponse>(url, data, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+
+    if (!res.data.answers.length) {
+      return;
+    }
+
+    return res.data.answers[0].name;
+
+  } catch (error) {
+    console.error('CNS query failed')
+    return
+  }
 }
