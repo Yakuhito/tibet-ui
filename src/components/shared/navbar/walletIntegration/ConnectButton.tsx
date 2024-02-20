@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import Image from 'next/image';
+import useSWR from "swr";
 
 import ConnectWalletModal from './ConnectWalletModal';
 
+
+import { getCNSNameApiCall } from '@/api';
 import { selectSession } from '@/redux/walletConnectSlice';
+import { setCNSName } from '@/redux/walletSlice';
 import { RootState } from '@/redux/store';
 import { useAppDispatch } from '@/hooks';
 
@@ -21,6 +25,7 @@ function ConnectButton() {
     const address = useSelector((state: RootState) => state.wallet.address);
     const walletImage = useSelector((state: RootState) => state.wallet.image);
     const walletName = useSelector((state: RootState) => state.wallet.name);
+    const CNSName = useSelector((state: RootState) => state.wallet.CNSName);
     const walletConnectSelectedSession = useSelector((state: RootState) => state.walletConnect.selectedSession);
     const walletConnectSessions = useSelector((state: RootState) => state.walletConnect.sessions);
     const displayWalletImage = (() => {
@@ -34,6 +39,19 @@ function ConnectButton() {
       }
     })();
 
+    // CNSName is only ever null if it hasn't ever been fetched (if no name fetched, it's an empty string)
+    // If CNSName hasn't previously been fetched set it in Redux
+    const shouldFetch = CNSName === null;
+    const { data, error, isLoading } = useSWR(shouldFetch && address, () => getCNSNameApiCall(address || ''),
+     {
+      onSuccess(data, key, config) {
+        dispatch(setCNSName(data));
+      },
+      onError: (error) => {
+        console.error("CNS POST query failed", error);
+      }
+     }
+    );
 
     useEffect(() => {
       //  If users wallet address shows that they are on the wrong chain, display a warning in ConnectedWalletModal
@@ -59,6 +77,7 @@ function ConnectButton() {
 
     return ( 
         <>
+        <p className='border-4 border-red-400'>{isLoading ? 'Loading Name' : CNSName}</p>
             <button onClick={() => setIsWalletModalOpen(true)} className="flex items-center gap-2 bg-brandDark/10  text-brandDark dark:text-brandLight px-6 py-1.5 font-medium rounded-xl animate-fadeIn hover:opacity-80">
                 {(connectedWallet && displayWalletImage && isWalletConnectActuallyConnected) && <Image src={displayWalletImage} width={20} height={20} alt={`${walletName} wallet logo`} className="rounded-full w-5 h-5" />}
                 {!connectedWallet || !isWalletConnectActuallyConnected ? 'Connect Wallet' : displayAddress()}
