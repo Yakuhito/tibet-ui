@@ -177,34 +177,31 @@ interface Answer {
   nft_coin_name: string;
 }
 
-export async function getCNSName(address: string) {
+export async function getCNSNameApiCall(address: string) {
+  if (!address) return null;
+  const decodedAddr = Buffer.from(
+    bech32m.fromWords(bech32m.decode(address).words)
+  ).toString("hex");
 
-  try {
-    const decodedAddr = bech32m.decode(address)
-    const url = 'https://walletapi.chiabee.net/Name/resolve';
-    const data = {
-      queries: [
-        {
-          name: decodedAddr,
-          type: "name"
-        }
-      ]
-    };
-
-    const res = await axios.post<CNSApiResponse>(url, data, {
-      headers: {
-        'Content-Type': 'application/json'
+  const url = 'https://walletapi.chiabee.net/Name/resolve';
+  const data = {
+    queries: [
+      {
+        name: decodedAddr,
+        type: "name"
       }
-    })
+    ]
+  };
 
-    if (!res.data.answers.length) {
-      return;
+  const res = await axios.post<CNSApiResponse>(url, data, {
+    headers: {
+      'Content-Type': 'application/json'
     }
+  })
 
-    return res.data.answers[0].name;
-
-  } catch (error) {
-    console.error('CNS query failed')
-    return
+  if (!res.data.answers.length) {
+    return '';
   }
+
+  return res.data.answers[0].name;
 }
