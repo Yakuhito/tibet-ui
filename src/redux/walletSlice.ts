@@ -41,10 +41,13 @@ const walletSlice = createSlice({
     },
     setCNSName(state, action) {
       state.CNSName = action.payload
+    },
+    setAddress(state, action) {
+      state.address = action.payload
     }
   }
 });
 
-export const { setConnectedWallet, setCNSName } = walletSlice.actions;
+export const { setConnectedWallet, setCNSName, setAddress } = walletSlice.actions;
 
 export default walletSlice.reducer;

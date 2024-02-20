@@ -6,7 +6,7 @@ import { toast } from 'react-hot-toast';
 import store from '../../../redux/store';
 import WalletIntegrationInterface, { generateOffer } from '../walletIntegrationInterface';
 
-import { setConnectedWallet } from '@/redux/walletSlice';
+import { setAddress, setConnectedWallet } from '@/redux/walletSlice';
 import { connectSession, setPairingUri, selectSession, setSessions, deleteTopicFromFingerprintMemory } from '@/redux/walletConnectSlice';
 import { setUserMustAddTheseAssetsToWallet, setOfferRejected, setRequestStep } from '@/redux/completeWithWalletSlice';
 
@@ -110,6 +110,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
                 "chia_createOfferForIds",
                 "chia_getWallets",
                 'chia_addCATToken',
+                'chia_getCurrentAddress',
               ],
               chains: ["chia:mainnet"],
               events: [],
@@ -292,7 +293,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     // Fetch previous connection
     try {
         if (!this.topic || !signClient) {
-          toast.error('Not connected via WalletConnect or could not sign client')
+          toast.error('Not connected via WalletConnect or could not sign client', { id: 'failed-to-sign-client' })
           return;
         }
 
@@ -352,7 +353,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     // Fetch previous connection
     try {
         if (!this.topic || !signClient) {
-          toast.error('Not connected via WalletConnect or could not sign client')
+          toast.error('Not connected via WalletConnect or could not sign client', { id: 'failed-to-sign-client' })
           return;
         }
         
@@ -391,7 +392,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     // Fetch previous connection
     try {
         if (!this.topic || !signClient) {
-          toast.error('Not connected via WalletConnect or could not sign client')
+          toast.error('Not connected via WalletConnect or could not sign client', { id: 'failed-to-sign-client' })
           throw Error('Not connected via WalletConnect or could not sign client');
         }
 
@@ -419,8 +420,55 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
   }
 
   async getAddress(): Promise<string | null> {
-    return null;
-    
+    try {
+      const signClient = await this.signClient();
+      const state = store.getState();
+      const topic = state.walletConnect.selectedSession?.topic
+      if (!topic || !signClient) {
+        toast.error('Not connected via WalletConnect or could not sign client', { id: 'failed-to-sign-client' })
+        throw Error('Not connected via WalletConnect or could not sign client');
+      }
+      const selectedSession = state?.walletConnect?.selectedSession
+      if (!selectedSession) return null
+      const fingerprint = state.walletConnect.selectedFingerprint[selectedSession.topic];
+      if (!fingerprint) return null
+      const wallet_id = selectedSession?.namespaces?.chia?.accounts.findIndex(account => account.includes(fingerprint.toString()));
+      console.log(wallet_id)
+      if (wallet_id === undefined) return ''
+      console.log({
+        topic,
+        chainId: "chia:mainnet",
+        request: {
+          method: "chia_getCurrentAddress",
+          params: {
+            fingerprint: fingerprint,
+            wallet_id,
+            new_address: false
+          },
+        },
+      })
+      const request = signClient.request<{data: string}>({
+        topic,
+        chainId: "chia:mainnet",
+        request: {
+          method: "chia_getCurrentAddress",
+          params: {
+            fingerprint: fingerprint,
+            wallet_id,
+            new_address: false
+          },
+        },
+      });
+      const response = await request
+      const address = response?.data || null
+      if (address) {
+        store.dispatch(setAddress(address))
+      }
+      return address;
+    } catch (error) {
+      console.error(error)
+      return null
+    }
   }
 
   async getAllSessions() {
