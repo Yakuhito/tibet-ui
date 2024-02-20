@@ -80,7 +80,7 @@ function ConnectButton() {
         <p className='border-4 border-red-400'>{isLoading ? 'Loading Name' : CNSName}</p>
             <button onClick={() => setIsWalletModalOpen(true)} className="flex items-center gap-2 bg-brandDark/10  text-brandDark dark:text-brandLight px-6 py-1.5 font-medium rounded-xl animate-fadeIn hover:opacity-80">
                 {(connectedWallet && displayWalletImage && isWalletConnectActuallyConnected) && <Image src={displayWalletImage} width={20} height={20} alt={`${walletName} wallet logo`} className="rounded-full w-5 h-5" />}
-                {!connectedWallet || !isWalletConnectActuallyConnected ? 'Connect Wallet' : displayAddress()}
+                {!connectedWallet || !isWalletConnectActuallyConnected ? 'Connect Wallet' : !!CNSName ? CNSName : displayAddress()}
             </button>
             <ConnectWalletModal isOpen={isWalletModalOpen} setIsOpen={setIsWalletModalOpen} isWalletOnWrongChain={isWalletOnWrongChain} />
         </>
