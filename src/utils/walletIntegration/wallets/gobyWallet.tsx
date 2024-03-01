@@ -115,9 +115,10 @@ class gobyWallet implements WalletIntegrationInterface {
   }
 
   detectEvents(): void {
-    const { chia } = window as any;
-    chia.on("chainChanged", () => window.location.reload());
-    chia.on("accountChanged", () => window.location.reload());
+    // Pointless as not working rn & refreshing page is bad UX. Will write a better refresh solution when Goby is fixed.
+    // const { chia } = window as any;
+    // chia.on("chainChanged", () => window.location.reload());
+    // chia.on("accountChanged", () => window.location.reload());
   }
 
 }

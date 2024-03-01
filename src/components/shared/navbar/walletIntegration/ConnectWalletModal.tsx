@@ -50,7 +50,14 @@ function ConnectWalletModal({ isOpen, setIsOpen, isWalletOnWrongChain }: Connect
         try {
             const walletConnect = new WalletConnect();
             const newSession = await walletConnect.connectSession();
-            if (newSession) setIsPairingQRModalOpen(false); // If pairing is successful
+            if (newSession) {
+                console.log("WC pairing successful!");
+                try {
+                    const address = await walletConnect.getAddress();
+                    console.log({ address });
+                } catch(_) {}
+                setIsPairingQRModalOpen(false); // If pairing is successful
+            }
           } catch (error: any) {
             if (error.message) {
               toast.error(`WalletConnect - ${error.message}`);
@@ -112,15 +119,15 @@ function ConnectWalletModal({ isOpen, setIsOpen, isWalletOnWrongChain }: Connect
 
                 {/* Goby Wallet */}
                 <div>
-                    <div onClick={() => walletManager.connect("Goby")} className={`${gobyActive ? 'bg-green-700/20 focus:ring-green-700/20' : 'bg-brandDark/10'} ${isWalletOnWrongChain && gobyActive ? 'rounded-t-xl' : 'rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
+                    <div onClick={() => connectedWallet === "Goby" ? walletManager.disconnect("Goby") : walletManager.connect("Goby")} className={`${gobyActive ? 'bg-green-700/20 focus:ring-green-700/20 hover:bg-red-400/50 dark:hover:bg-red-400/20' : 'bg-brandDark/10'} ${isWalletOnWrongChain && gobyActive ? 'rounded-t-xl' : 'rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
                     <div className="flex items-center gap-4">
                             <Image src="/assets/goby.webp" height={40} width={40} alt={'Goby Wallet Logo'} className="rounded-full" />
                             <p className="font-medium text-lg">Goby Wallet</p>
                         </div>
                         <button className={`
-                        ${gobyActive ? 'outline-none text-green-700' : ''}
+                        ${gobyActive ? 'outline-none text-green-700 group-hover:text-red-700 group-hover:dark:text-red-600' : ''}
                         font-medium rounded-lg px-2 py-1
-                        ${gobyActive ? "before:content-['Connected']" : "before:content-['Connect']"}`}
+                        ${gobyActive ? "before:content-['Connected'] group-hover:before:content-['Disconnect']" : "before:content-['Connect']"}`}
                         ></button>
                     </div>
                     {gobyActive && isWalletOnWrongChain && <p className="animate-fadeIn text-sm bg-red-700/80 font-medium text-brandLight px-2 py-1 rounded-b-xl text-center">Incorrect chain selected ({process.env.NEXT_PUBLIC_XCH === "TXCH" ? 'Mainnet' : 'Testnet'})</p>}
@@ -129,15 +136,15 @@ function ConnectWalletModal({ isOpen, setIsOpen, isWalletOnWrongChain }: Connect
 
                 {/* Hoogii Wallet */}
                 <div>
-                    <div onClick={() => walletManager.connect("Hoogii")} className={`${hoogiiActive ? 'bg-green-700/20 focus:ring-green-700/20' : 'bg-brandDark/10'} ${isWalletOnWrongChain && hoogiiActive ? 'rounded-t-xl' : 'rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
+                    <div onClick={() => connectedWallet === "Hoogii" ? walletManager.disconnect("Hoogii") : walletManager.connect("Hoogii")} className={`${hoogiiActive ? 'bg-green-700/20 focus:ring-green-700/20 hover:bg-red-400/50 dark:hover:bg-red-400/20' : 'bg-brandDark/10'} ${isWalletOnWrongChain && hoogiiActive ? 'rounded-t-xl' : 'rounded-xl'} hover:opacity-80 group flex items-center justify-between border-2 border-transparent hover:border-brandDark/10 py-4 px-4 cursor-pointer`}>
                     <div className="flex items-center gap-4">
                             <Image src="/assets/hoogii.png" height={40} width={40} alt={'Hoogii Wallet Logo'} className="rounded-full" />
                             <p className="font-medium text-lg">Hoogii Wallet</p>
                         </div>
                         <button className={`
-                        ${hoogiiActive ? 'outline-none text-green-700' : ''}
+                        ${hoogiiActive ? 'outline-none text-green-700 group-hover:text-red-700 group-hover:dark:text-red-600' : ''}
                         font-medium rounded-lg px-2 py-1
-                        ${hoogiiActive ? "before:content-['Connected']" : "before:content-['Connect']"}`}
+                        ${hoogiiActive ? "before:content-['Connected'] group-hover:before:content-['Disconnect']" : "before:content-['Connect']"}`}
                         ></button>
                     </div>
                     {hoogiiActive && isWalletOnWrongChain && <p className="animate-fadeIn text-sm bg-red-700/80 font-medium text-brandLight px-2 py-1 rounded-b-xl text-center">Incorrect chain selected ({process.env.NEXT_PUBLIC_XCH === "TXCH" ? 'Mainnet' : 'Testnet'})</p>}

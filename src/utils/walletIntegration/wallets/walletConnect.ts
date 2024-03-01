@@ -6,7 +6,7 @@ import { toast } from 'react-hot-toast';
 import store from '../../../redux/store';
 import WalletIntegrationInterface, { generateOffer } from '../walletIntegrationInterface';
 
-import { setConnectedWallet } from '@/redux/walletSlice';
+import { setAddress, setConnectedWallet } from '@/redux/walletSlice';
 import { connectSession, setPairingUri, selectSession, setSessions, deleteTopicFromFingerprintMemory } from '@/redux/walletConnectSlice';
 import { setUserMustAddTheseAssetsToWallet, setOfferRejected, setRequestStep } from '@/redux/completeWithWalletSlice';
 
@@ -53,10 +53,11 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     try {
       const sessions = await this.getAllSessions();
       if (sessions) {
-        store.dispatch(setSessions(sessions))
+        store.dispatch(setSessions(sessions));
         return
       } else {
         store.dispatch(setSessions([]))
+        store.dispatch(setAddress(null));
         if (store.getState().wallet.connectedWallet === "WalletConnect") store.dispatch(setConnectedWallet(null))
         console.error('No WC sessions found');
       }
@@ -110,6 +111,8 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
                 "chia_createOfferForIds",
                 "chia_getWallets",
                 'chia_addCATToken',
+                'chia_getCurrentAddress',
+                'chia_getNextAddress',
               ],
               chains: ["chia:mainnet"],
               events: [],
@@ -129,7 +132,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           // If new connection established successfully
           const session = await approval();
           console.log('Connected Chia wallet via WalletConnect', session, signClient)
-          store.dispatch(setPairingUri(null))
+          store.dispatch(setPairingUri(null));
           this.detectEvents()
 
           await this.updateSessions();
@@ -142,6 +145,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
             name: "WalletConnect"
           }
           store.dispatch(setConnectedWallet(setConnectedWalletInfo))
+
           return session;
         }
     } catch (error) {
@@ -292,7 +296,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     // Fetch previous connection
     try {
         if (!this.topic || !signClient) {
-          toast.error('Not connected via WalletConnect or could not sign client')
+          toast.error('Not connected via WalletConnect or could not sign client', { id: 'failed-to-sign-client' })
           return;
         }
 
@@ -352,7 +356,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     // Fetch previous connection
     try {
         if (!this.topic || !signClient) {
-          toast.error('Not connected via WalletConnect or could not sign client')
+          toast.error('Not connected via WalletConnect or could not sign client', { id: 'failed-to-sign-client' })
           return;
         }
         
@@ -391,7 +395,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     // Fetch previous connection
     try {
         if (!this.topic || !signClient) {
-          toast.error('Not connected via WalletConnect or could not sign client')
+          toast.error('Not connected via WalletConnect or could not sign client', { id: 'failed-to-sign-client' })
           throw Error('Not connected via WalletConnect or could not sign client');
         }
 
@@ -419,8 +423,57 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
   }
 
   async getAddress(): Promise<string | null> {
-    return null;
-    
+    console.log("Attempting to get address via WC...")
+    try {
+      const signClient = await this.signClient();
+      const state = store.getState();
+      const topic = state.walletConnect.selectedSession?.topic
+      if (!topic || !signClient) {
+        toast.error('Not connected via WalletConnect or could not sign client', { id: 'failed-to-sign-client' })
+        throw Error('Not connected via WalletConnect or could not sign client');
+      }
+      const selectedSession = state?.walletConnect?.selectedSession
+      if (!selectedSession) return null
+      const fingerprint = state.walletConnect.selectedFingerprint[selectedSession.topic];
+      if (!fingerprint) return null
+      const wallet_id = selectedSession?.namespaces?.chia?.accounts.findIndex(account => account.includes(fingerprint.toString()));
+      console.log(wallet_id)
+      if (wallet_id === undefined) return ''
+      console.log({
+        topic,
+        chainId: "chia:mainnet",
+        request: {
+          method: "chia_getCurrentAddress",
+          params: {
+            fingerprint: fingerprint,
+            wallet_id,
+            new_address: false
+          },
+        },
+      })
+      const request = signClient.request<{data: string}>({
+        topic,
+        chainId: "chia:mainnet",
+        request: {
+          method: "chia_getCurrentAddress",
+          params: {
+            fingerprint: fingerprint,
+            wallet_id,
+            new_address: false
+          },
+        },
+      });
+      const response = await request
+      console.log({ addressRequestResponse: response });
+      const address = response?.data || null
+      if (address) {
+        store.dispatch(setAddress(address))
+      }
+      return address;
+    } catch (error) {
+      console.error(error)
+      return null
+    }
   }
 
   async getAllSessions() {

@@ -7,6 +7,7 @@ export interface WalletState {
   address: string | null;
   image: string | null;
   name: string | null;
+  CNSName: string | null;
 }
 
 // SLICES
@@ -16,6 +17,7 @@ const initialState: WalletState = {
   address: null,
   image: null,
   name: null,
+  CNSName: null,
 };
 
 const walletSlice = createSlice({
@@ -28,16 +30,24 @@ const walletSlice = createSlice({
         state.address = null;
         state.image = null;
         state.name = null;
+        state.CNSName = null;
         return
       }
       state.connectedWallet = action.payload.wallet;
       state.address = action.payload.address;
       state.image = action.payload.image;
       state.name = action.payload.name;
+      state.CNSName = null;
+    },
+    setCNSName(state, action) {
+      state.CNSName = action.payload
+    },
+    setAddress(state, action) {
+      state.address = action.payload
     }
   }
 });
 
-export const { setConnectedWallet } = walletSlice.actions;
+export const { setConnectedWallet, setCNSName, setAddress } = walletSlice.actions;
 
 export default walletSlice.reducer;
