@@ -88,8 +88,9 @@ export default function App({ Component, pageProps }: AppProps) {
           <div className="flex flex-col px-4">
             <div className="pt-12 pb-[96px]">
               <Component {...pageProps}  />
+              {/* Disable vercel analytics */}
               {/* Disable vercel web analytics when developing */}
-              {!!process?.env?.VERCEL_ENV && <Analytics />}
+              {/* !!process?.env?.VERCEL_ENV && <Analytics /> */}
             </div>
             <footer className="absolute bottom-0 w-full left-0 pb-6 pt-12 text-center text-brandDark mt-full mx-auto flex flex-col items-center">
               <a href="https://twitter.com/TibetSwap" target="_blank" rel="noopener noreferrer" className="underline ml-1">
