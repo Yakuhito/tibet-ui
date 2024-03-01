@@ -53,10 +53,11 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     try {
       const sessions = await this.getAllSessions();
       if (sessions) {
-        store.dispatch(setSessions(sessions))
+        store.dispatch(setSessions(sessions));
         return
       } else {
         store.dispatch(setSessions([]))
+        store.dispatch(setAddress(null));
         if (store.getState().wallet.connectedWallet === "WalletConnect") store.dispatch(setConnectedWallet(null))
         console.error('No WC sessions found');
       }
@@ -111,6 +112,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
                 "chia_getWallets",
                 'chia_addCATToken',
                 'chia_getCurrentAddress',
+                'chia_getNextAddress',
               ],
               chains: ["chia:mainnet"],
               events: [],
@@ -130,7 +132,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           // If new connection established successfully
           const session = await approval();
           console.log('Connected Chia wallet via WalletConnect', session, signClient)
-          store.dispatch(setPairingUri(null))
+          store.dispatch(setPairingUri(null));
           this.detectEvents()
 
           await this.updateSessions();
@@ -143,6 +145,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
             name: "WalletConnect"
           }
           store.dispatch(setConnectedWallet(setConnectedWalletInfo))
+
           return session;
         }
     } catch (error) {
@@ -420,6 +423,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
   }
 
   async getAddress(): Promise<string | null> {
+    console.log("Attempting to get address via WC...")
     try {
       const signClient = await this.signClient();
       const state = store.getState();
@@ -460,6 +464,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
         },
       });
       const response = await request
+      console.log({ addressRequestResponse: response });
       const address = response?.data || null
       if (address) {
         store.dispatch(setAddress(address))

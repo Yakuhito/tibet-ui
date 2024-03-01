@@ -50,7 +50,14 @@ function ConnectWalletModal({ isOpen, setIsOpen, isWalletOnWrongChain }: Connect
         try {
             const walletConnect = new WalletConnect();
             const newSession = await walletConnect.connectSession();
-            if (newSession) setIsPairingQRModalOpen(false); // If pairing is successful
+            if (newSession) {
+                console.log("WC pairing successful!");
+                try {
+                    const address = await walletConnect.getAddress();
+                    console.log({ address });
+                } catch(_) {}
+                setIsPairingQRModalOpen(false); // If pairing is successful
+            }
           } catch (error: any) {
             if (error.message) {
               toast.error(`WalletConnect - ${error.message}`);

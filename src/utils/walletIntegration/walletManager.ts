@@ -28,7 +28,9 @@ class WalletManager {
       const walletClass = this.getWalletClassFromString(wallet);
       const response = await walletClass.connect();
       if (response) {
+        console.log("getting address...");
         const address = await this.getAddress(wallet);
+        console.log({ address });
         const image = this.getImage(wallet);
         const name = this.getName(wallet);
         const setConnectedWalletInfo = {
