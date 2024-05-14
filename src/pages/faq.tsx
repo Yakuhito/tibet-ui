@@ -28,7 +28,7 @@ const faqs = [
   },
   {
     question: 'Is the code open-source?',
-    answer: 'Of course! How else would liquidity providers trust us with their money? The smart contracts (puzzles), CLI, and API can be found in <a href="https://github.com/yakuhito/tibet" target="_blank" rel="noopener noreferrer" class="underline hover:text-gray-700">this repository</a>, and this website's code can be found in <a href="https://github.com/yakuhito/tibet-ui" target="_blank" rel="noopener noreferrer" class="underline hover:text-gray-700">this tibet-ui repository</a>. For any questions about the code, just reach out to us!',
+    answer: 'Of course! How else would liquidity providers trust us with their money? The smart contracts (puzzles), CLI, and API can be found in <a href="https://github.com/yakuhito/tibet" target="_blank" rel="noopener noreferrer" class="underline hover:text-gray-700">this repository</a>, and this website\'s code can be found in <a href="https://github.com/yakuhito/tibet-ui" target="_blank" rel="noopener noreferrer" class="underline hover:text-gray-700">this repository</a>. For any questions about the code, just reach out to us!',
   },
   {
     question: 'Do you provide an API?',
