@@ -7,7 +7,8 @@ export interface devFeeSliceState {
 // SLICES
 /////////////////////////////////
 const initialState: devFeeSliceState = {
-  devFee: 0.003
+  // devFee: 0.003
+  devFee: 0.007
 };
 
 const devFeeSlice = createSlice({
@@ -16,7 +17,8 @@ const devFeeSlice = createSlice({
   reducers: {
     setDevFee(state, action: PayloadAction<number>) {
       const devFee = action.payload;
-      state.devFee = devFee;
+      // state.devFee = devFee;
+      state.devFee = 0.007;
     },
   },
 });

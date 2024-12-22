@@ -21,10 +21,10 @@ function SettingsModal({ isOpen, setIsOpen, theme, setTheme }: ConnectWalletModa
                     <ThemeSwitcher theme={theme} setTheme={setTheme} />
                 </div>
 
-                <div>
+                {/* <div>
                     <p className="font-medium text-brandDark pb-2">Dev Fee</p>
                     <DevFeeSelector />
-                </div>
+                </div> */}
 
             </div>
         </Modal>
