@@ -33,4 +33,3 @@ interface WalletIntegrationInterface {
 }
   
 export default WalletIntegrationInterface;
-  

@@ -28,6 +28,11 @@ interface wallets {
   isSuccess: boolean
 }
 
+interface WalletsResponse {
+  wallets: wallets | null,
+  isSage: boolean
+}
+
 class WalletConnectIntegration implements WalletIntegrationInterface {
   name = "WalletConnect"
   image = "/assets/xch.webp"
@@ -113,6 +118,8 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
                 'chia_addCATToken',
                 'chia_getCurrentAddress',
                 'chia_getNextAddress',
+                'chia_getAddress',
+                'chia_createOffer'
               ],
               chains: ["chia:mainnet"],
               events: [],
@@ -202,73 +209,77 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     var firstRun = true
     var tempAssetsToAddArray: generateOffer["offerAssets"] = [];
 
+    let walletsResponse;
     while (firstRun || tempAssetsToAddArray.length > 0) {
       firstRun = false
       tempAssetsToAddArray = []
 
       // Send request to fetch users wallets
-      const wallets = await this.getWallets();
-      if (!wallets) {
-        store.dispatch(setRequestStep(null))
-        return;
+      walletsResponse = await this.getWallets();
+      if(!walletsResponse?.isSage) {
+          const wallets = walletsResponse?.wallets;
+          if (!wallets) {
+            store.dispatch(setRequestStep(null))
+            return;
+          }
+
+          // Match assetIds to users wallet to find the wallet ID (required to send a create offer)
+
+          // For offering assets
+          offerAssets.forEach(offerItem => {
+            // If item is Chia, set walletId to 1 as this is the default
+            if (offerItem.assetId === "") return offerItem.walletId = 1;
+
+            const matchingChiaWallet = wallets!.data.find(item => item.meta.assetId === offerItem.assetId);
+            if (matchingChiaWallet) {
+              offerItem.walletId = matchingChiaWallet.id;
+            } else {
+              tempAssetsToAddArray.push({...offerItem})
+            }
+          })
+
+          // For requesting assets
+          requestAssets.forEach(requestItem => {
+            // If item is Chia, set walletId to 1 as this is the default
+            if (requestItem.assetId === "") return requestItem.walletId = 1;
+
+            const matchingChiaWallet = wallets.data.find(item => item.meta.assetId == requestItem.assetId);
+            if (matchingChiaWallet) {
+              requestItem.walletId = matchingChiaWallet.id;
+            } else {
+              tempAssetsToAddArray.push({...requestItem})
+            }
+          })
+
+          if (tempAssetsToAddArray.length) {
+            store.dispatch(setUserMustAddTheseAssetsToWallet(tempAssetsToAddArray));
+            store.dispatch(setRequestStep("addAssets"));
+
+
+            // We now have a list of assets which need adding. We keep track of the list length. When it's 0, we can continue as all assets are added.
+            const checkIfAssetsHaveBeenAdded = () => {
+              return new Promise<void>((resolve, reject) => {
+                const unsubscribe = store.subscribe(() => {
+                  const state = store.getState();
+                  const userMustAddTheseAssetsToWallet = state.completeWithWallet.userMustAddTheseAssetsToWallet;
+                  if (userMustAddTheseAssetsToWallet.length === 0 && !state.completeWithWallet.offerRejected) {
+                    unsubscribe();
+                    store.dispatch(setRequestStep("getWalletsAgain"));
+                    resolve();
+                  } else if (state.completeWithWallet.offerRejected) {
+                    unsubscribe();
+                    reject();
+                  }
+                  // Still more assets to add, wait for next update & check again
+                });
+              });
+            }
+
+            await checkIfAssetsHaveBeenAdded();
+          }      
+          
+        } // End of while loop (will run twice if user has had to add assets to continue)
       }
-
-      // Match assetIds to users wallet to find the wallet ID (required to send a create offer)
-
-      // For offering assets
-      offerAssets.forEach(offerItem => {
-        // If item is Chia, set walletId to 1 as this is the default
-        if (offerItem.assetId === "") return offerItem.walletId = 1;
-
-        const matchingChiaWallet = wallets.data.find(item => item.meta.assetId === offerItem.assetId);
-        if (matchingChiaWallet) {
-          offerItem.walletId = matchingChiaWallet.id;
-        } else {
-          tempAssetsToAddArray.push({...offerItem})
-        }
-      })
-
-      // For requesting assets
-      requestAssets.forEach(requestItem => {
-        // If item is Chia, set walletId to 1 as this is the default
-        if (requestItem.assetId === "") return requestItem.walletId = 1;
-
-        const matchingChiaWallet = wallets.data.find(item => item.meta.assetId == requestItem.assetId);
-        if (matchingChiaWallet) {
-          requestItem.walletId = matchingChiaWallet.id;
-        } else {
-          tempAssetsToAddArray.push({...requestItem})
-        }
-      })
-
-      if (tempAssetsToAddArray.length) {
-        store.dispatch(setUserMustAddTheseAssetsToWallet(tempAssetsToAddArray));
-        store.dispatch(setRequestStep("addAssets"));
-
-
-        // We now have a list of assets which need adding. We keep track of the list length. When it's 0, we can continue as all assets are added.
-        const checkIfAssetsHaveBeenAdded = () => {
-          return new Promise<void>((resolve, reject) => {
-            const unsubscribe = store.subscribe(() => {
-              const state = store.getState();
-              const userMustAddTheseAssetsToWallet = state.completeWithWallet.userMustAddTheseAssetsToWallet;
-              if (userMustAddTheseAssetsToWallet.length === 0 && !state.completeWithWallet.offerRejected) {
-                unsubscribe();
-                store.dispatch(setRequestStep("getWalletsAgain"));
-                resolve();
-              } else if (state.completeWithWallet.offerRejected) {
-                unsubscribe();
-                reject();
-              }
-              // Still more assets to add, wait for next update & check again
-            });
-          });
-        }
-
-        await checkIfAssetsHaveBeenAdded();
-      }      
-      
-    } // End of while loop (will run twice if user has had to add assets to continue)
     
     store.dispatch(setRequestStep("generateOffer"));
     
@@ -313,6 +324,48 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           }
         }
 
+        if(walletsResponse?.isSage) {
+          console.log("Sage offer request :)");
+          /*
+          export interface asset {
+              assetId: string
+              amount: number
+            }
+
+            export interface createOfferParams {
+              offerAssets: asset[]
+              requestAssets: asset[]
+            }
+          */
+          const resultOffer: {offer: string | undefined, error: string | undefined} = await signClient.request({
+            topic: this.topic,
+            chainId: "chia:mainnet",
+            request: {
+              method: "chia_createOffer",
+              params: {
+                offerAssets: offerAssets.map(offerItem => ({
+                  assetId: offerItem.assetId,
+                  amount: offerItem.amount
+                } as {assetId: string, amount: number})),
+                requestAssets: requestAssets.map(requestItem => ({
+                  assetId: requestItem.assetId,
+                  amount: requestItem.amount
+                } as {assetId: string, amount: number})),
+                // fee
+              },
+            },
+          })
+
+          if (resultOffer.error) {
+            toast.error(resultOffer.error);
+            // Set offer rejected: true
+            store.dispatch(setOfferRejected(true));
+          } else if (resultOffer.offer) {
+            store.dispatch(setRequestStep(null));
+            return resultOffer.offer;
+          }
+        }
+
         // Send request to generate offer via WalletConnect
         const resultOffer: resultOffer = await signClient.request({
           topic: this.topic,
@@ -349,7 +402,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
     // WalletConnect balance retrieval logic
   }
 
-  async getWallets(): Promise<wallets | undefined> {
+  async getWallets(): Promise<WalletsResponse | undefined> {
     // Sign client
     const signClient = await this.signClient();
     
@@ -360,25 +413,36 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           return;
         }
         
-        // Send request to get Wallets via WalletConnect
-        const request: Promise<wallets> = signClient.request({
-          topic: this.topic,
-          chainId: "chia:mainnet",
-          request: {
-            method: "chia_getWallets",
-            params: {
-              fingerprint: this.selectedFingerprint,
-              includeData: true
+        try {
+          // Send request to get Wallets via WalletConnect
+          const request: Promise<wallets> = signClient.request({
+            topic: this.topic,
+            chainId: "chia:mainnet",
+            request: {
+              method: "chia_getWallets",
+              params: {
+                fingerprint: this.selectedFingerprint,
+                includeData: true
+              },
             },
-          },
-        });
+          });
 
-        const wallets = await request;
-        
-        if (wallets.isSuccess) {
-          return wallets;
-        } else {
-          throw Error('Fetching wallet request unsuccessful')
+          const wallets = await request;
+          
+          if (wallets.isSuccess) {
+            return { isSage: false, wallets };
+          } else {
+            throw Error('Fetching wallet request unsuccessful')
+          }
+        } catch (error: any) {
+          if(error.code === 4001 && error.message === "Unsupported method: chia_getWallets") {
+            return {
+              isSage: true,
+              wallets: null,
+            };
+          } else {
+            throw error;
+          }
         }
         
       } catch (error: any) {
@@ -424,10 +488,13 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
 
   async getAddress(): Promise<string | null> {
     console.log("Attempting to get address via WC...")
+
+    let signClient;
+    let topic;
     try {
-      const signClient = await this.signClient();
+      signClient = await this.signClient();
       const state = store.getState();
-      const topic = state.walletConnect.selectedSession?.topic
+      topic = state.walletConnect.selectedSession?.topic
       if (!topic || !signClient) {
         toast.error('Not connected via WalletConnect or could not sign client', { id: 'failed-to-sign-client' })
         throw Error('Not connected via WalletConnect or could not sign client');
@@ -451,6 +518,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           },
         },
       })
+
       const request = signClient.request<{data: string}>({
         topic,
         chainId: "chia:mainnet",
@@ -464,13 +532,34 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
         },
       });
       const response = await request
+
       console.log({ addressRequestResponse: response });
       const address = response?.data || null
       if (address) {
         store.dispatch(setAddress(address))
       }
       return address;
-    } catch (error) {
+    } catch (error: any) {
+      if(error.code === 4001 && error.message === "Unsupported method: chia_getCurrentAddress") {
+        console.log("Sage detected!");
+
+        const request = (signClient as SignClient).request<{address: string}>({
+          topic: topic as string,
+          chainId: "chia:mainnet",
+          request: {
+            method: "chia_getAddress",
+            params: {},
+          },
+        });
+        const response = await request
+        
+        console.log({ response });
+        const address = response.address;
+        if (address) {
+          store.dispatch(setAddress(address))
+        }
+        return address;
+      }
       console.error(error)
       return null
     }
