@@ -351,7 +351,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
                   assetId: requestItem.assetId,
                   amount: requestItem.amount
                 } as {assetId: string, amount: number})),
-                // fee
+                fee
               },
             },
           })
