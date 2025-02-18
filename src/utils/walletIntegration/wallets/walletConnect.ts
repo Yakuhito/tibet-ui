@@ -337,9 +337,6 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
               requestAssets: asset[]
             }
           */
-          if(fee && fee > 0 && fee < 2500000000){
-            fee = 2500000000;
-          }
           const resultOffer: {offer: string | undefined, error: string | undefined} = await signClient.request({
             topic: this.topic,
             chainId: "chia:mainnet",
