@@ -1,3 +1,8 @@
+import Head from 'next/head';
+import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { useSelector } from 'react-redux';
+
 import { createPair, CreatePairResponse, isCoinSpent, refreshRouter } from '@/api';
 import GeneralInput from '@/components/shared/GeneralInput';
 import CompleteWithWalletModal from '@/components/trade_components/CompleteWithWalletModal';
@@ -5,10 +10,6 @@ import { useAppDispatch } from '@/hooks';
 import { RootState } from '@/redux/store';
 import { XCH } from '@/shared_tokens';
 import WalletManager from '@/utils/walletIntegration/walletManager';
-import Head from 'next/head';
-import { useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
-import { useSelector } from 'react-redux';
 
 const Home: React.FC = () => {
   return (
