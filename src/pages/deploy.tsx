@@ -42,7 +42,6 @@ const Deploy: React.FC<{}> = ({}) => {
   const catLiquidityAmountOrNull = Math.floor(parseFloat(catLiquidityAmountStr) * 1e3);
 
   const infoCompleted = (assetId.length == 64 && (liquidityAddress?.length ?? 0) > 0 && (liquidityAddress?.startsWith("xch1") || liquidityAddress?.startsWith("txch1")) && xchLiquidityAmountOrNull && xchLiquidityAmountOrNull > 0 && catLiquidityAmountOrNull && catLiquidityAmountOrNull > 0) === true;
-  console.log({ infoCompleted,  })
 
   const walletManager = new WalletManager();
   const connectedWallet = useSelector((state: RootState) => state.wallet.connectedWallet);
