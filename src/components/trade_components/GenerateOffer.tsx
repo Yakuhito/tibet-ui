@@ -16,6 +16,7 @@ import { ActionType, createOfferForPair, getInputPrice, getLiquidityQuote, getOu
 import type { OfferResponse, Pair, Quote, Token } from '@/api';
 import { type RootState } from '@/redux/store';
 import WalletManager from '@/utils/walletIntegration/walletManager';
+import { XCH } from '@/shared_tokens';
 
 type GenerateOfferProps = {
   data: GenerateOfferData;
@@ -310,7 +311,6 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, devFee, setGenerate
         );
     };
     
-
     
     const walletManager = new WalletManager();
     const connectedWallet = useSelector((state: RootState) => state.wallet.connectedWallet);

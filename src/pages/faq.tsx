@@ -12,7 +12,7 @@ const faqs = [
   },
   {
     question: 'What are the fees associated with using TibetSwap?',
-    answer: 'Aside from the associated blockchain fees, 0.7% of every trade is distributed to liquidity providers for the pool that is involved in the transaction. There is also a developer fee, which is completely optional and you can set it to any value you want - your donations keep the ecosystem running!',
+    answer: 'Aside from the associated blockchain fees, 0.7% of every trade is distributed to liquidity providers for the pool that is involved in the transaction. This interface also includes a developer fee - your donations keep the ecosystem running!',
   },
   {
     question: 'What is liquidity used for, exactly?',
@@ -36,7 +36,7 @@ const faqs = [
   },
   {
     question: 'How can I make my token tradeable on TibetSwap?',
-    answer: 'Currently, you need to use the <a href="https://github.com/Yakuhito/tibet/" target="_blank" rel="noopener noreferrer">TibetSwap CLI</a> to deploy a pair for your token. However, we are happy to help! Once you have an initial price in mind and some initial liquidity for the pair (50% token, 50% XCH), just message <a href="https://twitter.com/yakuh1t0" target="_blank" rel="noopener noreferrer" class="underline hover:text-gray-700">yakuhito</a> and he\'ll deploy the pair for you :)',
+    answer: 'Simply use <a href="/deploy" rel="noopener noreferrer" class="underline hover:text-gray-700">this page</a> to deploy a pair. If you have any questions, please reach out to <a href="https://twitter.com/yakuh1t0" target="_blank" rel="noopener noreferrer" class="underline hover:text-gray-700">yakuhito</a>.',
   }
 ];
 

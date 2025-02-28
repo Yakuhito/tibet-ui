@@ -45,6 +45,13 @@ export interface OfferResponse {
     success: boolean;
     message: string;
     offer_id: string;
+}
+
+// Model for CreatePairResponse
+export interface CreatePairResponse {
+    success: boolean;
+    message: string;
+    coin_id: string;
 }  
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL; 
@@ -99,6 +106,36 @@ export async function createOfferForPair(
   };
   const response = await axios.post<OfferResponse>(`${BASE_URL}/offer/${pairId}`, requestBody);
   return response.data;
+}
+
+// Function to create pair
+export async function createPair(
+   assetId: string,
+   offer: string,
+   xch_liquidity: number,
+   token_liquidity: number,
+   liquidity_destination_address: string,
+): Promise<CreatePairResponse> {
+  const requestBody = {
+    offer,
+    xch_liquidity,
+    token_liquidity,
+    liquidity_destination_address
+  };
+  const response = await axios.post<CreatePairResponse>(`${BASE_URL}/pair/${assetId}`, requestBody);
+  return response.data;
+}
+
+export async function refreshRouter(): Promise<void> {
+ await axios.post<void>(`${BASE_URL}/router`, {});
+}
+
+// Function to create pair
+export async function isCoinSpent(
+  coinId: string,
+): Promise<boolean> {
+ const response: any = await axios.post<any>(process.env.NEXT_PUBLIC_XCH === "XCH" ? "https://api.coinset.org/get_coin_record_by_name" : "https://testnet11.api.coinset.org/get_coin_record_by_name", {name: "0x" + coinId});
+ return response.success && (response.coin_record?.spent ?? false);
 }
 
 export function getInputPrice(input_amount: number, input_reserve: number, output_reserve: number): number {
