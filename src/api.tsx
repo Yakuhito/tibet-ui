@@ -127,7 +127,7 @@ export async function createPair(
 }
 
 export async function refreshRouter(): Promise<void> {
- await axios.post<void>(`${BASE_URL}/router`, {});
+ await axios.get<void>(`${BASE_URL}/router`);
 }
 
 // Function to create pair
@@ -135,6 +135,7 @@ export async function isCoinSpent(
   coinId: string,
 ): Promise<boolean> {
  const response: any = await axios.post<any>(process.env.NEXT_PUBLIC_XCH === "XCH" ? "https://api.coinset.org/get_coin_record_by_name" : "https://testnet11.api.coinset.org/get_coin_record_by_name", {name: "0x" + coinId});
+ console.log({resp_data: response.data});
  return response.data.success;
 }
 
