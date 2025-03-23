@@ -20,16 +20,23 @@ const StatsPage: React.FC = () => {
   const [stats, setStats] = useState<Stats | null>(null);
   const [pairs, setPairs] = useState<Pair[] | null>(null);
   const [price, setPrice] = useState<number | null>(null);
-  const [loading, setLoading] = useState(true);
+
+  const loading = stats === null;
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const [statsData, pairsData, priceData] = await Promise.all([getStats(), getPairs(), getXCHPrice()]);
-        setStats(statsData);
-        setPairs(pairsData);
-        setPrice(priceData)
-        setLoading(false);
+        const [statsData, pairsData, priceData] = await Promise.all([
+          getStats().then(stats => {
+            setStats(stats);
+          }),
+          getPairs().then(pairs => {
+            setPairs(pairs);
+          }),
+          getXCHPrice().then(price => {
+            setPrice(price);
+          })
+        ]);
       } catch (error) {
         alert('Error fetching data :(');
       }
@@ -72,7 +79,7 @@ const StatsPage: React.FC = () => {
 
         {pairs && (
           <div className="px-4 pb-20">
-            {!loading && <PairList pairs={pairs}/>}
+            <PairList pairs={pairs}/>
           </div>
         )}
       </section>
