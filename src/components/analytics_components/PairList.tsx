@@ -47,7 +47,7 @@ export const PairList: React.FC<PairListProps> = ({ pairs }) => {
       <tr className="hover:opacity-60 align-middle dark:text-brandLight">
         <td className="flex items-center gap-3 h-16 pl-4">
           <Image
-            src={pair.image_url}
+            src={pair.image_url ?? ""}
             alt="Img"
             height={24}
             width={24}
