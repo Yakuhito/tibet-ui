@@ -99,7 +99,7 @@ const Deploy: React.FC<{}> = ({}) => {
             const coin_confirmed = await isCoinSpent(createPairResponse.coin_id);
             if(coin_confirmed) {
               setStatus("Pair deployed successfully - refreshing router...");
-              await new Promise((resolve) => setTimeout(resolve, 5000));
+              await new Promise((resolve) => setTimeout(resolve, 60000));
               await refreshRouter();
               setStatus("All done! :)");
               break;
