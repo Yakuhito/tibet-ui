@@ -8,7 +8,9 @@ import Image from 'next/image';
 import CrossIcon from '../icons/CrossIcon';
 
 import { RootState } from '@/redux/store';
-import type { Pair, Token } from '@/api';
+import type { Pair } from '@/api';
+import { setDevFee } from '@/redux/devFeeSlice';
+import { useAppDispatch } from '@/hooks';
 
 
 
@@ -19,8 +21,9 @@ interface TokenSelectorProps {
 }
 
 function TokenSelectorModal({ isOpen, setIsOpen, setSelectedPair }: TokenSelectorProps) {
-
+  const dispatch = useAppDispatch();
   const pairs = useSelector((state: RootState) => state.globalOnLoadData.pairs);
+  const devFee = useSelector((state: RootState) => state.devFee.devFee);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
   const filteredPairs = pairs ? pairs.filter(pair => {
@@ -36,6 +39,12 @@ function TokenSelectorModal({ isOpen, setIsOpen, setSelectedPair }: TokenSelecto
   const selectPair = (pair: Pair) => {
     setIsOpen(false);
     setSelectedPair(pair);
+
+    if(pair.asset_hidden_puzzle_hash === null && devFee !== 0.007) {
+      dispatch(setDevFee(0.007));
+    } else if(pair.asset_hidden_puzzle_hash !== null && devFee !== 0.0) {
+      dispatch(setDevFee(0.0));
+    }
     setSearchTerm("");
   }
 

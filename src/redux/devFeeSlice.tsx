@@ -17,8 +17,7 @@ const devFeeSlice = createSlice({
   reducers: {
     setDevFee(state, action: PayloadAction<number>) {
       const devFee = action.payload;
-      // state.devFee = devFee;
-      state.devFee = 0.007;
+      state.devFee = devFee;
     },
   },
 });
