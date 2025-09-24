@@ -225,7 +225,7 @@ const Swap: React.FC<SwapProps> = ({ disabled, pairs, generateOffer, selectedPai
           {/* Liquidity Fee */}
           <div className="flex justify-between w-full">
             <p>Liquidity fee</p>
-            <p className="font-medium">{((1000 - pair.inverse_fee) / 100.0).toFixed(2) + '%'}</p>
+            <p className="font-medium">{((1000 - pair.inverse_fee) / 10.0).toFixed(2) + '%'}</p>
           </div>
 
           {/* Dev Fee */}

@@ -59,10 +59,13 @@ function TokenSelectorModal({ isOpen, setIsOpen, setSelectedPair }: TokenSelecto
           <Image className="absolute top-0 left-0 w-10 h-10 rounded-full animate-fadeIn z-10 bg-brandLight" src={pair.asset_image_url} width={100} height={100} alt={pair.asset_name} priority />
           <div className="w-full h-full rounded-full text-brandLight font-medium flex justify-center items-center bg-brandDark/20 backdrop-blur">{pair.asset_short_name.substring(0, 2)}</div>
         </div>
-        <div className="group-hover:pl-0.5 transition-all pl-0">
-          <p className="font-medium text-xl">{pair.asset_short_name}</p>
+        <div className="group-hover:pl-0.5 transition-all pl-0 flex-1">
+          <div className="flex items-center gap-2">
+            <p className="font-medium text-xl">{pair.asset_short_name}</p>
+            {!pair.asset_verified && <p className="text-brandLight bg-red-700 text-sm rounded-full px-3 font-medium" title="This token is not verified">Unverified</p>}
+          </div>
+          <p className="text-gray-500 text-sm">{pair.asset_hidden_puzzle_hash === null ? 'XCH-CAT':'XCH-rCAT'} · {((1000 - pair.inverse_fee) / 10.0).toFixed(2) + '%'}</p>
         </div>
-        {!pair.asset_verified && <p className="text-brandLight bg-red-700 text-sm rounded-full px-3 font-medium" title="This token is not verified">Unverified</p>}
       </li>
     )
   }
