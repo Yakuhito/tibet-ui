@@ -1,37 +1,37 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 
-import { type Token, getAllTokens } from '../api';
+import { type Pair, getAllPairs } from '../api';
 
 import TabContainer from '@/components/trade_components/TabContainer';
-import { getTokens } from '@/redux/globalOnLoadDataSlice';
+import { getPairs } from '@/redux/globalOnLoadDataSlice';
 import { useAppDispatch } from '@/hooks';
 
 
 const Home: React.FC = () => {
-  const [selectedToken, setSelectedToken] = useState<Token | null>(null);
+  const [selectedPair, setSelectedPair] = useState<Pair | null>(null);
 
   // Fetch all tokens
-  const [tokens, setTokens] = useState<Token[] | null>(null);
+  const [pairs, setPairs] = useState<Pair[] | null>(null);
   useEffect(() => {
-    async function fetchTokens() {
-      const allTokens = await getAllTokens();
-      setTokens(allTokens);
+    async function fetchPairs() {
+      const allPairs = await getAllPairs();
+      setPairs(allPairs);
     }
-    fetchTokens();
+    fetchPairs();
   }, []);
 
   // Store tokens globally in Redux
   const dispatch = useAppDispatch();
-  dispatch(getTokens())
+  dispatch(getPairs())
 
   return (
     <>
       <Head>
-        <title>TibetSwap | The First AMM on Chia</title>
+        <title>TibetSwap | The Leading Chia AMM</title>
       </Head>
       <main className="max-w-[28rem] mx-auto">
-        <TabContainer tokens={tokens} selectedToken={selectedToken} setSelectedToken={setSelectedToken} />
+        <TabContainer pairs={pairs} selectedPair={selectedPair} setSelectedPair={setSelectedPair} />
       </main>
     </>
   );

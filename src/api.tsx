@@ -157,20 +157,25 @@ export function getInputPrice(
 ): number {
   if(input_amount == 0) return 0;
 
-  const input_amount_with_fee = input_amount * 993;
+  const input_amount_with_fee = input_amount * inverse_fee;
   const numerator = input_amount_with_fee * output_reserve;
   const denominator = (input_reserve * 1000) + input_amount_with_fee;
   return Math.floor(numerator / denominator);
 }
 
-export function getOutputPrice(output_amount: number, input_reserve: number, output_reserve: number): number {
+export function getOutputPrice(
+  output_amount: number,
+  input_reserve: number,
+  output_reserve: number,
+  inverse_fee: number
+): number {
   if(output_amount > output_reserve) {
     return 0;
   }
   if(output_amount == 0) return 0;
 
   const numerator = input_reserve * output_amount * 1000;
-  const denominator = (output_reserve - output_amount) * 993;
+  const denominator = (output_reserve - output_amount) * inverse_fee;
   return Math.floor(numerator / denominator) + 1;
 }
 
@@ -179,7 +184,8 @@ export function getFastQuote(
   amountOut: number | undefined,
   xchIsInput: boolean,
   xchReserve: number,
-  tokenReserve: number
+  tokenReserve: number,
+  inverseFee: number
 ): number {
   if ((amountIn !== undefined && amountOut !== undefined) || (amountIn === undefined && amountOut === undefined)) {
     throw new Error('Exactly one of amountIn or amountOut must be set');
@@ -196,17 +202,17 @@ export function getFastQuote(
   }
 
   if(amountOut === undefined) {
-    return getInputPrice(amountIn!, inputReserve, outputReserve)
+    return getInputPrice(amountIn!, inputReserve, outputReserve, inverseFee)
   }
 
-  return getOutputPrice(amountOut!, inputReserve, outputReserve)
+  return getOutputPrice(amountOut!, inputReserve, outputReserve, inverseFee)
 }
 
 export function getLiquidityQuote(
   knownIn: number,
   knownReserve: number,
   unknownReserve: number,
-  checkUnknown: boolean
+  checkUnknown: boolean,
 ): number {
   if(knownReserve === 0 || unknownReserve === 0 || knownIn === 0) return 0;
   const output = Math.floor(unknownReserve * knownIn / knownReserve);

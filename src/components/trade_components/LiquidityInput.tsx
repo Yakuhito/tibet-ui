@@ -1,4 +1,4 @@
-import type { Token } from "../../api";
+import type { Pair, Token } from "../../api";
 
 import ChevronDownIcon from "@/components/shared/icons/ChevronDownIcon";
 import AssetAmountInput from "@/components/shared/AssetAmountInput";
@@ -14,7 +14,7 @@ type LiquidityInputsProps = {
   amount2: number;
   onAmountsChanged: (amount0: number, amount1: number, amount2: number) => void;
   disabled: boolean;
-  selectToken: (token: Token) => void;
+  selectPair: (pair: Pair) => void;
 };
 
 const LiquidityInput: React.FC<LiquidityInputsProps> = ({
@@ -28,7 +28,7 @@ const LiquidityInput: React.FC<LiquidityInputsProps> = ({
   onAmountsChanged,
   onArrowClick,
   disabled,
-  selectToken,
+  selectPair,
 }) => {
   return (
     <div className="w-fill mt-8">
@@ -39,7 +39,7 @@ const LiquidityInput: React.FC<LiquidityInputsProps> = ({
         onChange={(val) => onAmountsChanged(val, amount1, amount2)}
         maxDecimals={12}
         disabled={true}
-        selectToken={selectToken}
+        selectPair={selectPair}
       />
 
       <div className={`mt-2 transition-transform duration-300 ease-in-out ${isAddSelected ? 'translate-y-0' : 'translate-y-[calc(100%+0.5rem)]'}`}>
@@ -49,7 +49,7 @@ const LiquidityInput: React.FC<LiquidityInputsProps> = ({
           onChange={(val) => onAmountsChanged(amount0, val, amount2)}
           maxDecimals={3}
           disabled={disabled || !isAddSelected}
-          selectToken={selectToken}
+          selectPair={selectPair}
         />
       </div>
 
@@ -67,7 +67,7 @@ const LiquidityInput: React.FC<LiquidityInputsProps> = ({
           onChange={(val) => onAmountsChanged(amount0, amount1, val)}
           maxDecimals={3}
           disabled={disabled || isAddSelected}
-          selectToken={selectToken}
+          selectPair={selectPair}
         />
       </div>
 

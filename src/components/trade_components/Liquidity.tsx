@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import { Token, Pair, getPairByLauncherId, getLiquidityQuote, ActionType } from '../../api';
+import { Token, Pair, getPairByLauncherId, getLiquidityQuote, ActionType, pairToToken } from '../../api';
 import GenerateOfferButton from '../shared/GenerateOfferButton';
 
 import type { GenerateOfferData } from './TabContainer';
@@ -86,42 +86,44 @@ const Liquidity: React.FC<LiquidityProps> = ({ disabled, pairs, generateOffer, s
 
     return () => clearInterval(interval);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedToken, isAddSelected, pair]);
+  }, [selectedPair, isAddSelected, pair]);
 
-  const setSelectedTokenAndWarn = (t: Token) => {
-    if(!t.verified) {
-      alert(`WARNING: This token has not been labeled as 'verified' by the TibetSwap team. Please make sure you truly want to transact with asset id 0x${t.asset_id} before proceeding.`);
+  const setSelectedPairAndWarn = (p: Pair) => {
+    if(!p.asset_verified) {
+      alert(`WARNING: This token has not been labeled as 'verified' by the TibetSwap team. Please make sure you truly want to transact with asset id 0x${p.asset_id} before proceeding.`);
     }
 
-    setSelectedToken(t);
+    setSelectedPair(p);
 
   }
 
   const submitLiquidityOperation = () => {
     const sideOne: [Token, boolean, number][] = [
       [XCH, true, amount0],
-      [selectedToken!, false, amount1]
+      [pairToToken(pair!), false, amount1]
     ];
     const sideTwo: [Token, boolean, number][] = [
-      [getLiquidityToken(pair!, selectedToken), false, amount2],
+      [getLiquidityToken(pair!, pairToToken(pair!)), false, amount2],
     ];
 
     if(isAddSelected) {
       generateOffer({
-        pairId: pair!.launcher_id,
+        pairId: pair!.pair_id,
         offer: sideOne,
         request: sideTwo,
         action: ActionType.ADD_LIQUIDITY
       });
     } else {
       generateOffer({
-        pairId: pair!.launcher_id,
+        pairId: pair!.pair_id,
         offer: sideTwo,
         request: sideOne,
         action: ActionType.REMOVE_LIQUIDITY
       });
     }
   };
+
+  const selectedToken = pair ? pairToToken(pair) : null;
 
   return (
     <div className="w-fill">
@@ -162,7 +164,7 @@ const Liquidity: React.FC<LiquidityProps> = ({ disabled, pairs, generateOffer, s
             setAmount2(liquidity);
         }}
         disabled={selectedToken == null || pair == null}
-        selectToken={setSelectedTokenAndWarn}
+        selectPair={setSelectedPairAndWarn}
       />
 
       <GenerateOfferButton

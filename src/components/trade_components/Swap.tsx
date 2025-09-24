@@ -65,10 +65,10 @@ const Swap: React.FC<SwapProps> = ({ disabled, pairs, generateOffer, selectedPai
       if(currentPair !== null && currentPair.xch_reserve > 0 && currentPair.token_reserve > 0) {
         if(isBuySelected) {
           setAmount0(10 ** 12);
-          setAmount1(getInputPrice(10 ** 12, currentPair.xch_reserve, currentPair.token_reserve));
+          setAmount1(getInputPrice(10 ** 12, currentPair.xch_reserve, currentPair.token_reserve, currentPair.inverse_fee));
         } else {
           setAmount1(1000);
-          setAmount0(getInputPrice(1000, currentPair.token_reserve, currentPair.xch_reserve));
+          setAmount0(getInputPrice(1000, currentPair.token_reserve, currentPair.xch_reserve, currentPair.inverse_fee));
         }
       }
    }
@@ -152,17 +152,17 @@ const Swap: React.FC<SwapProps> = ({ disabled, pairs, generateOffer, selectedPai
               setAmount0(newAmount0);
 
               if(isBuySelected) {
-                setAmount1(getInputPrice(newAmount0, pair?.xch_reserve ?? 0, pair?.token_reserve ?? 0));
+                setAmount1(getInputPrice(newAmount0, pair?.xch_reserve ?? 0, pair?.token_reserve ?? 0, pair?.inverse_fee ?? 993));
               } else {
-                setAmount1(getOutputPrice(newAmount0, pair?.token_reserve ?? 0, pair?.xch_reserve ?? 0));
+                setAmount1(getOutputPrice(newAmount0, pair?.token_reserve ?? 0, pair?.xch_reserve ?? 0, pair?.inverse_fee ?? 993));
               }
             } else if(amount1 !== newAmount1) {
               setAmount1(newAmount1);
 
               if(isBuySelected) {
-                setAmount0(getOutputPrice(newAmount1, pair?.xch_reserve ?? 0, pair?.token_reserve ?? 0));
+                setAmount0(getOutputPrice(newAmount1, pair?.xch_reserve ?? 0, pair?.token_reserve ?? 0, pair?.inverse_fee ?? 993));
               } else {
-                setAmount0(getInputPrice(newAmount1, pair?.token_reserve ?? 0, pair?.xch_reserve ?? 0));
+                setAmount0(getInputPrice(newAmount1, pair?.token_reserve ?? 0, pair?.xch_reserve ?? 0, pair?.inverse_fee ?? 993));
               }
             }
         }}
