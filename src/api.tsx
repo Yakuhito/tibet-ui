@@ -132,7 +132,7 @@ export async function createPair(
     token_liquidity,
     liquidity_destination_address
   };
-  const response = await axios.post<CreatePairResponse>(`${BASE_URL}/token/${assetId}`, requestBody);
+  const response = await axios.post<CreatePairResponse>(`${BASE_URL}/new-pair/${assetId}`, requestBody);
   return response.data;
 }
 
