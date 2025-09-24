@@ -127,8 +127,8 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, devFee, setGenerate
                         data.offer[0][1],
                         true
                     );
-                    if(quote.fee && quote.fee > 0 && quote.fee < 2500000000){
-                        quote.fee = 2500000000;
+                    if(quote.fee && quote.fee > 0 && quote.fee < 250000000){
+                        quote.fee = 250000000;
                     }
                     setPairAndQuote([pair, quote]);
                 }
@@ -152,8 +152,8 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, devFee, setGenerate
                     data.offer[0][1],
                     true
                 );
-                if(quote.fee && quote.fee > 0 && quote.fee < 2500000000){
-                    quote.fee = 2500000000;
+                if(quote.fee && quote.fee > 0 && quote.fee < 250000000){
+                    quote.fee = 250000000;
                 }
                 setPairAndQuote([pair, quote]);
             } else if(step === 0) {
