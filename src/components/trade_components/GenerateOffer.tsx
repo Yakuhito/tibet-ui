@@ -64,13 +64,13 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, devFee, setGenerate
 
                         if (isBuy) {
                             const amount0 = newOfferData.offer[0][2]
-                            const amount1 = getInputPrice(amount0, xch_reserve, token_reserve); // Get updated token quote
+                            const amount1 = getInputPrice(amount0, xch_reserve, token_reserve, pair.inverse_fee); // Get updated token quote
                             newOfferData.request[0][2] = amount1;
                             setGenerateOfferData(newOfferData);
                             console.log("Updating offer data");
                         } else {
                           const amount1 = newOfferData.offer[0][2];
-                          const amount0 = getInputPrice(amount1, token_reserve, xch_reserve); // Get updated XCH quote
+                          const amount0 = getInputPrice(amount1, token_reserve, xch_reserve, pair.inverse_fee); // Get updated XCH quote
                           newOfferData.request[0][2] = amount0;
                           console.log("Updating offer data");
                           setGenerateOfferData(newOfferData);
@@ -172,11 +172,11 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, devFee, setGenerate
                     
                     const pair = pairAndQuote![0];
                     if(token0IsXCH) {
-                        const expectedTokenAmount = getInputPrice(xchAmount, pair.xch_reserve, pair.token_reserve);
+                        const expectedTokenAmount = getInputPrice(xchAmount, pair.xch_reserve, pair.token_reserve, pair.inverse_fee);
                         if(expectedTokenAmount > tokenAmount) {
                             setStep(-1);
                         } else {
-                            const expectedXCHAmount = getOutputPrice(tokenAmount, pair.xch_reserve, pair.token_reserve)
+                            const expectedXCHAmount = getOutputPrice(tokenAmount, pair.xch_reserve, pair.token_reserve, pair.inverse_fee);
                             if(expectedXCHAmount < xchAmount) {
                                 const newOfferData = {...data};
                                 newOfferData.offer[0][2] = expectedXCHAmount;
@@ -188,7 +188,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, devFee, setGenerate
                     }
                     
                     if(!token0IsXCH) {
-                        const expectedXCHAmount = getInputPrice(tokenAmount, pair.token_reserve, pair.xch_reserve);
+                        const expectedXCHAmount = getInputPrice(tokenAmount, pair.token_reserve, pair.xch_reserve, pair.inverse_fee);
                         if(expectedXCHAmount < xchAmount) {
                             setStep(-1);
                         } else {
@@ -250,7 +250,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, devFee, setGenerate
                 }
             } else if(step === 3 && offerResponse === null) {
                 const offerResponse = await createOfferForPair(
-                    pairAndQuote![0].launcher_id,
+                    pairAndQuote![0].pair_id,
                     offer,
                     data.action,
                     devFee * (data.offer[0][1] ? data.offer[0][2] : data.request[0][2])
