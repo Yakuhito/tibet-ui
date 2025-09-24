@@ -10,13 +10,13 @@ import { UNKNWN, XCH, getLiquidityToken } from '@/shared_tokens';
 
 type LiquidityProps = {
   disabled: boolean;
-  tokens: Token[] | null;
+  pairs: Pair[] | null;
   generateOffer: (data: GenerateOfferData) => void;
-  selectedToken: Token | null;
-  setSelectedToken: React.Dispatch<React.SetStateAction<Token | null>>;
+  selectedPair: Pair | null;
+  setSelectedPair: React.Dispatch<React.SetStateAction<Pair | null>>;
 };
 
-const Liquidity: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, selectedToken, setSelectedToken }) => {
+const Liquidity: React.FC<LiquidityProps> = ({ disabled, pairs, generateOffer, selectedPair, setSelectedPair }) => {
   const emergency_withdraw = process.env.NEXT_PUBLIC_V1_EMERGENCY_WITHDRAW === "true";
 
   const [pair, setPair] = useState<Pair | null>(null);
@@ -28,14 +28,17 @@ const Liquidity: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, 
   // Update token pair details every 5 seconds
   useEffect(() => {
     async function updatePair(): Promise<Pair | null> {
-      if(selectedToken !== null) {
-        const newPair = await getPairByLauncherId(selectedToken!.pair_id);
+      if(selectedPair !== null) {
+        const newPair = await getPairByLauncherId(selectedPair!.pair_id);
 
         if(
-          newPair.launcher_id !== pair?.launcher_id ||
+          newPair.pair_id !== pair?.pair_id ||
           newPair.liquidity !== pair?.liquidity ||
           newPair.xch_reserve !== pair?.xch_reserve ||
-          newPair.token_reserve !== pair?.token_reserve
+          newPair.token_reserve !== pair?.token_reserve ||
+          newPair.asset_id !== pair?.asset_id ||
+          newPair.asset_hidden_puzzle_hash !== pair?.asset_hidden_puzzle_hash ||
+          newPair.inverse_fee !== pair?.inverse_fee
         ) {
           setPair(newPair);
           return newPair;
@@ -46,10 +49,10 @@ const Liquidity: React.FC<LiquidityProps> = ({ disabled, tokens, generateOffer, 
     }
 
     async function update() {
-      if(selectedToken === null) return;
+      if(selectedPair === null) return;
 
       var currentPair: Pair | null = pair;
-      if(pair === null || selectedToken?.pair_id !== pair.launcher_id) {
+      if(pair === null || selectedPair?.pair_id !== pair.pair_id) {
         currentPair = (await updatePair()) ?? pair;
       }
 

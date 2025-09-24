@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import { type Token, type Pair, getPairByLauncherId, getInputPrice, getOutputPrice, ActionType } from '../../api';
+import { type Token, type Pair, getPairByLauncherId, getInputPrice, getOutputPrice, ActionType, pairToToken } from '../../api';
 import GenerateOfferButton from '../shared/GenerateOfferButton';
 import TickIcon from '../shared/icons/TickIcon';
 import CogIcon from '../shared/icons/CogIcon';
@@ -15,16 +15,15 @@ import { useAppDispatch } from '@/hooks';
 
 type SwapProps = {
   disabled: boolean;
-  tokens: Token[] | null;
+  pairs: Pair[] | null;
   generateOffer: (data: GenerateOfferData) => void;
-  selectedToken: Token | null;
-  setSelectedToken: React.Dispatch<React.SetStateAction<Token | null>>;
+  selectedPair: Pair | null;
+  setSelectedPair: React.Dispatch<React.SetStateAction<Pair | null>>;
   devFee: number;
   setDevFee: (value: number) => void;
 };
 
-const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedToken, setSelectedToken, devFee, setDevFee }) => {
-
+const Swap: React.FC<SwapProps> = ({ disabled, pairs, generateOffer, selectedPair, setSelectedPair, devFee, setDevFee }) => {
   const dispatch = useAppDispatch();
 
   const [pair, setPair] = useState<Pair | null>(null);
@@ -35,14 +34,17 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
   // Update token pair details every 5 seconds
   useEffect(() => {
     async function updatePair(): Promise<Pair | null> {
-      if(selectedToken !== null) {
-        const newPair = await getPairByLauncherId(selectedToken!.pair_id);
+      if(selectedPair !== null) {
+        const newPair = await getPairByLauncherId(selectedPair!.pair_id);
 
         if(
-          newPair.launcher_id !== pair?.launcher_id ||
+          newPair.pair_id !== pair?.pair_id ||
           newPair.liquidity !== pair?.liquidity ||
           newPair.xch_reserve !== pair?.xch_reserve ||
-          newPair.token_reserve !== pair?.token_reserve
+          newPair.token_reserve !== pair?.token_reserve ||
+          newPair.asset_id !== pair?.asset_id ||
+          newPair.asset_hidden_puzzle_hash !== pair?.asset_hidden_puzzle_hash ||
+          newPair.inverse_fee !== pair?.inverse_fee
         ) {
           setPair(newPair);
           return newPair;
@@ -53,10 +55,10 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
     }
 
     async function update() {
-      if(selectedToken === null) return;
+      if(selectedPair === null) return;
 
       var currentPair: Pair | null = pair;
-      if(pair === null || selectedToken?.pair_id !== pair.launcher_id) {
+      if(pair === null || selectedPair?.pair_id !== pair.pair_id) {
         currentPair = (await updatePair()) ?? pair;
       }
 
@@ -79,14 +81,14 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
 
     return () => clearInterval(interval);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedToken, isBuySelected, pair]);
+  }, [selectedPair, isBuySelected, pair]);
 
-  const setSelectedTokenAndWarn = (t: Token) => {
-    if(!t.verified) {
-      alert(`WARNING: This token has not been labeled as 'verified' by the TibetSwap team. Please make sure you truly want to transact with asset id 0x${t.asset_id} before proceeding.`);
+  const setSelectedPairAndWarn = (p: Pair) => {
+    if(!p.asset_verified) {
+      alert(`WARNING: This token has not been labeled as 'verified' by the TibetSwap team. Please make sure you truly want to transact with asset id 0x${p.asset_id} before proceeding.`);
     }
 
-    setSelectedToken(t);
+    setSelectedPair(p);
   }
 
   // Calculate & update price impact and store in state
@@ -110,19 +112,19 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
       [XCH, true, amount0]
     ];
     const sideTwo: [Token, boolean, number][] = [
-      [selectedToken!, false, amount1]
+      [pairToToken(pair!), false, amount1]
     ];
 
     if(isBuySelected) {
       generateOffer({
-        pairId: pair!.launcher_id,
+        pairId: pair!.pair_id,
         offer: sideOne,
         request: sideTwo,
         action: ActionType.SWAP
       });
     } else {
       generateOffer({
-        pairId: pair!.launcher_id,
+        pairId: pair!.pair_id,
         offer: sideTwo,
         request: sideOne,
         action: ActionType.SWAP
@@ -133,6 +135,7 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
   // State management for high price impact banner user confirmation checkbox
   const [highPriceImpactConfirmed, setHighPriceImpactConfirmed] = useState(false);
 
+  const selectedToken = pair ? pairToToken(pair) : null;
 
   return (
     <div className="w-fill">
@@ -163,8 +166,8 @@ const Swap: React.FC<SwapProps> = ({ disabled, tokens, generateOffer, selectedTo
               }
             }
         }}
-        disabled={selectedToken == null || pair == null}
-        selectToken={setSelectedTokenAndWarn}
+        disabled={pair == null}
+        selectPair={setSelectedPairAndWarn}
       />
 
       {/* High price impact warning banner */}

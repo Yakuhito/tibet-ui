@@ -8,23 +8,23 @@ import Image from 'next/image';
 import CrossIcon from '../icons/CrossIcon';
 
 import { RootState } from '@/redux/store';
-import type { Token } from '@/api';
+import type { Pair, Token } from '@/api';
 
 
 
 interface TokenSelectorProps {
     isOpen: boolean;
     setIsOpen: (value: boolean) => void;
-    setSelectedToken: (token: Token) => void;
+    setSelectedPair: (pair: Pair) => void;
 }
 
-function TokenSelectorModal({ isOpen, setIsOpen, setSelectedToken }: TokenSelectorProps) {
+function TokenSelectorModal({ isOpen, setIsOpen, setSelectedPair }: TokenSelectorProps) {
 
-  const tokens = useSelector((state: RootState) => state.globalOnLoadData.tokens);
+  const pairs = useSelector((state: RootState) => state.globalOnLoadData.pairs);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  const filteredTokens = tokens ? tokens.filter(token => {
-    const searchableName = (`${token.name} ${token.short_name} ${token.asset_id}`).toLowerCase();
+  const filteredPairs = pairs ? pairs.filter(pair => {
+    const searchableName = (`${pair.asset_name} ${pair.asset_short_name} ${pair.asset_id}`).toLowerCase();
     return searchableName.includes(searchTerm.toLowerCase())
     }
   ) : null;
@@ -33,33 +33,33 @@ function TokenSelectorModal({ isOpen, setIsOpen, setSelectedToken }: TokenSelect
     setSearchTerm(e.target.value);
   }
 
-  const selectToken = (token: Token) => {
+  const selectPair = (pair: Pair) => {
     setIsOpen(false);
-    setSelectedToken(token);
+    setSelectedPair(pair);
     setSearchTerm("");
   }
 
   const tokenRow = ({ index, style }: { index: number, style: CSSProperties }) => {
-    if (!filteredTokens) return <p>No tokens</p>
-    const token = filteredTokens[index]
+    if (!filteredPairs) return <p>No pairs</p>
+    const pair = filteredPairs[index]
     return (
       <li
-        key={token.asset_id}
+        key={pair.pair_id}
         style={{
           ...style,
           top: `${parseFloat(`${style.top}`) + 32}px`
         }}
         className="flex gap-6 max-h-full items-center select-none cursor-pointer group hover:bg-brandDark/0 px-4 py-2 rounded-lg"
-        onClick={() => selectToken(token)}
+        onClick={() => selectPair(pair)}
       >
         <div className="w-10 h-10 rounded-full relative overflow-hidden">
-          <Image className="absolute top-0 left-0 w-10 h-10 rounded-full animate-fadeIn z-10 bg-brandLight" src={token.image_url} width={100} height={100} alt={token.name} priority />
-          <div className="w-full h-full rounded-full text-brandLight font-medium flex justify-center items-center bg-brandDark/20 backdrop-blur">{token.short_name.substring(0, 2)}</div>
+          <Image className="absolute top-0 left-0 w-10 h-10 rounded-full animate-fadeIn z-10 bg-brandLight" src={pair.asset_image_url} width={100} height={100} alt={pair.asset_name} priority />
+          <div className="w-full h-full rounded-full text-brandLight font-medium flex justify-center items-center bg-brandDark/20 backdrop-blur">{pair.asset_short_name.substring(0, 2)}</div>
         </div>
         <div className="group-hover:pl-0.5 transition-all pl-0">
-          <p className="font-medium text-xl">{token.short_name}</p>
+          <p className="font-medium text-xl">{pair.asset_short_name}</p>
         </div>
-        {!token.verified && <p className="text-brandLight bg-red-700 text-sm rounded-full px-3 font-medium" title="This token is not verified">Unverified</p>}
+        {!pair.asset_verified && <p className="text-brandLight bg-red-700 text-sm rounded-full px-3 font-medium" title="This token is not verified">Unverified</p>}
       </li>
     )
   }
@@ -130,7 +130,7 @@ function TokenSelectorModal({ isOpen, setIsOpen, setSelectedToken }: TokenSelect
                   >
                     <div className="relative h-[calc(100svh-164px)]">
                       {/* Loading state or if no tokens available */}
-                      {!tokens && (
+                      {!pairs && (
                         <ul className="py-8">
                           <li className="flex gap-6 max-h-full items-center select-none cursor-pointer group hover:bg-brandDark/0 px-4 py-2 rounded-lg">
                               <div className="w-10 h-10 aspect-square rounded-full flex justify-center bg-brandDark/20 backdrop-blur animate-pulse"></div>
@@ -138,14 +138,14 @@ function TokenSelectorModal({ isOpen, setIsOpen, setSelectedToken }: TokenSelect
                           </li>
                         </ul>
                       )}
-                      {filteredTokens && (
+                      {filteredPairs && (
                         <div className="absolute w-full h-full min-h-full max-h-full left-0 top-0">
                           <AutoSizer>
                             {({ height, width }: {height: number, width: number}) => (
                               <List
                                 className="List"
                                 height={height ? height : 0}
-                                itemCount={filteredTokens.length}
+                                itemCount={filteredPairs.length}
                                 itemSize={68}
                                 width={width ? width : 0}
                                 innerElementType={innerElementType}

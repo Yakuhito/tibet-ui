@@ -1,4 +1,4 @@
-import type { Token } from "../../api";
+import type { Pair, Token } from "../../api";
 
 import AssetAmountInput from "@/components/shared/AssetAmountInput";
 import ChevronDownIcon from "@/components/shared/icons/ChevronDownIcon";
@@ -12,7 +12,7 @@ type SwapInputsProps = {
   amount1: number;
   onAmountsChanged: (amount0: number, amount1: number) => void;
   disabled: boolean;
-  selectToken: (token: Token) => void;
+  selectPair: (pair: Pair) => void;
 };
 
 const SwapInputs: React.FC<SwapInputsProps> = ({
@@ -24,7 +24,7 @@ const SwapInputs: React.FC<SwapInputsProps> = ({
   onAmountsChanged,
   onArrowClick,
   disabled,
-  selectToken,
+  selectPair,
 }) => {
   return (
     <div className="w-fill mt-8">
@@ -35,7 +35,7 @@ const SwapInputs: React.FC<SwapInputsProps> = ({
           value={amount0}
           onChange={(val) => onAmountsChanged(val, amount1)}
           maxDecimals={12}
-          selectToken={selectToken}
+          selectPair={selectPair}
           disabled={disabled}
         />
       </div>
@@ -53,7 +53,7 @@ const SwapInputs: React.FC<SwapInputsProps> = ({
           value={amount1}
           onChange={(val) => onAmountsChanged(amount0, val)}
           maxDecimals={3}
-          selectToken={selectToken}
+          selectPair={selectPair}
           disabled={disabled}
         />
       </div>

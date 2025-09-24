@@ -4,7 +4,7 @@ import axios from 'axios';
 // Token model
 export interface Token {
     asset_id: string;
-    pair_id: string;
+    hidden_puzzle_hash: string | null;
     name: string;
     short_name: string;
     image_url: string;
@@ -13,13 +13,30 @@ export interface Token {
   
 // Pair model
 export interface Pair {
-    launcher_id: string;
+    pair_id: string;
     asset_id: string;
+    asset_name: string;
+    asset_hidden_puzzle_hash: string | null;
+    asset_short_name: string;
+    asset_image_url: string;
+    asset_verified: boolean;
+    inverse_fee: number;
     liquidity_asset_id: string;
     xch_reserve: number;
     token_reserve: number;
     liquidity: number;
     last_coin_id_on_chain: string;
+}
+
+export function pairToToken(pair: Pair): Token {
+  return {
+    asset_id: pair.asset_id,
+    hidden_puzzle_hash: pair.asset_hidden_puzzle_hash,
+    name: pair.asset_name,
+    short_name: pair.asset_short_name,
+    image_url: pair.asset_image_url,
+    verified: pair.asset_verified,
+  };
 }
 
 // Enum for ActionType
@@ -56,23 +73,12 @@ export interface CreatePairResponse {
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL; 
 
-// Function to get all tokens
-export async function getAllTokens(): Promise<Token[]> {
-  const response = await axios.get<Token[]>(`${BASE_URL}/tokens`);
-  return response.data;
-}
-
 // Function to get all pairs
-export async function getAllPairs(skip: number = 0, limit: number = 10): Promise<Pair[]> {
+export async function getAllPairs(skip: number = 0, limit: number = 1337000): Promise<Pair[]> {
   const response = await axios.get<Pair[]>(`${BASE_URL}/pairs`, {
     params: { skip, limit },
   });
-  return response.data;
-}
 
-// Function to get a token by asset_id
-export async function getTokenByAssetId(assetId: string): Promise<Token> {
-  const response = await axios.get<Token>(`${BASE_URL}/token/${assetId}`);
   return response.data;
 }
 
@@ -126,8 +132,12 @@ export async function createPair(
   return response.data;
 }
 
-export async function refreshRouter(): Promise<void> {
- await axios.get<void>(`${BASE_URL}/router`);
+export async function refreshRouter(rcat: boolean): Promise<void> {
+  if(rcat) {
+    await axios.get<void>(`${BASE_URL}/router?rcat=true`);
+  } else {
+    await axios.get<void>(`${BASE_URL}/router`);
+  }
 }
 
 // Function to create pair
@@ -139,7 +149,12 @@ export async function isCoinSpent(
  return response.data.success;
 }
 
-export function getInputPrice(input_amount: number, input_reserve: number, output_reserve: number): number {
+export function getInputPrice(
+  input_amount: number,
+  input_reserve: number,
+  output_reserve: number,
+  inverse_fee: number
+): number {
   if(input_amount == 0) return 0;
 
   const input_amount_with_fee = input_amount * 993;

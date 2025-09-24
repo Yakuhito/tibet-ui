@@ -1,6 +1,6 @@
 import { type ChangeEvent, useState } from 'react';
 
-import type { Token } from '../../api';
+import type { Pair, Token } from '../../api';
 
 import TokenSelector from './TokenSelector';
 
@@ -10,10 +10,10 @@ type AssetAmountInputProps = {
   onChange: (value: number) => void;
   maxDecimals: number;
   disabled?: boolean;
-  selectToken: (token: Token) => void;
+  selectPair: (pair: Pair) => void;
 };
 
-const AssetAmountInput: React.FC<AssetAmountInputProps> = ({ token, onChange, maxDecimals, disabled, value, selectToken }) => {
+const AssetAmountInput: React.FC<AssetAmountInputProps> = ({ token, onChange, maxDecimals, disabled, value, selectPair }) => {
 
   const [inputValue, setInputValue] = useState<number | string>("");
 
@@ -43,7 +43,7 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({ token, onChange, ma
           min={0}
         />
 
-        <TokenSelector selectedToken={token} selectToken={selectToken} disabled={disabled} />
+        <TokenSelector selectedToken={token} selectPair={selectPair} disabled={disabled} />
 
     </div>
   );

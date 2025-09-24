@@ -1,18 +1,18 @@
 import { useState } from 'react';
 import Image from "next/image";
 
-import type { Token } from '../../api';
+import type { Pair, Token } from '../../api';
 
 import TokenSelectorModal from './modals/TokenSelectorModal';
 import ChevronDownIcon from './icons/ChevronDownIcon';
 
 interface TokenSelectorProps {
   selectedToken: Token;
-  selectToken: (token: Token) => void;
+  selectPair: (pair: Pair) => void;
   disabled?: boolean;
 }
 
-function TokenSelectorNew({ selectedToken, selectToken, disabled }: TokenSelectorProps) {
+function TokenSelectorNew({ selectedToken, selectPair, disabled }: TokenSelectorProps) {
   
   const [isTokenSelectorModalOpen, setIsTokenSelectorModalOpen] = useState<boolean>(false);
 
@@ -59,7 +59,7 @@ function TokenSelectorNew({ selectedToken, selectToken, disabled }: TokenSelecto
             </div>
           )}
       </div>
-      <TokenSelectorModal isOpen={isTokenSelectorModalOpen} setIsOpen={setIsTokenSelectorModalOpen} setSelectedToken={selectToken} />
+      <TokenSelectorModal isOpen={isTokenSelectorModalOpen} setIsOpen={setIsTokenSelectorModalOpen} setSelectedPair={selectPair} />
     </>
   );
 }

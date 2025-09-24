@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import React, { useState } from 'react';
 
-import { type Token, ActionType } from '../../api';
+import { ActionType, Token, type Pair } from '../../api';
 
 import CompleteWithWalletModal from './CompleteWithWalletModal';
 import GenerateOffer from './GenerateOffer';
@@ -20,12 +20,12 @@ export interface GenerateOfferData {
 }
 
 export interface TabContainerProps {
-  tokens: Token[] | null;
-  selectedToken: Token | null;
-  setSelectedToken: React.Dispatch<React.SetStateAction<Token | null>>;
+  pairs: Pair[] | null;
+  selectedPair: Pair | null;
+  setSelectedPair: React.Dispatch<React.SetStateAction<Pair | null>>;
 }
 
-const TabContainer: React.FC<TabContainerProps> = ({ tokens, selectedToken, setSelectedToken }) => {
+const TabContainer: React.FC<TabContainerProps> = ({ pairs, selectedPair, setSelectedPair }) => {
   const emergency_withdraw = process.env.NEXT_PUBLIC_V1_EMERGENCY_WITHDRAW === "true";
 
   const SWAP_ENABLED = !emergency_withdraw && process.env.NEXT_PUBLIC_SWAP_ENABLED === 'true';
@@ -46,21 +46,21 @@ const TabContainer: React.FC<TabContainerProps> = ({ tokens, selectedToken, setS
 
     if (activeTab === 'swap') {
       return <Swap
-        disabled={tokens == null}
-        tokens={tokens}
+        disabled={pairs == null}
+        pairs={pairs}
         generateOffer={generateOffer}
-        selectedToken={selectedToken}
-        setSelectedToken={setSelectedToken}
+        selectedPair={selectedPair}
+        setSelectedPair={setSelectedPair}
         devFee={devFee}
         setDevFee={setDevFee}
       />;
     } else {
       return <Liquidity
-        disabled={tokens == null}
-        tokens={tokens}
+        disabled={pairs == null}
+        pairs={pairs}
         generateOffer={generateOffer}
-        selectedToken={selectedToken}
-        setSelectedToken={setSelectedToken}
+        selectedPair={selectedPair}
+        setSelectedPair={setSelectedPair}
       />;
     }
   };
