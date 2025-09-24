@@ -83,10 +83,21 @@ const Deploy: React.FC<{}> = ({}) => {
   }
 
   useEffect(() => {
+    let hiddenPuzzleHash = null;
+    let inverseFee = 993;
+
     const func = async function() {
       if(infoCompleted && offer.length > 0 && offer.startsWith("offer1")) {
         if(createPairResponse === null) {
-          let resp = await createPair(assetId, offer, xchLiquidityAmountOrNull, catLiquidityAmountOrNull, liquidityAddress);
+          let resp = await createPair(
+            assetId,
+            hiddenPuzzleHash,
+            inverseFee,
+            offer,
+            xchLiquidityAmountOrNull,
+            catLiquidityAmountOrNull,
+            liquidityAddress
+          );
           if(!resp.success){
             alert(resp.message);
             setOffer("");
@@ -100,7 +111,7 @@ const Deploy: React.FC<{}> = ({}) => {
             if(coin_confirmed) {
               setStatus("Pair deployed successfully - refreshing router...");
               await new Promise((resolve) => setTimeout(resolve, 60000));
-              await refreshRouter(false);
+              await refreshRouter(hiddenPuzzleHash !== null);
               setStatus("All done! :)");
               break;
             }

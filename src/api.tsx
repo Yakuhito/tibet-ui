@@ -117,6 +117,8 @@ export async function createOfferForPair(
 // Function to create pair
 export async function createPair(
    assetId: string,
+   hidden_puzzle_hash: string | null,
+   inverse_fee: number,
    offer: string,
    xch_liquidity: number,
    token_liquidity: number,
@@ -124,11 +126,13 @@ export async function createPair(
 ): Promise<CreatePairResponse> {
   const requestBody = {
     offer,
+    hidden_puzzle_hash,
+    inverse_fee,
     xch_liquidity,
     token_liquidity,
     liquidity_destination_address
   };
-  const response = await axios.post<CreatePairResponse>(`${BASE_URL}/pair/${assetId}`, requestBody);
+  const response = await axios.post<CreatePairResponse>(`${BASE_URL}/token/${assetId}`, requestBody);
   return response.data;
 }
 
