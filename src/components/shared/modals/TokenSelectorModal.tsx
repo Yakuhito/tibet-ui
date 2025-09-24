@@ -39,12 +39,6 @@ function TokenSelectorModal({ isOpen, setIsOpen, setSelectedPair }: TokenSelecto
   const selectPair = (pair: Pair) => {
     setIsOpen(false);
     setSelectedPair(pair);
-
-    if(pair.asset_hidden_puzzle_hash === null && devFee !== 0.007) {
-      dispatch(setDevFee(0.007));
-    } else if(pair.asset_hidden_puzzle_hash !== null && devFee !== 0.0) {
-      dispatch(setDevFee(0.0));
-    }
     setSearchTerm("");
   }
 
