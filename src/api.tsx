@@ -82,6 +82,12 @@ export async function getAllPairs(skip: number = 0, limit: number = 1337000): Pr
   return response.data;
 }
 
+// Function to get all tokens
+export async function getAllTokens(): Promise<Token[]> {
+  const response = await axios.get<Token[]>(`${BASE_URL}/tokens`);
+  return response.data;
+}
+
 // Function to get a pair by launcher_id
 export async function getPairByLauncherId(launcherId: string): Promise<Pair> {
   const response = await axios.get<Pair>(`${BASE_URL}/pair/${launcherId}`);

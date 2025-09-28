@@ -33,10 +33,12 @@ interface WalletsResponse {
   isSage: boolean
 }
 
+const chainId = process.env.NEXT_PUBLIC_XCH === "TXCH" ? "chia:testnet" : "chia:mainnet";
+
 class WalletConnectIntegration implements WalletIntegrationInterface {
   name = "WalletConnect"
   image = "/assets/xch.webp"
-  chainId = process.env.NEXT_PUBLIC_XCH === "TXCH" ? "chia:testnet" : "chia:mainnet"
+  chainId = chainId
   topic
   client: SignClient | undefined
   selectedFingerprint
@@ -121,7 +123,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
                 'chia_getAddress',
                 'chia_createOffer'
               ],
-              chains: ["chia:mainnet"],
+              chains: [chainId],
               events: [],
             },
           };
@@ -339,7 +341,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           */
           const resultOffer: {offer: string | undefined, error: string | undefined} = await signClient.request({
             topic: this.topic,
-            chainId: "chia:mainnet",
+            chainId: chainId,
             request: {
               method: "chia_createOffer",
               params: {
@@ -369,7 +371,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
         // Send request to generate offer via WalletConnect
         const resultOffer: resultOffer = await signClient.request({
           topic: this.topic,
-          chainId: "chia:mainnet",
+          chainId: chainId,
           request: {
             method: "chia_createOfferForIds",
             params: {
@@ -417,7 +419,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
           // Send request to get Wallets via WalletConnect
           const request: Promise<wallets> = signClient.request({
             topic: this.topic,
-            chainId: "chia:mainnet",
+            chainId: chainId,
             request: {
               method: "chia_getWallets",
               params: {
@@ -466,7 +468,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
         // Send request to get Wallets via WalletConnect
         const request = signClient.request({
           topic: this.topic,
-          chainId: "chia:mainnet",
+          chainId: chainId,
           request: {
             method: "chia_addCATToken",
             params: {
@@ -508,7 +510,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
       if (wallet_id === undefined) return ''
       console.log({
         topic,
-        chainId: "chia:mainnet",
+        chainId: chainId,
         request: {
           method: "chia_getCurrentAddress",
           params: {
@@ -521,7 +523,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
 
       const request = signClient.request<{data: string}>({
         topic,
-        chainId: "chia:mainnet",
+        chainId: chainId,
         request: {
           method: "chia_getCurrentAddress",
           params: {
@@ -545,7 +547,7 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
 
         const request = (signClient as SignClient).request<{address: string}>({
           topic: topic as string,
-          chainId: "chia:mainnet",
+          chainId: chainId,
           request: {
             method: "chia_getAddress",
             params: {},

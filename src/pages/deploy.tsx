@@ -2,8 +2,9 @@ import Head from 'next/head';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
+import { useRouter } from 'next/router';
 
-import { createPair, CreatePairResponse, isCoinSpent, refreshRouter } from '@/api';
+import { createPair, CreatePairResponse, isCoinSpent, refreshRouter, getAllTokens, Token } from '@/api';
 import GeneralInput from '@/components/shared/GeneralInput';
 import CompleteWithWalletModal from '@/components/trade_components/CompleteWithWalletModal';
 import { useAppDispatch } from '@/hooks';
@@ -14,35 +15,79 @@ import HexInput from '@/components/shared/HexInput';
 
 const Home: React.FC = () => {
   return (
-    <>
-      <Head>
-        <title>Deploy Pair/Pool | TibetSwap | The First AMM on Chia</title>
-      </Head>
-      <main className="max-w-[28rem] mx-auto">
-        <Deploy />
-      </main>
-    </>
+    <main className="max-w-[28rem] mx-auto">
+      <Deploy />
+    </main>
   );
 };
 
 const Deploy: React.FC<{}> = ({}) => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
+
+  // Get rcat parameter from URL
+  const { rcat } = router.query;
+  const isRcat = rcat === 'true';
 
   const address = useSelector((state: RootState) => state.wallet.address);
   const [assetId, setAssetId] = useState("");
   const [liquidityAddress, setLiquidityAddress] = useState(address ?? "");
   const [xchLiquidityAmountStr, setXchLiquidityAmountStr] = useState("1");
   const [catLiquidityAmountStr, setCatLiquidityAmountStr] = useState("");
+  
+  // RCAT-specific fields
+  const [hiddenPuzzleHashInput, setHiddenPuzzleHashInput] = useState("");
+  const [inverseFeeInput, setInverseFeeInput] = useState(rcat ? "999" : "993");
 
   const [offer, setOffer] = useState<string>('');
   const INITIAL_STATUS = "Sending offer..."
   const [status, setStatus] = useState<string>(INITIAL_STATUS);
   const [createPairResponse, setCreatePairResponse] = useState<CreatePairResponse | null>(null);
 
+  // Token validation for RCAT
+  const [tokens, setTokens] = useState<Token[] | null>(null);
+  
+  // Fetch tokens when in RCAT mode
+  useEffect(() => {
+    const fetchTokens = async () => {
+      try {
+        const allTokens = await getAllTokens();
+        setTokens(allTokens);
+      } catch (error) {
+        alert(`Error fetching tokens: ${error}`);
+      }
+    };
+
+    if (isRcat) {
+      fetchTokens();
+    }
+  }, [isRcat]);
+
   const xchLiquidityAmountOrNull = Math.floor(parseFloat(xchLiquidityAmountStr) * 1e12);
   const catLiquidityAmountOrNull = Math.floor(parseFloat(catLiquidityAmountStr) * 1e3);
+  
+  // Validation logic
+  const inverseFeeValue = parseInt(inverseFeeInput);
+  const isInverseFeeValid = !isRcat || (inverseFeeValue >= 958 && inverseFeeValue <= 999);
+  
+  const isTokenValid = !isRcat || (tokens && tokens.some(token => 
+    token.verified === true && 
+    token.asset_id === assetId && 
+    token.hidden_puzzle_hash === hiddenPuzzleHashInput
+  ));
 
-  const infoCompleted = (assetId.length == 64 && (liquidityAddress?.length ?? 0) > 0 && (liquidityAddress?.startsWith("xch1") || liquidityAddress?.startsWith("txch1")) && xchLiquidityAmountOrNull && xchLiquidityAmountOrNull > 0 && catLiquidityAmountOrNull && catLiquidityAmountOrNull > 0) === true;
+  const basicInfoCompleted = (
+    assetId.length == 64 && 
+    (liquidityAddress?.length ?? 0) > 0 && 
+    (liquidityAddress?.startsWith("xch1") || liquidityAddress?.startsWith("txch1")) && 
+    xchLiquidityAmountOrNull && 
+    xchLiquidityAmountOrNull > 0 && 
+    catLiquidityAmountOrNull && 
+    catLiquidityAmountOrNull > 0
+  );
+
+  const infoCompleted = basicInfoCompleted && 
+    (!isRcat || (hiddenPuzzleHashInput.length === 64 && isInverseFeeValid && isTokenValid));
 
   const walletManager = new WalletManager();
   const connectedWallet = useSelector((state: RootState) => state.wallet.connectedWallet);
@@ -84,8 +129,9 @@ const Deploy: React.FC<{}> = ({}) => {
   }
 
   useEffect(() => {
-    let hiddenPuzzleHash = null;
-    let inverseFee = 993;
+    let hiddenPuzzleHash = isRcat ? hiddenPuzzleHashInput : null;
+    console.log({ hiddenPuzzleHash, isRcat, hiddenPuzzleHashInput })
+    let inverseFee = isRcat ? inverseFeeValue : 993;
 
     const func = async function() {
       if(infoCompleted && offer.length > 0 && offer.startsWith("offer1")) {
@@ -111,6 +157,10 @@ const Deploy: React.FC<{}> = ({}) => {
             const coin_confirmed = await isCoinSpent(createPairResponse.coin_id);
             if(coin_confirmed) {
               setStatus("Pair deployed successfully - refreshing router...");
+              await new Promise((resolve) => setTimeout(resolve, 5000));
+              await refreshRouter(hiddenPuzzleHash !== null);
+              await new Promise((resolve) => setTimeout(resolve, 30000));
+              await refreshRouter(hiddenPuzzleHash !== null);
               await new Promise((resolve) => setTimeout(resolve, 60000));
               await refreshRouter(hiddenPuzzleHash !== null);
               setStatus("All done! :)");
@@ -123,7 +173,7 @@ const Deploy: React.FC<{}> = ({}) => {
     }
 
     func();
-  }, [offer, createPairResponse, infoCompleted]);
+  }, [offer, createPairResponse, infoCompleted, isRcat, hiddenPuzzleHashInput, inverseFeeValue]);
 
   return (
     <div className="rounded-2xl max-w-screen-sm w-full">
@@ -136,10 +186,12 @@ const Deploy: React.FC<{}> = ({}) => {
         <p>Providing liquidity carries associated risks, such as impermanent loss and the possibility of security vulnerabilities. Please take time to do your own research before adding assets to the protocol.</p>
       </div>
 
-      {/* Token update process */}
-      <div className="bg-blue-400/50 dark:bg-blue-800/20 rounded-xl text-blue-700 p-4 mt-1 flex items-center gap-4 mb-4 font-medium text-sm animate-fadeIn">
-        <p>Token data will be fetched from Dexie <span className='font-bold'>immediately</span> after deployment. Further details updated (i.e., of name/symbol/image) need to be sent to our team for manual processing.</p>
-      </div>
+      {/* Token update process - hide when rcat is true */}
+      {!isRcat && (
+        <div className="bg-blue-400/50 dark:bg-blue-800/20 rounded-xl text-blue-700 p-4 mt-1 flex items-center gap-4 mb-4 font-medium text-sm animate-fadeIn">
+          <p>Token data will be fetched from Dexie <span className='font-bold'>immediately</span> after deployment. Further details updated (i.e., of name/symbol/image) need to be sent to our team for manual processing.</p>
+        </div>
+      )}
 
       <div className='space-y-2'>
         <HexInput
@@ -150,6 +202,35 @@ const Deploy: React.FC<{}> = ({}) => {
             small={true}
             expectedLength={64}
           />
+        
+        {/* RCAT-specific fields */}
+        {isRcat && (
+          <>
+            <HexInput
+              value={hiddenPuzzleHashInput}
+              onChange={setHiddenPuzzleHashInput}
+              helperText="0a1b...2c"
+              label='Hidden Puzzle Hash'
+              small={true}
+              expectedLength={64}
+            />
+                         <GeneralInput
+               value={inverseFeeInput}
+               onChange={setInverseFeeInput}
+               helperText="993"
+               label='Inverse Fee (958-999)'
+               small={true}
+               type='text'
+             />
+            {!isInverseFeeValid && (
+              <p className="text-red-500 text-sm">Inverse fee must be between 958 and 999</p>
+            )}
+            {isRcat && !isTokenValid && assetId.length === 64 && hiddenPuzzleHashInput.length === 64 && (
+              <p className="text-red-500 text-sm">Token not found or not verified with the specified asset ID and hidden puzzle hash</p>
+            )}
+          </>
+        )}
+        
         <GeneralInput
           value={liquidityAddress}
           onChange={setLiquidityAddress}
