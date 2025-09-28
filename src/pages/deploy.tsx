@@ -10,6 +10,7 @@ import { useAppDispatch } from '@/hooks';
 import { RootState } from '@/redux/store';
 import { XCH } from '@/shared_tokens';
 import WalletManager from '@/utils/walletIntegration/walletManager';
+import HexInput from '@/components/shared/HexInput';
 
 const Home: React.FC = () => {
   return (
@@ -141,31 +142,35 @@ const Deploy: React.FC<{}> = ({}) => {
       </div>
 
       <div className='space-y-2'>
-        <GeneralInput
-          value={assetId}
-          onChange={setAssetId}
-          helperText="0a1b...2c"
-          label='Token Asset Id'
-          small={true}
-        />
+        <HexInput
+            value={assetId}
+            onChange={setAssetId}
+            helperText="0a1b...2c"
+            label='Token Asset Id'
+            small={true}
+            expectedLength={64}
+          />
         <GeneralInput
           value={liquidityAddress}
           onChange={setLiquidityAddress}
           helperText="xch1..."
           label='Initial Liquidity Tokens Recipient Address'
           small={true}
+          type='text'
         />
         <GeneralInput
           value={xchLiquidityAmountStr}
           onChange={setXchLiquidityAmountStr}
           helperText="1.069"
           label='Initial Liquidity (XCH)'
+          type='decimal'
         />
         <GeneralInput
           value={catLiquidityAmountStr}
           onChange={setCatLiquidityAmountStr}
           helperText="420.001"
           label='Initial Liquidity (CAT)'
+          type='decimal'
         />
       </div>
 

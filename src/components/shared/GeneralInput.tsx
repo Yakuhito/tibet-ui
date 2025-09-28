@@ -1,4 +1,4 @@
-import { type ChangeEvent, useState } from 'react';
+import { type ChangeEvent, useState, useEffect } from 'react';
 
 type GeneralInputProps = {
   value: string;
@@ -6,11 +6,17 @@ type GeneralInputProps = {
   label: string;
   helperText?: string;
   small?: boolean;
+  type?: 'text' | 'decimal';
 };
 
-const GeneralInput: React.FC<GeneralInputProps> = ({ value, onChange, label, helperText, small }) => {
+const GeneralInput: React.FC<GeneralInputProps> = ({ value, onChange, label, helperText, small, type = 'decimal' }) => {
 
   const [inputValue, setInputValue] = useState<string>(value);
+
+  // Sync internal state with external value prop
+  useEffect(() => {
+    setInputValue(value);
+  }, [value]);
 
   return (
     <div className="bg-brandDark/10 p-2 rounded-xl">
@@ -23,8 +29,8 @@ const GeneralInput: React.FC<GeneralInputProps> = ({ value, onChange, label, hel
               onChange(a.target.value);
               setInputValue(a.target.value);
             }}
-            inputMode="decimal"
-            pattern="[0-9]*"
+            inputMode={type === 'decimal' ? 'decimal' : 'text'}
+            pattern={type === 'decimal' ? '[0-9]*' : undefined}
             placeholder={helperText}
           />
         </div>
