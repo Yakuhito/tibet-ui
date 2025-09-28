@@ -8,11 +8,17 @@ import { getStats, getPairs, Stats, Pair } from '@/analyticsApi';
 
 async function getXCHPrice(): Promise<number | null> {
   try {
-    const resp = await fetch("https://xchscan.com/api/chia-price");
-    const resp_parsed = await resp.json();
-    return resp_parsed.usd;
+      const resp = await fetch("https://api.spacescan.io/stats/price");
+      const resp_parsed = await resp.json();
+      return resp_parsed.price;
   } catch(_) {
-    return null;
+    try {
+      const resp = await fetch("https://xchscan.com/api/chia-price");
+      const resp_parsed = await resp.json();
+      return resp_parsed.price;
+    } catch(_) {
+      return null;
+    }
   }
 }
 
