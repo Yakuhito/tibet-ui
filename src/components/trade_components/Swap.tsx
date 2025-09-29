@@ -160,16 +160,20 @@ const Swap: React.FC<SwapProps> = ({ disabled, pairs, generateOffer, selectedPai
               setAmount0(newAmount0);
 
               if(isBuySelected) {
+                console.log({ if: pair?.inverse_fee ?? 993 })
                 setAmount1(getInputPrice(newAmount0, pair?.xch_reserve ?? 0, pair?.token_reserve ?? 0, pair?.inverse_fee ?? 993));
               } else {
+                console.log({ if: pair?.inverse_fee ?? 993 })
                 setAmount1(getOutputPrice(newAmount0, pair?.token_reserve ?? 0, pair?.xch_reserve ?? 0, pair?.inverse_fee ?? 993));
               }
             } else if(amount1 !== newAmount1) {
               setAmount1(newAmount1);
 
               if(isBuySelected) {
+                console.log({ if: pair?.inverse_fee ?? 993 })
                 setAmount0(getOutputPrice(newAmount1, pair?.xch_reserve ?? 0, pair?.token_reserve ?? 0, pair?.inverse_fee ?? 993));
               } else {
+                console.log({ if: pair?.inverse_fee ?? 993 })
                 setAmount0(getInputPrice(newAmount1, pair?.token_reserve ?? 0, pair?.xch_reserve ?? 0, pair?.inverse_fee ?? 993));
               }
             }

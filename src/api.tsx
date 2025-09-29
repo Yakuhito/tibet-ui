@@ -113,8 +113,8 @@ export async function createOfferForPair(
     offer,
     action,
     total_donation_amount: devFee,
-    donation_addresses: [process.env.NEXT_PUBLIC_DONATION_ADDRESS],
-    donation_weights: [1]
+    donation_addresses: devFee > 0 ? [process.env.NEXT_PUBLIC_DONATION_ADDRESS] : [],
+    donation_weights: devFee > 0 ? [1] : []
   };
   const response = await axios.post<OfferResponse>(`${BASE_URL}/offer/${pairId}`, requestBody);
   return response.data;
