@@ -5,6 +5,7 @@ export interface walletNamesType {
 export interface generateOffer {
     requestAssets: {
       assetId: string
+      hiddenPuzzleHash: string | null
       amount: number
       image_url: string
       short_name: string
@@ -13,6 +14,7 @@ export interface generateOffer {
     }[]
     offerAssets: {
       assetId: string
+      hiddenPuzzleHash: string | null
       amount: number
       image_url: string
       short_name: string

@@ -104,6 +104,7 @@ const Deploy: React.FC<{}> = ({}) => {
               [
                 {
                     assetId: XCH.asset_id,
+                    hiddenPuzzleHash: null,
                     amount: Math.floor(xchLiquidityAmountOrNull + catLiquidityAmountOrNull + 1 + 0.42 * 1e12 + 0.042 * 1e12),
                     image_url: XCH.image_url,
                     short_name: XCH.short_name,
@@ -111,6 +112,7 @@ const Deploy: React.FC<{}> = ({}) => {
                 },
                 {
                   assetId: assetId,
+                  hiddenPuzzleHash: isRcat ? hiddenPuzzleHashInput : null,
                   amount: catLiquidityAmountOrNull,
                   image_url: "",
                   short_name: "???",

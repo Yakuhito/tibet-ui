@@ -345,14 +345,26 @@ class WalletConnectIntegration implements WalletIntegrationInterface {
             request: {
               method: "chia_createOffer",
               params: {
-                offerAssets: offerAssets.map(offerItem => ({
-                  assetId: offerItem.assetId,
-                  amount: offerItem.amount
-                } as {assetId: string, amount: number})),
-                requestAssets: requestAssets.map(requestItem => ({
-                  assetId: requestItem.assetId,
-                  amount: requestItem.amount
-                } as {assetId: string, amount: number})),
+                offerAssets: offerAssets.map(offerItem => {
+                  const asset: any = {
+                    assetId: offerItem.assetId,
+                    amount: offerItem.amount
+                  };
+                  if (offerItem.hiddenPuzzleHash && offerItem.hiddenPuzzleHash.length == 64) {
+                    asset.hiddenPuzzleHash = offerItem.hiddenPuzzleHash;
+                  }
+                  return asset;
+                }),
+                requestAssets: requestAssets.map(requestItem => {
+                  const asset: any = {
+                    assetId: requestItem.assetId,
+                    amount: requestItem.amount
+                  };
+                  if (requestItem.hiddenPuzzleHash && requestItem.hiddenPuzzleHash.length == 64) {
+                    asset.hiddenPuzzleHash = requestItem.hiddenPuzzleHash;
+                  }
+                  return asset;
+                }),
                 fee
               },
             },

@@ -322,6 +322,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, devFee, setGenerate
         const requestAssets = data.request.map(asset => (
                 {
                     assetId: asset[0].asset_id,
+                    hiddenPuzzleHash: asset[0].hidden_puzzle_hash,
                     amount: data.action === "SWAP" && !data.offer[0][1] ? Math.ceil(asset[2] * (1-devFee)) : asset[2],
                     image_url: asset[0].image_url,
                     short_name: asset[0].short_name,
@@ -331,7 +332,8 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, devFee, setGenerate
 
         const offerAssets = data.offer.map(asset => (
                 {
-                    assetId:  asset[0].asset_id,
+                    assetId: asset[0].asset_id,
+                    hiddenPuzzleHash: asset[0].hidden_puzzle_hash,
                     amount: data.action === "SWAP" && data.offer[0][1] ? Math.floor(asset[2] * (1+devFee)) : asset[2],
                     image_url: asset[0].image_url,
                     short_name: asset[0].short_name,
@@ -447,7 +449,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, devFee, setGenerate
                         && data.action === ActionType.SWAP && data.request.some(([token, isXch]) => !isXch) && (
                     <div className="bg-yellow-400/50 dark:bg-yellow-800/20 rounded-xl text-yellow-700 dark:text-yellow-600 p-4 mb-4 flex items-center gap-4 animate-fadeIn">
                       <p className="font-medium text-sm">
-                        You're about to buy a revocable CAT (rCAT). rCATs may be revoked by their issuer at any time. {' '}
+                        You&apos;re about to buy a revocable CAT (rCAT). rCATs may be revoked by their issuer at any time. {' '}
                         <a 
                           href="https://github.com/Chia-Network/chips/blob/main/CHIPs/chip-0038.md" 
                           target="_blank" 
