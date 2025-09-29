@@ -19,11 +19,15 @@ export const UNKNWN: Token = {
 }
 
 export function getLiquidityToken(pair: Pair | null, token: Token | null): Token {
+  let shortName = `TIBET-${token?.short_name ?? 'XXX'}-${process.env.NEXT_PUBLIC_XCH}`;
+  if (pair?.asset_hidden_puzzle_hash && pair?.inverse_fee !== 999) {
+    shortName = `TIBET-${pair?.inverse_fee}-${token?.short_name ?? 'XXX'}-${process.env.NEXT_PUBLIC_XCH}`;
+  }
   return {
     asset_id: pair?.liquidity_asset_id ?? '',
     hidden_puzzle_hash: null,
     name: 'Pair Liquidity Token',
-    short_name: `TIBET-${token?.short_name ?? 'XXX'}-${process.env.NEXT_PUBLIC_XCH}`,
+    short_name: shortName,
     image_url: '/logo.jpg',
     verified: true
   }
