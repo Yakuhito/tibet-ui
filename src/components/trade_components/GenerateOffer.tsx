@@ -441,6 +441,26 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, devFee, setGenerate
 
             return (
                 <div className="text-left w-full">
+                    {/* Revocable CAT Warning */}
+                    {
+                        ((pair && pair.asset_hidden_puzzle_hash !== null) || (pairAndQuote && pairAndQuote[0].asset_hidden_puzzle_hash !== null)) 
+                        && data.action === ActionType.SWAP && data.request.some(([token, isXch]) => !isXch) && (
+                    <div className="bg-yellow-400/50 dark:bg-yellow-800/20 rounded-xl text-yellow-700 dark:text-yellow-600 p-4 mb-4 flex items-center gap-4 animate-fadeIn">
+                      <p className="font-medium text-sm">
+                        You're about to buy a revocable CAT (rCAT). rCATs may be revoked by their issuer at any time. {' '}
+                        <a 
+                          href="https://github.com/Chia-Network/chips/blob/main/CHIPs/chip-0038.md" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="underline hover:opacity-80"
+                        >
+                          Learn more
+                        </a>
+                        .
+                      </p>
+                    </div>
+                    )}
+                    
                     <div className="mb-4 bg-brandDark/10 rounded-xl p-4">
                         <p className="mb-4 font-medium text-2xl text-brandDark dark:text-brandLight">Offering</p>
                         {listAssets(data.offer, true)}
@@ -452,7 +472,7 @@ const GenerateOffer: React.FC<GenerateOfferProps> = ({ data, devFee, setGenerate
                         {listAssets(data.request, false)}
                     </div>
                     
-                    <p className="py-4 px-4 font-medium mb-12 bg-brandDark/10 rounded-xl">
+                    <p className="py-4 px-4 font-medium mb-4 bg-brandDark/10 rounded-xl">
                         <span>Suggested fee</span>
                         <span className="animate-fadeIn font-normal pl-2">
                             <CopyButton copyText={fee.toString()} variant="invisible" >{fee.toString()} {process.env.NEXT_PUBLIC_XCH || ""}</CopyButton>
