@@ -59,7 +59,10 @@ const Deploy: React.FC<{}> = ({}) => {
     };
 
     if (isRcat) {
-      fetchTokens();
+      fetchTokens(); // Initial fetch
+      const intervalId = setInterval(fetchTokens, 15000); // Fetch every 15 seconds
+      
+      return () => clearInterval(intervalId);
     }
   }, [isRcat]);
 
