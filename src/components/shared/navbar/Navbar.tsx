@@ -47,7 +47,7 @@ export default function Navbar({ theme, setTheme }: NavbarProps) {
             <Link href="/" className={`font-medium text-brandDark px-6 py-1.5 rounded-xl ${router.asPath === "/" || router.pathname === "/[pair_short_name]" ? 'dark:text-brandLight bg-brandDark/10' : 'text-brandDark/70 dark:text-brandLight/50 hover:opacity-80'}`}>Trade</Link>
             <Link href="/deploy" className={`font-medium hidden lg:flex text-brandDark px-6 py-1.5 rounded-xl ${router.asPath === "/deploy" ? 'dark:text-brandLight bg-brandDark/10' : 'text-brandDark/70 dark:text-brandLight/50 hover:opacity-80'}`}>New Pair</Link>
             <Link href="/faq" className={`font-medium text-brandDark px-6 py-1.5 rounded-xl ${router.asPath === "/faq" ? 'dark:text-brandLight bg-brandDark/10' : 'text-brandDark/70 dark:text-brandLight/50 hover:opacity-80'}`}>FAQs</Link>
-            <Link href="/analytics" className={`font-medium text-brandDark px-6 py-1.5 rounded-xl ${router.asPath === "/analytics" ? 'dark:text-brandLight bg-brandDark/10' : 'text-brandDark/70 dark:text-brandLight/50 hover:opacity-80'}`}>Analytics</Link>
+            <Link href="/analytics" className={`font-medium text-brandDark px-6 py-1.5 rounded-xl ${router.asPath === "/analytics" || router.pathname == '/pair/[pair_id]' ? 'dark:text-brandLight bg-brandDark/10' : 'text-brandDark/70 dark:text-brandLight/50 hover:opacity-80'}`}>Analytics</Link>
           </nav>
           <CogIcon className="w-6 hover:rotate-45 ml-auto transition cursor-pointer fill-brandDark dark:fill-brandLight hidden sm:block" onClick={() => dispatch(setIsOpen(true))} />
           <SettingsModal isOpen={isSettingsModalOpen} setIsOpen={setIsSettingsModalOpen} theme={theme} setTheme={setTheme} />
