@@ -23,7 +23,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions, 
         return <span>Add {tokenShortName} and XCH</span>;
       case "SWAP":
         if (state_change.xch == 0) {
-          return <span>Issuer: Rebase pair's rCAT reserve</span>;
+          return <span>Issuer: Rebase rCAT reserve</span>;
         }
 
         let swapAdd;
