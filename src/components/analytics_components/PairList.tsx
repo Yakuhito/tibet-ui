@@ -56,6 +56,7 @@ export const PairList: React.FC<PairListProps> = ({ pairs }) => {
           <p className="max-w-[22rem] inline-flex gap-2">
             <span className="hidden sm:block text-ellipsis overflow-hidden">{pair.name}</span>
             <span className="sm:text-brandDark/50 dark:sm:text-brandLight/50 sm:before:content-['('] sm:after:content-[')']">{pair.short_name}</span>
+            {pair.hidden_puzzle_hash && <span className="sm:text-brandDark/50 dark:sm:text-brandLight/50 sm:before:content-['('] sm:after:content-[')']">{((1000 - pair.inverse_fee) / 10).toFixed(1)}%</span>}
           </p>
         </td>
         <td className="pr-4 text-right hidden xl:table-cell">{mojoToXCHString(pair.xch_reserve)}</td>

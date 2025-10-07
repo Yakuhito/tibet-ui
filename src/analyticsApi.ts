@@ -11,11 +11,13 @@
     short_name: string;
     image_url: string;
     asset_id: string;
+    hidden_puzzle_hash: string;
     current_coin_id: string;
     xch_reserve: number;
     token_reserve: number;
     liquidity: number;
     trade_volume: number;
+    inverse_fee: number;
   }
 
   export interface StateChange {
