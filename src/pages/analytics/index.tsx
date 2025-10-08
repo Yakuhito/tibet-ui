@@ -44,6 +44,7 @@ const StatsPage: React.FC = () => {
           })
         ]);
       } catch (error) {
+        console.log(error);
         alert('Error fetching data :(');
       }
     }
@@ -63,7 +64,7 @@ const StatsPage: React.FC = () => {
   var ttvPrice = "Fetching price...";
   if(price !== null && stats !== null) {
     tvlPrice = formatDollars(stats.total_value_locked * price / (10 ** 12));
-    ttvPrice = formatDollars(stats.total_trade_volume * price / (10 ** 12));
+    ttvPrice = formatDollars(stats.total_trade_volume_usd ?? (stats.total_trade_volume * price / (10 ** 12)));
   }
   return (
     <main>

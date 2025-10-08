@@ -12,15 +12,15 @@ const faqs = [
   },
   {
     question: 'What are the fees associated with using TibetSwap?',
-    answer: 'Aside from the associated blockchain fees, 0.7% of every trade is distributed to liquidity providers for the pool that is involved in the transaction. This interface also includes a developer fee - your donations keep the ecosystem running!',
+    answer: 'Aside from the associated blockchain fees, 0.7% of every trade is distributed to liquidity providers for the pool involved in the transaction. This interface also includes a developer fee - your donations keep the ecosystem running!',
   },
   {
     question: 'What is liquidity used for, exactly?',
-    answer: 'TibetSwap is, at its core, just a program running on the Chia blockchain. It uses liquidity - funds provided by users known as liquidity providers - to trade at a price it deems fair based on its reserves. More liquidity reflects as better prices for larger trade volumes.',
+    answer: 'TibetSwap is, at its core, just a program running on the Chia blockchain. It uses liquidity - funds provided by users known as liquidity providers - to trade at a price it deems fair based on its reserves. More liquidity results in better prices for larger trade volumes.',
   },
   {
     question: 'How are fees distributed to liquidity providers?',
-    answer: 'When you deposit liquidity to a pair, you receive liquidity tokens. These CATs represent your \'share\' of the pair - if you have 100 liquidity tokens and there are 1000 in existence, for example, you own 10% of the pair. When you withdraw liqudity, you burn the CATs to get your share back. Since swap fees accumulate in the pair with each swap, your share will also contain that value (minus impermanent loss). So, in short, the fees are included in the amount you withdraw when you remove your liqudiiy.',
+    answer: 'When you deposit liquidity to a pair, you receive liquidity tokens. These CATs represent your \'share\' of the pair - if you have 100 liquidity tokens and there are 1000 in existence, for example, you own 10% of the pair. When you withdraw liquidity, you burn the CATs to get your share back. Since swap fees accumulate in the pair with each swap, your share will also contain that value (minus impermanent loss). So, in short, the fees are included in the amount you withdraw when you remove your liquidity.',
   },
   {
     question: 'Are there any risks associated with providing liquidity?',
@@ -37,6 +37,10 @@ const faqs = [
   {
     question: 'How can I make my token tradeable on TibetSwap?',
     answer: 'Simply use <a href="/deploy" rel="noopener noreferrer" class="underline hover:text-gray-700">this page</a> to deploy a pair. If you have any questions, please reach out to <a href="https://twitter.com/yakuh1t0" target="_blank" rel="noopener noreferrer" class="underline hover:text-gray-700">yakuhito</a>.',
+  },
+  {
+    question: 'How are overall protocol statistics calculated?',
+    answer: 'TibetSwap v2 and v2r always hold half of the value in XCH and the other in CATs/rCATs. XCH TVL is calculated by summing up XCH reserves across all pairs and doubling the amount. The dollar TVL is calculated by multiplying the XCH TVL by the current XCH price, as reported by the SpaceScan API. Total trade volume in XCH is calculated by summing up the absolute XCH change across all past swaps - liquidity operations are excluded from the statistic. The USD total trade volume is calculated by summing up each swap\'s XCH value in USD, which is calculated using the hourly average XCH price for the hour in which the swap occurred, as reported by the CoinDesk CryptoCompare API.',
   }
 ];
 

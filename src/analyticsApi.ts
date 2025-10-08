@@ -39,6 +39,7 @@
     transaction_count: number;
     total_value_locked: number;
     total_trade_volume: number;
+    total_trade_volume_usd: number | null;
   }
   
   // API Functions
