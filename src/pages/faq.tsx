@@ -36,7 +36,7 @@ const faqs = [
   },
   {
     question: 'How can I make my token tradeable on TibetSwap?',
-    answer: 'Simply use <a href="/deploy" rel="noopener noreferrer" class="underline hover:text-gray-700">this page</a> to deploy a pair. If you have any questions, please reach out to <a href="https://twitter.com/yakuh1t0" target="_blank" rel="noopener noreferrer" class="underline hover:text-gray-700">yakuhito</a>.',
+    answer: 'Simply use <a href="/deploy" rel="noopener noreferrer" class="underline hover:text-gray-700">this page</a> to deploy a pair. If you have any questions, please reach out to <a href="https://twitter.com/yakuhito" target="_blank" rel="noopener noreferrer" class="underline hover:text-gray-700">yakuhito</a>.',
   },
   {
     question: 'How are overall protocol statistics calculated?',
