@@ -4,12 +4,17 @@ import { useRouter } from 'next/router';
 import { Pair, getAllPairs } from '../api';
 
 import TabContainer from '@/components/trade_components/TabContainer';
+import { useAppDispatch } from '@/hooks';
+import { getPairs } from '@/redux/globalOnLoadDataSlice';
 
 const PairPreSelect: React.FC = () => {
   
   // Get pair short name from url
   const router = useRouter();
   const { pair_short_name } = router.query;
+
+  const dispatch = useAppDispatch();
+  dispatch(getPairs())
   
   const [selectedPair, setSelectedPair] = useState<Pair | null>(null);
 
