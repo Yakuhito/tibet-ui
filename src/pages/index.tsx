@@ -31,7 +31,7 @@ const Home: React.FC = () => {
         <title>TibetSwap | The Leading Chia AMM</title>
       </Head>
       <main className="max-w-[28rem] mx-auto">
-        <TabContainer pairs={pairs} selectedPair={selectedPair} setSelectedPair={setSelectedPair} />
+        <TabContainer pairs={pairs} selectedPair={selectedPair} setSelectedPair={setSelectedPair} swapUrlPreset={null} />
       </main>
     </>
   );
