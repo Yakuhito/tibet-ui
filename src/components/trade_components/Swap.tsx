@@ -3,12 +3,12 @@ import { useState, useEffect } from 'react';
 import { type Token, type Pair, getPairByLauncherId, getInputPrice, getOutputPrice, ActionType, pairToToken } from '../../api';
 import GenerateOfferButton from '../shared/GenerateOfferButton';
 import TickIcon from '../shared/icons/TickIcon';
-import CogIcon from '../shared/icons/CogIcon';
+// import CogIcon from '../shared/icons/CogIcon';
 
-import type { GenerateOfferData } from './TabContainer';
+import type { GenerateOfferData, SwapUrlPreset } from './TabContainer';
 import SwapInput from './SwapInput';
 
-import { setIsOpen } from '@/redux/settingsModalSlice';
+// import { setIsOpen } from '@/redux/settingsModalSlice';
 import { UNKNWN, XCH } from '@/shared_tokens';
 import { useAppDispatch } from '@/hooks';
 
@@ -21,9 +21,10 @@ type SwapProps = {
   setSelectedPair: React.Dispatch<React.SetStateAction<Pair | null>>;
   devFee: number;
   setDevFee: (value: number) => void;
+  swapUrlPreset: SwapUrlPreset | null;
 };
 
-const Swap: React.FC<SwapProps> = ({ disabled, pairs, generateOffer, selectedPair, setSelectedPair, devFee, setDevFee }) => {
+const Swap: React.FC<SwapProps> = ({ disabled, pairs, generateOffer, selectedPair, setSelectedPair, devFee, setDevFee, swapUrlPreset }) => {
   const dispatch = useAppDispatch();
 
   const [pair, setPair] = useState<Pair | null>(null);
@@ -71,13 +72,50 @@ const Swap: React.FC<SwapProps> = ({ disabled, pairs, generateOffer, selectedPai
       }
 
       if(currentPair !== null && currentPair.xch_reserve > 0 && currentPair.token_reserve > 0) {
-        if(isBuySelected) {
-          setAmount0(10 ** 12);
-          setAmount1(getInputPrice(10 ** 12, currentPair.xch_reserve, currentPair.token_reserve, currentPair.inverse_fee));
-        } else {
-          setAmount1(1000);
-          setAmount0(getInputPrice(1000, currentPair.token_reserve, currentPair.xch_reserve, currentPair.inverse_fee));
+        if (swapUrlPreset && amount0 === 0 && amount1 === 0) {
+
+          const parsedAmount = Number.parseFloat(swapUrlPreset.amount);
+          if (Number.isNaN(parsedAmount) || parsedAmount < 0) {
+            return;
+          }
+
+          const isXchAmount = swapUrlPreset.xchIsInput
+            ? swapUrlPreset.amountType === 'in'
+            : swapUrlPreset.amountType === 'out';
+          const amountDecimals = isXchAmount ? 12 : 3;
+          const scaledAmount = Math.floor(parsedAmount * Math.pow(10, amountDecimals));
+
+          setIsBuySelected(swapUrlPreset.xchIsInput);
+
+          if (swapUrlPreset.amountType === 'in') {
+            if (swapUrlPreset.xchIsInput) {
+              setAmount0(scaledAmount);
+              setAmount1(getInputPrice(scaledAmount, currentPair.xch_reserve, currentPair.token_reserve, currentPair.inverse_fee));
+            } else {
+              setAmount1(scaledAmount);
+              setAmount0(getInputPrice(scaledAmount, currentPair.token_reserve, currentPair.xch_reserve, currentPair.inverse_fee));
+            }
+          } else if (swapUrlPreset.xchIsInput) {
+            setAmount1(scaledAmount);
+            setAmount0(getOutputPrice(scaledAmount, currentPair.xch_reserve, currentPair.token_reserve, currentPair.inverse_fee));
+          } else {
+            setAmount0(scaledAmount);
+            setAmount1(getOutputPrice(scaledAmount, currentPair.token_reserve, currentPair.xch_reserve, currentPair.inverse_fee));
+          }
+
+          return;
         }
+
+        if(!swapUrlPreset) {
+          if(isBuySelected) {
+            setAmount0(10 ** 12);
+            setAmount1(getInputPrice(10 ** 12, currentPair.xch_reserve, currentPair.token_reserve, currentPair.inverse_fee));
+          } else {
+            setAmount1(1000);
+            setAmount0(getInputPrice(1000, currentPair.token_reserve, currentPair.xch_reserve, currentPair.inverse_fee));
+          }
+        }
+        
       }
    }
 
@@ -89,7 +127,7 @@ const Swap: React.FC<SwapProps> = ({ disabled, pairs, generateOffer, selectedPai
 
     return () => clearInterval(interval);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedPair, isBuySelected, pair]);
+  }, [selectedPair, isBuySelected, pair, swapUrlPreset]);
 
   const setSelectedPairAndWarn = (p: Pair) => {
     if(!p.asset_verified) {
@@ -113,7 +151,6 @@ const Swap: React.FC<SwapProps> = ({ disabled, pairs, generateOffer, selectedPai
     price_impact < 0.1 && setHighPriceImpactConfirmed(false);
     setPriceImpact(price_impact);
   },[amount0, amount1, isBuySelected, pair]);
-
 
   const submitSwapOperation = () => {
     const sideOne: [Token, boolean, number][] = [

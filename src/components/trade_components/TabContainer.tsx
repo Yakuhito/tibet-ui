@@ -19,13 +19,20 @@ export interface GenerateOfferData {
   action: ActionType;
 }
 
+export interface SwapUrlPreset {
+  amountType: 'in' | 'out';
+  amount: string;
+  xchIsInput: boolean;
+}
+
 export interface TabContainerProps {
   pairs: Pair[] | null;
   selectedPair: Pair | null;
   setSelectedPair: React.Dispatch<React.SetStateAction<Pair | null>>;
+  swapUrlPreset: SwapUrlPreset | null;
 }
 
-const TabContainer: React.FC<TabContainerProps> = ({ pairs, selectedPair, setSelectedPair }) => {
+const TabContainer: React.FC<TabContainerProps> = ({ pairs, selectedPair, setSelectedPair, swapUrlPreset }) => {
   const emergency_withdraw = process.env.NEXT_PUBLIC_V1_EMERGENCY_WITHDRAW === "true";
 
   const SWAP_ENABLED = !emergency_withdraw && process.env.NEXT_PUBLIC_SWAP_ENABLED === 'true';
@@ -53,6 +60,7 @@ const TabContainer: React.FC<TabContainerProps> = ({ pairs, selectedPair, setSel
         setSelectedPair={setSelectedPair}
         devFee={devFee}
         setDevFee={setDevFee}
+        swapUrlPreset={swapUrlPreset}
       />;
     } else {
       return <Liquidity
