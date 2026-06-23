@@ -93,7 +93,8 @@ function ConnectWalletModal({ isOpen, setIsOpen, isWalletOnWrongChain }: Connect
                             <WalletConnectIcon className="w-10 h-10 dark:fill-brandLight" />
                             <div>
                                 <p className="font-medium text-lg">Wallet Connect</p>
-                                <p className="font-normal text-xs">Sage | Ozone | Reference Wallet</p>
+                                {/* <p className="font-normal text-xs">Sage | Ozone | Legacy Wallet</p> */}
+                                <p className="font-normal text-xs">Sage | Ozone </p>
                             </div>
                         </div>
                         <button className={`
