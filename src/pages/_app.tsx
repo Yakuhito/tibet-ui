@@ -1,19 +1,26 @@
-import { PersistGate } from 'redux-persist/integration/react';
 import { Analytics } from '@vercel/analytics/react';
 import { useState, useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import type { AppProps } from 'next/app';
+import { useRouter } from 'next/router';
 import { Provider } from 'react-redux';
 
 import Navbar from '@/components/shared/navbar/Navbar';
 import XIcon from '@/components/shared/icons/XIcon';
-import store, { persistor } from '@/redux/store';
+import store from '@/redux/store';
 import { setDevFee } from '@/redux/devFeeSlice';
 import '@/styles/globals.css';
 import WalletManager from '@/utils/walletIntegration/walletManager';
 
 
 export default function App({ Component, pageProps }: AppProps) {
+  const router = useRouter();
+
+  useEffect(() => {
+    if (router.pathname !== '/') {
+      void router.replace('/');
+    }
+  }, [router, router.pathname]);
 
   // Theme detector
   const [theme, setTheme] = useState<"dark" | "light" | "auto">("auto");
@@ -59,7 +66,6 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
         <div className="min-h-screen relative">
           <Navbar theme={theme} setTheme={setTheme} />
           <Toaster position="bottom-right"
@@ -87,7 +93,7 @@ export default function App({ Component, pageProps }: AppProps) {
             }} />
           <div className="flex flex-col px-4">
             <div className="pt-12 pb-[96px]">
-              <Component {...pageProps}  />
+              {router.pathname === '/' ? <Component {...pageProps}  /> : null}
               {/* Disable vercel analytics */}
               {/* Disable vercel web analytics when developing */}
               {/* !!process?.env?.VERCEL_ENV && <Analytics /> */}
@@ -99,7 +105,6 @@ export default function App({ Component, pageProps }: AppProps) {
             </footer>
           </div>
         </div>
-      </PersistGate>
     </Provider>
   );
 }

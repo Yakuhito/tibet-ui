@@ -16,4 +16,13 @@ module.exports = withPWA({
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/:path+',
+        destination: '/',
+        permanent: false,
+      },
+    ]
+  },
 })

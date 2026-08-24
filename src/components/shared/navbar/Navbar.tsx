@@ -1,22 +1,15 @@
 import { useSelector } from 'react-redux';
-import React, { useState } from 'react';
-import { useRouter } from 'next/router';
+import React from 'react';
 import Link from 'next/link';
 
-import MenuIcon from '../icons/MenuIcon';
 import CogIcon from '../icons/CogIcon';
 import Logo from '../icons/Logo';
 
-import ConnectButton from './walletIntegration/ConnectButton';
-import MobileNavMenuModal from './MobileNavMenuModal';
 import SettingsModal from './SettingsModal';
 
 import { setIsOpen } from '@/redux/settingsModalSlice';
 import { RootState } from '@/redux/store';
 import { useAppDispatch } from '@/hooks';
-
-
-
 
 interface NavbarProps {
   theme: "dark" | "light" | "auto";
@@ -24,14 +17,11 @@ interface NavbarProps {
 }
 
 export default function Navbar({ theme, setTheme }: NavbarProps) {
-  const router = useRouter();
   const dispatch = useAppDispatch();
   const isSettingsModalOpen = useSelector((state: RootState) => state.settingsModal.isOpen);
   const setIsSettingsModalOpen = (value: boolean) => {
     dispatch(setIsOpen(value));
   }
-
-  const [isMobileNavModalOpen, setIsMobileNavModalOpen] = useState(false);
 
   return (
     <>
@@ -42,23 +32,9 @@ export default function Navbar({ theme, setTheme }: NavbarProps) {
             <Logo className="fill-brandDark max-w-full h-auto mt-1.5" />
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center rounded-xl p-1">
-            <Link href="/" className={`font-medium text-brandDark px-6 py-1.5 rounded-xl ${router.asPath === "/" || router.pathname === "/[pair_short_name]" ? 'dark:text-brandLight bg-brandDark/10' : 'text-brandDark/70 dark:text-brandLight/50 hover:opacity-80'}`}>Trade</Link>
-            <Link href="/deploy" className={`font-medium hidden lg:flex text-brandDark px-6 py-1.5 rounded-xl ${router.asPath === "/deploy" ? 'dark:text-brandLight bg-brandDark/10' : 'text-brandDark/70 dark:text-brandLight/50 hover:opacity-80'}`}>New Pair</Link>
-            <Link href="/faq" className={`font-medium text-brandDark px-6 py-1.5 rounded-xl ${router.asPath === "/faq" ? 'dark:text-brandLight bg-brandDark/10' : 'text-brandDark/70 dark:text-brandLight/50 hover:opacity-80'}`}>FAQs</Link>
-            <Link href="/analytics" className={`font-medium text-brandDark px-6 py-1.5 rounded-xl ${router.asPath === "/analytics" || router.pathname == '/pair/[pair_id]' ? 'dark:text-brandLight bg-brandDark/10' : 'text-brandDark/70 dark:text-brandLight/50 hover:opacity-80'}`}>Analytics</Link>
-          </nav>
-          <CogIcon className="w-6 hover:rotate-45 ml-auto transition cursor-pointer fill-brandDark dark:fill-brandLight hidden sm:block" onClick={() => dispatch(setIsOpen(true))} />
+          <CogIcon className="w-6 hover:rotate-45 ml-auto transition cursor-pointer fill-brandDark dark:fill-brandLight" onClick={() => dispatch(setIsOpen(true))} />
           <SettingsModal isOpen={isSettingsModalOpen} setIsOpen={setIsSettingsModalOpen} theme={theme} setTheme={setTheme} />
-          <div className="ml-auto sm:ml-0">
-            <ConnectButton />
-          </div>
-          
-          {/* Mobile Navigation */}
-          <MenuIcon className="w-8 text-brandDark dark:text-brandLight cursor-pointer hover:opacity-80 sm:hidden" onClick={() => setIsMobileNavModalOpen(true)}  />
-          <MobileNavMenuModal isOpen={isMobileNavModalOpen} setIsOpen={setIsMobileNavModalOpen} setIsSettingsModalOpen={setIsSettingsModalOpen} isSettingsModalOpen={isSettingsModalOpen} />
-          
+
         </div>
       </header>
     </>
