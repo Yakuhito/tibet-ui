@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "verify:derivation": "node scripts/verify-derivation.mjs",
+    "verify:check-assets": "npx --yes tsx scripts/verify-check-assets.ts"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.14",
@@ -19,6 +21,7 @@
     "@walletconnect/types": "^2.7.6",
     "axios": "^1.3.5",
     "bech32": "^2.0.0",
+    "chia-wallet-sdk-wasm": "file:./chia-wallet-sdk-wasm",
     "canvas-confetti": "^1.6.0",
     "date-fns": "^2.30.0",
     "eslint-config-next": "13.3.0",
