@@ -9,9 +9,9 @@ import {
   SNAPSHOT_UTC_LABEL,
 } from '@/lib/refund/dates';
 
-const ANNOUNCEMENT_URL = 'https://x.com/TODO';
-const POST_MORTEM_URL = 'https://kuhi.to/TODO';
-const FAREWELL_URL = 'https://kuhi.to/TODO';
+const ANNOUNCEMENT_URL = 'https://x.com/TibetSwap/status/2097993672889409799?s=20';
+const POST_MORTEM_URL = 'https://blog.kuhi.to/tibetswap-v2-post-mortem';
+const FAREWELL_URL = 'https://blog.kuhi.to/so-long-and-thanks-for-all-the-trades';
 const INITIAL_ANNOUNCEMENT_URL = 'https://x.com/TibetSwap/status/2092014706009518333?s=20';
 
 const Home: React.FC = () => {
