@@ -25,7 +25,7 @@ const Home: React.FC = () => {
 
         <div className="space-y-6 leading-relaxed">
           <p>LP holders will be paid as if they removed liquidity at rescue time.</p>
-          <p>Burned LP will go to whoever sent it to the burn address.</p>
+          <p>Assets for burned LP will go to the address that sent the LP to the burn address.</p>
           <p>Bridged liquidity (TIBET-NeckCoin-XCH) will be distributed once the bridge is back online.</p>
           <div className="space-y-3">
             <p>The final LP snapshot will be taken on</p>
