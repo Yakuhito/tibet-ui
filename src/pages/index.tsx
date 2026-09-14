@@ -9,6 +9,7 @@ import {
   SNAPSHOT_UTC_LABEL,
 } from '@/lib/refund/dates';
 
+const SNAPSHOT_GIST_URL = 'https://gist.github.com/Yakuhito/e8808422e3a6fbf4d5759ee822db1d95';
 const ANNOUNCEMENT_URL = 'https://x.com/TibetSwap/status/2097993672889409799?s=20';
 const POST_MORTEM_URL = 'https://blog.kuhi.to/tibetswap-v2-post-mortem';
 const FAREWELL_URL = 'https://blog.kuhi.to/so-long-and-thanks-for-all-the-trades';
@@ -28,20 +29,23 @@ const Home: React.FC = () => {
           <p>Assets for burned LP will go to the address that sent the LP to the burn address.</p>
           <p>Bridged liquidity (TIBET-NeckCoin-XCH) will be distributed once the bridge is back online.</p>
           <div className="space-y-3">
-            <p>The final LP snapshot will be taken on</p>
+            <p>The final LP snapshot was taken on</p>
             <UtcLocalInstant iso={SNAPSHOT_ISO} utcLabel={SNAPSHOT_UTC_LABEL} />
-            <p>Before, the refund rules are public and open to change. After the final snapshot, the community may review the snapshot until</p>
+            <p>The community may review the snapshot until</p>
             <UtcLocalInstant iso={DISTRIBUTION_ISO} utcLabel={DISTRIBUTION_UTC_LABEL} />
             <p>when distribution is scheduled to start.</p>
           </div>
 
           <div className="bg-brandDark/10 rounded-xl px-4 py-4 space-y-3">
-            <p>It is best if you do not deposit or trade LP until the final snapshot is taken on</p>
-            <UtcLocalInstant iso={SNAPSHOT_ISO} utcLabel={SNAPSHOT_UTC_LABEL} />
-            <p>After that, LP tokens will become purely commemorative.</p>
+            <p>LP tokens are now purely commemorative. They no longer represent a claim on pool assets.</p>
           </div>
 
           <ul className="space-y-2">
+            <li>
+              <a href={SNAPSHOT_GIST_URL} target="_blank" rel="noopener noreferrer" className="underline hover:opacity-80">
+                Final snapshot
+              </a>
+            </li>
             <li>
               <a href={ANNOUNCEMENT_URL} target="_blank" rel="noopener noreferrer" className="underline hover:opacity-80">
                 Announcement

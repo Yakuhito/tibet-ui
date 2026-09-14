@@ -98,7 +98,7 @@ export async function checkAssets(rawInput: string, onProgress: CheckProgress = 
   }
 
   const lookedUpAddresses = [...addressSet];
-  onProgress('Matching snapshot…');
+  onProgress('Matching the final snapshot…');
   const csv = await loadRefundsCsv();
   const rows = collectRows(lookedUpAddresses, (address) => csv.get(address));
   const grouped = groupRows(rows);

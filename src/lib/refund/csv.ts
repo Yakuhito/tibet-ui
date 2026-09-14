@@ -1,5 +1,5 @@
 export const REFUNDS_CSV_URL =
-  'https://gist.githubusercontent.com/Yakuhito/f488dae7f2de01480ca7f02eb1f81985/raw/1744262fc4672330eb19184d5a31d1baad61d368/refunds_9210000.csv';
+  'https://gist.githubusercontent.com/Yakuhito/e8808422e3a6fbf4d5759ee822db1d95/raw/31d08c535b5c719417634ab543997ae44d7dd924/refunds.csv';
 
 export type RefundCsvRow = {
   asset: string;

@@ -1,5 +1,5 @@
 const CSV_URL =
-  'https://gist.githubusercontent.com/Yakuhito/f488dae7f2de01480ca7f02eb1f81985/raw/830cf1dd866d3890b8142581b7e24a2f652fe6e8/refunds_9210000.csv';
+  'https://gist.githubusercontent.com/Yakuhito/e8808422e3a6fbf4d5759ee822db1d95/raw/31d08c535b5c719417634ab543997ae44d7dd924/refunds.csv';
 
 const FIXTURE_ADDRESSES = [
   'xch1g3hve3wtz0rswuat93cz4smmqt2u5nr5alhelj4rmpgngelzc9aszehtem',

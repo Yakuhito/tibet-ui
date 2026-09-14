@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { flushSync } from 'react-dom';
 
-import PreliminaryBanner from '@/components/refund/PreliminaryBanner';
+import SnapshotBanner from '@/components/refund/SnapshotBanner';
 import CopyButton from '@/components/shared/CopyButton';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import { checkAssets, type RefundAssetGroup } from '@/lib/refund/checkAssets';
@@ -100,7 +100,7 @@ export default function CheckClient() {
       <h1 className="text-[2.75rem] leading-10 sm:text-5xl font-bold pb-8">Check your assets</h1>
 
       <div className="mb-8">
-        <PreliminaryBanner />
+        <SnapshotBanner />
       </div>
 
       <form onSubmit={onSubmit} className="space-y-4">
@@ -152,7 +152,7 @@ export default function CheckClient() {
           <div className="mt-8 space-y-4">
             <p className="text-sm opacity-70">Looked up {lookedUpCount} address{lookedUpCount === 1 ? '' : 'es'}.</p>
           {groups.length === 0 ? (
-            <p className="leading-relaxed">No refunds for these addresses in the current snapshot.</p>
+            <p className="leading-relaxed">No refunds for these addresses in the final snapshot.</p>
           ) : (
             <div className="space-y-4">
               {groups.map((group) => (
