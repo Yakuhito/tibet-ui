@@ -25,7 +25,7 @@ export default function CheckFormShell({ disabled = false }: { disabled?: boolea
           </div>
         </div>
         <p className="text-sm leading-relaxed opacity-80">
-          This checker can only expand <span className="font-medium">unhardened</span> children from a pasted observer key.
+          This checker expands 25,000 <span className="font-medium">unhardened</span> children from each pasted observer key.
           Hardened-path addresses cannot be derived from a public key — paste those <span className="font-mono">xch1</span> addresses instead.
         </p>
         <button

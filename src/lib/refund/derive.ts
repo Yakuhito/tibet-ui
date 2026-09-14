@@ -3,7 +3,8 @@ import type { ChiaWalletSdkWasm } from './wasm';
 
 export const WALLET_UNHARDENED_PATH_PREFIX = [12381, 8444, 2] as const;
 export const DERIVE_BATCH_SIZE = 500;
-export const COINSET_ACTIVITY_WINDOW = 32;
+/** Unhardened indexes `0` … `DERIVE_INDEX_COUNT - 1` are always expanded. */
+export const DERIVE_INDEX_COUNT = 25_000;
 
 export type DerivedAddress = {
   address: string;

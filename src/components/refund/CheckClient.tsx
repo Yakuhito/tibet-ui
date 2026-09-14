@@ -75,8 +75,14 @@ export default function CheckClient() {
     setProgress('');
 
     try {
-      const result = await checkAssets(input, (message) => {
-        flushSync(() => setProgress(message));
+      const result = await checkAssets(input, (state) => {
+        flushSync(() => {
+          setProgress(state.message);
+          setLookedUpCount(state.lookedUpCount);
+          if (state.groups.length > 0) {
+            setGroups(state.groups);
+          }
+        });
       });
       setErrors(result.errors);
       if (result.lookedUpAddresses.length > 0 || result.groups.length > 0) {
@@ -122,7 +128,7 @@ export default function CheckClient() {
         </div>
 
         <p className="text-sm leading-relaxed opacity-80">
-          This checker can only expand <span className="font-medium">unhardened</span> children from a pasted observer key.
+          This checker expands 25,000 <span className="font-medium">unhardened</span> children from each pasted observer key.
           Hardened-path addresses cannot be derived from a public key — paste those <span className="font-mono">xch1</span> addresses instead.
         </p>
 
@@ -148,18 +154,18 @@ export default function CheckClient() {
         </div>
       ) : null}
 
-        {groups ? (
+        {lookedUpCount > 0 || groups ? (
           <div className="mt-8 space-y-4">
             <p className="text-sm opacity-70">Looked up {lookedUpCount} address{lookedUpCount === 1 ? '' : 'es'}.</p>
-          {groups.length === 0 ? (
-            <p className="leading-relaxed">No refunds for these addresses in the final snapshot.</p>
-          ) : (
+          {groups && groups.length > 0 ? (
             <div className="space-y-4">
               {groups.map((group) => (
                 <AssetResultCard key={group.assetId ?? 'xch'} group={group} />
               ))}
             </div>
-          )}
+          ) : !running && groups && groups.length === 0 ? (
+            <p className="leading-relaxed">No refunds for these addresses in the final snapshot.</p>
+          ) : null}
         </div>
       ) : null}
     </main>

@@ -27,7 +27,9 @@ async function main() {
   }
   console.log('parseInput rejects txch but keeps valid xch1 tokens');
 
-  const addressOnly = await checkAssets(`${INDEX0}\n${INDEX1}`, console.log);
+  const logProgress = ({ message }: { message: string }) => console.log(message);
+
+  const addressOnly = await checkAssets(`${INDEX0}\n${INDEX1}`, logProgress);
   if (addressOnly.errors.length > 0) {
     throw new Error(addressOnly.errors.join('\n'));
   }
@@ -39,7 +41,7 @@ async function main() {
   }
   console.log('address-only CSV lookup ran (empty snapshot match)');
 
-  const sample = await checkAssets(SAMPLE_CSV, console.log);
+  const sample = await checkAssets(SAMPLE_CSV, logProgress);
   if (sample.errors.length > 0) {
     throw new Error(sample.errors.join('\n'));
   }
@@ -52,7 +54,7 @@ async function main() {
   );
 
   const catAddress = 'xch10al8ygak3nt6dq065dhywpyz3cqcnevjfphzsjdq6yfkfypwdzvsexrc8y';
-  const cat = await checkAssets(catAddress, console.log);
+  const cat = await checkAssets(catAddress, logProgress);
   if (cat.errors.length > 0) {
     throw new Error(cat.errors.join('\n'));
   }
@@ -62,7 +64,7 @@ async function main() {
   }
   console.log(`CAT sample matched amount ${catGroup.amount} dexie=${catGroup.dexie?.status} ticker=${catGroup.dexie?.ticker}`);
 
-  const mixed = await checkAssets(`${SAMPLE_CSV}\ntxch1notarealaddress`, console.log);
+  const mixed = await checkAssets(`${SAMPLE_CSV}\ntxch1notarealaddress`, logProgress);
   if (!mixed.errors.some((error) => error.includes('Testnet'))) {
     throw new Error('Mixed paste should surface the txch error');
   }
@@ -70,6 +72,34 @@ async function main() {
     throw new Error('Mixed paste should still look up the valid xch1 address');
   }
   console.log('mixed paste kept the valid address and surfaced the txch error');
+
+  const liveEvents: { message: string; groupCount: number; lookedUpCount: number }[] = [];
+  const live = await checkAssets(`${SAMPLE_CSV}\n${MASTER}`, (state) => {
+    liveEvents.push({
+      message: state.message,
+      groupCount: state.groups.length,
+      lookedUpCount: state.lookedUpCount,
+    });
+    console.log(state.message);
+  }, { deriveIndexCount: 1000, deriveBatchSize: 500 });
+  if (live.groups.length === 0) {
+    throw new Error('Pasted snapshot address should still match when an observer key is also scanned');
+  }
+  const duringDerivation = liveEvents.filter((event) => event.message.includes('derived'));
+  if (duringDerivation.length < 2) {
+    throw new Error(`Expected multiple derivation progress events, got ${duringDerivation.length}`);
+  }
+  if (!duringDerivation.some((event) => event.groupCount > 0)) {
+    throw new Error('CSV matches should appear in progress events before derivation finishes');
+  }
+  if (duringDerivation[0]?.lookedUpCount !== 1) {
+    throw new Error(`Pasted address should be looked up before the first batch, got ${duringDerivation[0]?.lookedUpCount}`);
+  }
+  const lastDerivation = duringDerivation[duringDerivation.length - 1];
+  if (!lastDerivation || lastDerivation.lookedUpCount < 1000) {
+    throw new Error(`Looked-up count should grow during derivation, last=${lastDerivation?.lookedUpCount}`);
+  }
+  console.log('CSV matches streamed during observer-key derivation');
 }
 
 main().catch((error) => {
