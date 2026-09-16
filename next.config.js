@@ -24,15 +24,20 @@ module.exports = withPWA({
   },
   async redirects() {
     return [
-      // Allowlist `/` and `/check` only. `[^/.]+` skips static files (logo.jpg, etc.).
+      // One-page site. `[^/.]+` skips static files (logo.jpg, etc.).
       // `/api/*` and `/_next/*` are excluded. `/` is not matched by `/:path`.
       {
-        source: '/:path((?!check|api|_next)[^/.]+)',
+        source: '/check',
         destination: '/',
         permanent: false,
       },
       {
-        source: '/:path((?!check|api|_next)[^/.]+)/:rest+',
+        source: '/:path((?!api|_next)[^/.]+)',
+        destination: '/',
+        permanent: false,
+      },
+      {
+        source: '/:path((?!api|_next)[^/.]+)/:rest+',
         destination: '/',
         permanent: false,
       },

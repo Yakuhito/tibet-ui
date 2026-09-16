@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import type { AppProps } from 'next/app';
-import { useRouter } from 'next/router';
 import { Provider } from 'react-redux';
 
 import Navbar from '@/components/shared/navbar/Navbar';
@@ -11,18 +10,7 @@ import { setDevFee } from '@/redux/devFeeSlice';
 import '@/styles/globals.css';
 import WalletManager from '@/utils/walletIntegration/walletManager';
 
-const ALLOWED_PAGE_PATHS = new Set(['/', '/check']);
-
 export default function App({ Component, pageProps }: AppProps) {
-  const router = useRouter();
-  const pageAllowed = ALLOWED_PAGE_PATHS.has(router.pathname);
-
-  useEffect(() => {
-    if (!pageAllowed) {
-      void router.replace('/');
-    }
-  }, [pageAllowed, router]);
-
   // Theme detector
   const [theme, setTheme] = useState<"dark" | "light" | "auto">("auto");
   useEffect(() => {
@@ -94,7 +82,7 @@ export default function App({ Component, pageProps }: AppProps) {
             }} />
           <div className="flex flex-col px-4">
             <div className="pt-12 pb-[96px]">
-              {pageAllowed ? <Component {...pageProps} /> : null}
+              <Component {...pageProps} />
             </div>
             <footer className="absolute bottom-0 w-full left-0 pb-6 pt-12 text-center text-brandDark mt-full mx-auto flex flex-col items-center">
               <a href="https://twitter.com/TibetSwap" target="_blank" rel="noopener noreferrer" className="underline ml-1">

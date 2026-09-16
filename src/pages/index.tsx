@@ -1,80 +1,39 @@
 import Head from 'next/head';
-import Link from 'next/link';
-
-import UtcLocalInstant from '@/components/refund/UtcLocalInstant';
-import {
-  DISTRIBUTION_ISO,
-  DISTRIBUTION_UTC_LABEL,
-  SNAPSHOT_ISO,
-  SNAPSHOT_UTC_LABEL,
-} from '@/lib/refund/dates';
 
 const SNAPSHOT_GIST_URL = 'https://gist.github.com/Yakuhito/e8808422e3a6fbf4d5759ee822db1d95';
-const ANNOUNCEMENT_URL = 'https://x.com/TibetSwap/status/2097993672889409799?s=20';
+const INITIAL_RESCUE_ANNOUNCEMENT_URL = 'https://x.com/TibetSwap/status/2092014706009518333?s=20';
+const RESCUE_UPDATE_URL = 'https://x.com/TibetSwap/status/2097993672889409799?s=20';
 const POST_MORTEM_URL = 'https://blog.kuhi.to/tibetswap-v2-post-mortem';
 const FAREWELL_URL = 'https://blog.kuhi.to/so-long-and-thanks-for-all-the-trades';
-const INITIAL_ANNOUNCEMENT_URL = 'https://x.com/TibetSwap/status/2092014706009518333?s=20';
+
+const LINKS = [
+  { href: SNAPSHOT_GIST_URL, label: 'Final snapshot' },
+  { href: INITIAL_RESCUE_ANNOUNCEMENT_URL, label: 'Initial rescue announcement' },
+  { href: RESCUE_UPDATE_URL, label: 'Rescue update' },
+  { href: POST_MORTEM_URL, label: 'Post-mortem' },
+  { href: FAREWELL_URL, label: 'Farewell' },
+];
 
 const Home: React.FC = () => {
   return (
     <>
       <Head>
-        <title>Overview | TibetSwap</title>
+        <title>TibetSwap</title>
       </Head>
-      <main className="max-w-2xl mx-auto">
-        <h1 className="text-[2.75rem] leading-10 sm:text-5xl font-bold pb-8">TibetSwap v2 Refunds</h1>
+      <main className="max-w-2xl mx-auto text-center">
+        <p className="leading-relaxed">
+          After 4 years of powering trading on Chia, TibetSwap has shut down following a white-hat rescue of all liquidity. All funds have been returned to liquidity providers on 16 September 2026. Chia community - thank you very much.
+        </p>
 
-        <div className="space-y-6 leading-relaxed">
-          <p>LP holders will be paid as if they removed liquidity at rescue time.</p>
-          <p>Assets for burned LP will go to the address that sent the LP to the burn address.</p>
-          <p>Bridged liquidity (TIBET-NeckCoin-XCH) will be distributed once the bridge is back online.</p>
-          <div className="space-y-3">
-            <p>The final LP snapshot was taken on</p>
-            <UtcLocalInstant iso={SNAPSHOT_ISO} utcLabel={SNAPSHOT_UTC_LABEL} />
-            <p>The community may review the snapshot until</p>
-            <UtcLocalInstant iso={DISTRIBUTION_ISO} utcLabel={DISTRIBUTION_UTC_LABEL} />
-            <p>when distribution is scheduled to start.</p>
-          </div>
-
-          <div className="bg-brandDark/10 rounded-xl px-4 py-4 space-y-3">
-            <p>LP tokens are now purely commemorative. They no longer represent a claim on pool assets.</p>
-          </div>
-
-          <ul className="space-y-2">
-            <li>
-              <a href={SNAPSHOT_GIST_URL} target="_blank" rel="noopener noreferrer" className="underline hover:opacity-80">
-                Final snapshot
+        <ul className="mt-10 space-y-2">
+          {LINKS.map((link) => (
+            <li key={link.href}>
+              <a href={link.href} target="_blank" rel="noopener noreferrer" className="underline hover:opacity-80">
+                {link.label}
               </a>
             </li>
-            <li>
-              <a href={ANNOUNCEMENT_URL} target="_blank" rel="noopener noreferrer" className="underline hover:opacity-80">
-                Announcement
-              </a>
-            </li>
-            <li>
-              <a href={POST_MORTEM_URL} target="_blank" rel="noopener noreferrer" className="underline hover:opacity-80">
-                Post-mortem
-              </a>
-            </li>
-            <li>
-              <a href={FAREWELL_URL} target="_blank" rel="noopener noreferrer" className="underline hover:opacity-80">
-                Farewell
-              </a>
-            </li>
-            <li>
-              <a href={INITIAL_ANNOUNCEMENT_URL} target="_blank" rel="noopener noreferrer" className="underline hover:opacity-80">
-                Initial announcement
-              </a>
-            </li>
-          </ul>
-        </div>
-
-        <Link
-          href="/check"
-          className="mt-10 inline-flex items-center justify-center font-medium px-6 py-3 rounded-xl bg-brandDark text-brandLight hover:opacity-90 transition"
-        >
-          Check your assets
-        </Link>
+          ))}
+        </ul>
       </main>
     </>
   );
